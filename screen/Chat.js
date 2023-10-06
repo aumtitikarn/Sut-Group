@@ -7,7 +7,7 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView>
     <View>
-      <Text>Chat</Text>
+      <Text>Chat test1</Text>
     </View>
     </SafeAreaView>
   );

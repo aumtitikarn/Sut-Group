@@ -4,11 +4,11 @@ import { firebase } from 'firebase/app';
 import Post from '../components/Post';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import  Createpost  from './createpost';
-import 'firebase/auth';
+import { FIREBASE_AUTH } from '../firestore';
 
   const Profile = () => {
   const navigation = useNavigation();
+  const auth = FIREBASE_AUTH;
 
   const handleLogout = async () => {
     try {

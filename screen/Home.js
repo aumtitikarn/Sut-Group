@@ -1,15 +1,16 @@
 import React from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
 import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // นำเข้า useNavigation
+import { useNavigation } from '@react-navigation/native'; 
 import Search from '../components/Searchbar';
 import Post from '../components/Post';
 
+
 const MyComponent = () => {
-  const navigation = useNavigation(); // ใช้ useNavigation สร้างตัวแปรนำทาง
+  const navigation = useNavigation(); 
 
   const handleCreatePostPress = () => {
-    // ใช้ navigation.navigate เพื่อนำทางไปยังหน้า createpost.js
+   
     navigation.navigate('Createpost');
   };
 

@@ -6,11 +6,11 @@ import { firebase } from '../firestore';
 import 'firebase/auth';
 
 export default function Register({navigation}) {
-  const [text, setText] = useState('');
-  const [myname, setName] = useState('');
-  const [oju, setOju] = useState('');
-   const [tt, setTt] = useState('');
-  const [my, setMy] = useState('');
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [lname, setLname] = useState('');
+   const [faculty, setFaculty] = useState('');
+  const [major, setMajor] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,11 +33,11 @@ export default function Register({navigation}) {
       const data = {
          id: uid,
         email: email,
-        username: text,
-        firstname: myname,
-        lastname: oju,
-        faculty: tt,
-        major: my,
+        username: username,
+        firstname: name,
+        lastname: lname,
+        faculty: faculty,
+        major: major,
       };
       const usersRef = firebase.firestore().collection('users');
       await usersRef.doc(uid).set(data);
@@ -57,38 +57,38 @@ export default function Register({navigation}) {
      <View style={styles.vivi}>
      <TextInput
         style={styles.input}
-        onChangeText={setText}
+        onChangeText={setUsername}
         placeholder="ชื่อบัญชีผู้ใช้"
         placeholderTextColor="Gray"
-        value={text}
+        value={username}
       />
       <TextInput
         style={styles.input}
         onChangeText={setName}
         placeholder="ชื่อ"
         placeholderTextColor="Gray"
-        value={myname}
+        value={name}
       />
       <TextInput
         style={styles.input}
-        onChangeText={setOju}
+        onChangeText={setLname}
         placeholder="นามสกุล"
         placeholderTextColor="Gray"
-        value={oju}
+        value={lname}
       />
       <TextInput
          style={styles.input}
-        onChangeText={setTt}
+        onChangeText={setFaculty}
         placeholder="สำนักวิชา"
         placeholderTextColor="Gray"
-        value={tt}
+        value={faculty}
       />
       <TextInput
         style={styles.input}
-        onChangeText={setMy}
+        onChangeText={setMajor}
         placeholder="สาขา"
         placeholderTextColor="Gray"
-        value={my}
+        value={major}
       />
       <TextInput
         style={styles.input}

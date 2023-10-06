@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, TextInput, Button, View, Image,} from 'react-native';
-import 'firebase/auth';
-import { firebase } from '../firestore';
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { FIREBASE_AUTH } from '../firestore';
 
 
 export default function Login({ navigation }) {
@@ -9,30 +9,28 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const [error, setError] = useState('');
+  const auth = FIREBASE_AUTH;
 
   async function UserLogin() {
-    await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        alert('เข้าสู่ระบบสำเร็จ');
-        navigation.navigate('MyTabs');
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      alert('เข้าสู่ระบบสำเร็จ');
+      navigation.navigate('MyTabs');
+    } catch (error) {
+      alert(error.message);
+      console.log(error.message);
+    }
   }
 
   useEffect(() => {
-    async function CheckLogin(){
-      firebase.auth().onAuthStateChanged((user) => {
-        if(user){
-          navigation.navigate('MyTabs');
-        }
-      });
-    }
-    CheckLogin();
-  }, [navigation]);
+    // Check authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate('MyTabs');
+      }
+    });
+    return () => unsubscribe(); // Unsubscribe when the component unmounts
+  }, [navigation, auth]);
 
 
   return (

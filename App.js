@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './screen/Home';
@@ -14,12 +14,12 @@ import Createpost from './screen/createpost'
 import NotiScreen from './screen/notiscreen'
 import Marketpost from './screen/marketpost'
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MyTabs() {
   return (
-    <Tab.Navigator
+    <Tab.Navigator barStyle={styles.tabbarStyle}
       initialRouteName="Home"
       tabBarOptions={{
         activeTintColor: '#e91e63',
@@ -90,4 +90,24 @@ export default function Page() {
       </Stack.Navigator>
     </NavigationContainer>
   );
+  
 }
+const styles = StyleSheet.create({
+  tabbarStyle: {
+    backgroundColor: '#FFD700',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
+    position: 'absolute',
+    width: '100%',
+    //marginTop: -60,
+    shadowOffset: {
+      width: 10,
+      height: 30,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 60.0,
+    elevation: 10,
+  },
+}); 
+

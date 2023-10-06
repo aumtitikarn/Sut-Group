@@ -14,7 +14,6 @@ export default function Login({ navigation }) {
   async function UserLogin() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      alert('เข้าสู่ระบบสำเร็จ');
       navigation.navigate('MyTabs');
     } catch (error) {
       alert(error.message);
@@ -29,8 +28,18 @@ export default function Login({ navigation }) {
         navigation.navigate('MyTabs');
       }
     });
-    return () => unsubscribe(); // Unsubscribe when the component unmounts
+    return () => unsubscribe();
   }, [navigation, auth]);
+  onAuthStateChanged(FIREBASE_AUTH, (user) => {
+    if (user) {
+      // ผู้ใช้ล็อกอินอยู่
+      console.log("User is logged in:", user);
+
+    } else {
+      // ผู้ใช้ไม่ได้ล็อกอิน
+      console.log("User is not logged in");
+    }
+  });
 
 
   return (

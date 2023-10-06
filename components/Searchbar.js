@@ -11,13 +11,10 @@ const MyComponent = () => {
       placeholder="Search"
       onChangeText={onChangeSearch}
       value={searchQuery}
-      style={{backgroundColor: '#FFF',
-    borderRadius: 20,
-    marginTop: 10,
-    padding:  10,
-    marginLeft: 10,
-    height: 50,
-    width: 380}}
+      style = {{ 
+        backgroundColor: '#FFF',
+        marginTop: 20
+      }}
     />
   );
 };

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
 import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
+import { onAuthStateChanged } from 'firebase/auth';
 import Search from '../components/Searchbar';
 import Post from '../components/Post';
 
@@ -12,6 +13,7 @@ const MyComponent = () => {
   const handleCreatePostPress = () => {
    
     navigation.navigate('Createpost');
+
   };
 
   return (

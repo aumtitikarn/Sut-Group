@@ -12,7 +12,7 @@ import { FIREBASE_AUTH } from '../firestore';
 
   const handleLogout = async () => {
     try {
-      await firebase.auth().signOut();
+      await auth().signOut();
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch (error) {
       console.error(error);

@@ -24,10 +24,6 @@ function MyTabs() {
       tabBarOptions={{
         activeTintColor: '#e91e63',
       }}
-       tabBarStyle={{
-    backgroundColor: '#FFBD59',
-    borderRadius: 15
-    }}
         screenOptions={{
           headerShown: false,
         }}>
@@ -37,7 +33,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons name="home" color={color} size={30} />
           ),
         }}
       />
@@ -47,7 +43,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Chat',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat" color={color} size={size} />
+            <MaterialCommunityIcons name="chat" color={color} size={30} />
           ),
         }}
       />
@@ -57,7 +53,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Marketplace',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="basket" color={color} size={size} />
+            <MaterialCommunityIcons name="basket" color={color} size={30} />
           ),
         }}
       />
@@ -67,7 +63,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={30} />
           ),
         }}
       />
@@ -94,7 +90,7 @@ export default function Page() {
 }
 const styles = StyleSheet.create({
   tabbarStyle: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FFBD59',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: 'hidden',

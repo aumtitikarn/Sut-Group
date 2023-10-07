@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, TextInput, Button, View,  Modal, Image } from 'react-native';
-import Constants from 'expo-constants';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { firebase } from '../firestore';
-import 'firebase/auth';
+import { Text, StyleSheet, TextInput, Button, View,  Modal, Image, StatusBar, SafeAreaView } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
+
 
 export default function Register({navigation}) {
   const [username, setUsername] = useState('');
@@ -15,6 +15,8 @@ export default function Register({navigation}) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
+  const auth = FIREBASE_AUTH;
+  const db = FIRESTORE_DB;
 
 
 
@@ -25,13 +27,11 @@ export default function Register({navigation}) {
     }
 
     try {
-      const response = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password);
+      const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log('User registration response:', response);
       const uid = response.user.uid;
       const data = {
-         id: uid,
+        id: uid,
         email: email,
         username: username,
         firstname: name,
@@ -39,8 +39,9 @@ export default function Register({navigation}) {
         faculty: faculty,
         major: major,
       };
-      const usersRef = firebase.firestore().collection('users');
-      await usersRef.doc(uid).set(data);
+      // Assuming you have imported and initialized Firestore previously.
+      const usersRef = collection(db, 'users');
+      await setDoc(doc(usersRef, uid), data);
     } catch (error) {
       console.error('Error during user registration:', error);
       setError(error.message);
@@ -49,7 +50,8 @@ export default function Register({navigation}) {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <View>
      <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
         <Text style={styles.para}>
      ลงทะเบียน
@@ -125,6 +127,7 @@ export default function Register({navigation}) {
       </Text>
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create ({
@@ -133,6 +136,7 @@ const styles = StyleSheet.create ({
     backgroundColor: '#FFBD59',
     justifyContent: 'center',
     padding: 20,
+    paddingTop: StatusBar.currentHeight
   
   },
   para:{
@@ -158,10 +162,9 @@ const styles = StyleSheet.create ({
    logo: {
     height: 150,
     width: 250,
-   marginRight: 10,
-    marginLeft: 10,
+    marginLeft: 50,
   },
   vivi:{
     marginTop: 1,
   },
-});
+}); 

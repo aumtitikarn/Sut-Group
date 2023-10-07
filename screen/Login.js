@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, TextInput, Button, View, Image,} from 'react-native';
+import { Text, StyleSheet, TextInput, Button, View, Image,SafeAreaView, StatusBar } from 'react-native';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../firestore';
 
@@ -43,7 +43,8 @@ export default function Login({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <View>
       <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
       <Text style={styles.logostyle}>เข้าสู่ระบบ</Text>
       <TextInput
@@ -70,6 +71,7 @@ export default function Login({ navigation }) {
         สมัครสมาชิก?
       </Text>
     </View>
+    </SafeAreaView>
   );
 }
 
@@ -78,6 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#FFBD59',
+    paddingTop: StatusBar.currentHeight //เว้นระยะส่วนบนขอ Andriod
   },
   logostyle: {
     marginTop: 2,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView } from 'react-native';
-import { firebase } from 'firebase/app';
 import Post from '../components/Post';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +11,7 @@ import { FIREBASE_AUTH } from '../firestore';
 
   const handleLogout = async () => {
     try {
-      await auth().signOut();
+      await auth.signOut();
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch (error) {
       console.error(error);

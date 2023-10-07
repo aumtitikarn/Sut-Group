@@ -21,7 +21,7 @@ const MyComponent = () => {
       <ScrollView>
         <Appbar.Header style={{ backgroundColor: '#FFBD59' }}>
           <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
-          <Appbar.Content title="Home" style={{ marginRight: 50 }} />
+          <Appbar.Content title="Home" style={{ marginLeft : 75 }} />
           <Appbar.Action
             icon="bell"
             style={{ marginLeft: 10 }}

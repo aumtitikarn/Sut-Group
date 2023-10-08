@@ -20,7 +20,7 @@ const storedValue = localStorage.getItem([...saveItem, product]);
   }
   async function get(product) {
     try {
-      const value = await AsyncStorage.getItem(product);
+      const value = localStorage.getItem(product);
       alert(value);
     } catch (e) {
       alert('Error');

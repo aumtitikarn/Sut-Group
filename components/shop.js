@@ -7,11 +7,12 @@ import { AsyncStorage } from 'react-native';
  function shop(props) {
   const { products } = props; 
   const [saveItem, setSaveItem] = useState([]);
+  const localStorage = window.localStorage;
 
 async function addProd(product) {
     try {
-      await AsyncStorage.setItem('name', product);
-      setSaveItem([...saveItem, product]);
+        localStorage.setItem('name', product);
+const storedValue = localStorage.getItem([...saveItem, product]);
       alert('บันทึกแล้ว' + product);
     } catch (e) {
       alert('Error');

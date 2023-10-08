@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-export default function Love () {
+export default function Marketpost () {
   
 const navigation = useNavigation();
 

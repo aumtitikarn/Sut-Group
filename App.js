@@ -13,7 +13,7 @@ import Register from './screen/Register';
 import Createpost from './screen/createpost'
 import NotiScreen from './screen/notiscreen'
 import Marketpost from './screen/marketpost'
-//comment
+//commenttttt
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 

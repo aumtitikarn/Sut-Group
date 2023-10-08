@@ -4,7 +4,7 @@ import { Card, Avatar } from 'react-native-paper';
 import { AsyncStorage } from 'react-native';
 
 
- function Shop(props) {
+export default function Shop(props) {
   const { products } = props; 
   const [saveItem, setSaveItem] = useState([]);
   const localStorage = window.localStorage;
@@ -12,7 +12,7 @@ import { AsyncStorage } from 'react-native';
 async function addProd(product) {
     try {
         localStorage.setItem('name', product);
-const storedValue = localStorage.getItem([...saveItem, product]);
+        setSaveItem([...saveItem, product]);
       alert('บันทึกแล้ว' + product);
     } catch (e) {
       alert('Error');
@@ -20,8 +20,8 @@ const storedValue = localStorage.getItem([...saveItem, product]);
   }
   async function get(product) {
     try {
-      const value = localStorage.getItem(product);
-      alert(value);
+      const storedValue = localStorage.getItem(product);
+      alert(storedValue);
     } catch (e) {
       alert('Error');
       // error reading value
@@ -88,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Shop;
+ 

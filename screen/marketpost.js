@@ -1,6 +1,6 @@
 import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {Icon} from '@rneui/themed';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -105,11 +105,11 @@ async function Shoppost() {
       />
     </View>
     <View style={styles.iconContainer}>
-    <Icon name="camera" size={20} color="#000" style={styles.icon} />
-    <Icon name="image" size={20} color="#000" style={styles.icon} />
-     <Icon name="map" size={20} color="#000" style={styles.icon} />
-    <Icon  name="paperclip" size={20} color="#000" style={styles.icon} />
-    <Icon  name="awesome" size={20} color="#000" style={styles.icon} />
+    <Icon name="camera" type="antdesign"  size={20} color="#000" style={styles.icon} />
+    <Icon name="image"  size={20} color="#000" style={styles.icon} />
+     <Icon name="enviromento" type="antdesign" size={20} color="#000" style={styles.icon} />
+    <Icon  name="paperclip" type="antdesign" size={20} color="#000" style={styles.icon} />
+    <Icon  name="emoji-happy" type="entypo" size={20} color="#000" style={styles.icon} />
     
     </View>
     <View style={{

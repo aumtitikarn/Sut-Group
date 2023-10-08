@@ -15,6 +15,22 @@ export default function Shop(props) {
           <View>
         <Image source={{ uri: product.pic }} style={{ width: 100, height: 100 ,marginLeft:50}} />
           </View>
+          <View style={{left: 350, top:-60  }} >
+             <TouchableOpacity onPress={handleMenuPress}>
+        <Icon name="ellipsis-v" size={20} color="#000" style={{ marginRight: 20 }} />
+      </TouchableOpacity> 
+      {/* แสดงเมนูหรือตัวเลือกที่ต้องการ */}
+      {isMenuVisible && (
+        <View style={styles.menuContainer}> 
+          <TouchableOpacity onPress={handleEditPress}>
+            <Icon name="edit" size={20} color="#000" style={styles.menuIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDeletePress}>
+            <Icon name="trash" size={20} color="#000" style={styles.menuIcon} />
+          </TouchableOpacity> 
+        </View>
+      )}
+      </View>
           <View style={{margin:1}}>
             <Card.Title
               style={{ height: 2 }}

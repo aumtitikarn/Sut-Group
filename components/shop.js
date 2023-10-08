@@ -1,14 +1,11 @@
 import React, {useState} from 'react';
 import { TouchableOpacity, StyleSheet, Text, View,Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
-import { AsyncStorage } from 'react-native';
 
 
- function Cat(props) {
+
+export default function Shop(props) {
   const { products } = props; 
-  const [saveItem, setSaveItem] = useState([]);
-
-
 
   return (
     <View style={styles.container}>
@@ -70,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Cat;
+ 

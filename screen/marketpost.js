@@ -5,8 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+export default function Marketpost() {
 
-export default function Marketpost () {
   
 const navigation = useNavigation();
 
@@ -118,7 +118,9 @@ async function Shoppost() {
     }}>
     
     <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={styles.buttonText} onPress={() => Shoppost()} >โพสต์</Text>
+
+      <Text style={styles.buttonText} onPress={handleMarketPress} >โพสต์</Text>
+
     </TouchableOpacity>
     </View>
     </SafeAreaView>

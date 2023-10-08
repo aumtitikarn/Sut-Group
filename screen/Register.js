@@ -3,6 +3,7 @@ import { Text, StyleSheet, TextInput, Button, View,  Modal, Image, StatusBar, Sa
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
 import { collection, doc, setDoc } from 'firebase/firestore';
+import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 export default function Register({navigation}) {
@@ -50,6 +51,7 @@ export default function Register({navigation}) {
 
 
   return (
+    <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
     <View>
      <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
@@ -78,13 +80,22 @@ export default function Register({navigation}) {
         placeholderTextColor="Gray"
         value={lname}
       />
-       <TextInput
-            style={styles.input}
-            onChangeText={setFaculty}
-            placeholder="สำนักวิชา"
-            placeholderTextColor="Gray"
-            value={faculty}
-          />
+  <Box maxW="300">
+        <Select selectedValue={faculty} minWidth="370" accessibilityLabel="Choose Service" placeholder="สำนักวิชา" style={styles.input} _selectedItem={{
+        bg: "teal.600",
+        endIcon: <CheckIcon size="5" />
+      }} mt={1} onValueChange={itemValue => setFaculty(itemValue)}>
+          <Select.Item label="สำนักวิชาวิทยาศาสตร์" value="สำนักวิชาวิทยาศาสตร์" />
+          <Select.Item label="สำนักวิชาเทคโนโลยีสังคม" value="สำนักวิชาเทคโนโลยีสังคม" />
+          <Select.Item label="สำนักวิชาเทคโนโลยีการเกษตร" value="สำนักวิชาเทคโนโลยีการเกษตร" />
+          <Select.Item label="สำนักวิชาวิศวกรรมศาสตร์" value="สำนักวิชาวิศวกรรมศาสตร์" />
+          <Select.Item label="สำนักวิชาแพทย์" value="สำนักวิชาแพทย์" />
+          <Select.Item label="สำนักวิชาพยาบาลศาสตร์" value="สำนักวิชาพยาบาลศาสตร์" />
+          <Select.Item label="สำนักวิชาทันตแพทย์" value="สำนักวิชาทันตแพทย์" />
+          <Select.Item label="สำนักวิชาสาธารณสุขศาสตร์" value="สำนักวิชาสาธารณสุขศาสตร์" />
+          <Select.Item label="กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" value="กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" />
+        </Select>
+      </Box>
       <TextInput
         style={styles.input}
         onChangeText={setMajor}
@@ -128,6 +139,7 @@ export default function Register({navigation}) {
       </View>
     </View>
     </SafeAreaView>
+    </NativeBaseProvider>
   );
 }
 const styles = StyleSheet.create ({

@@ -1,9 +1,17 @@
-import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View,
+   Text,  
+   SafeAreaView, 
+   StyleSheet, 
+   TextInput, 
+   TouchableOpacity,
+   StatusBar } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Home = ({ navigation }) => {
+  const [feed, setFeed] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,23 +38,23 @@ const Home = ({ navigation }) => {
         style={styles.input}
         placeholder="คุณกำลังคิดอะไรอยู่..."
         placeholderTextColor="Gray"
-        textAlignVertical="top" // Align text to the top
+        textAlignVertical="top" 
         multiline={true}
+        value={feed}
+        onChangeText={(text) => setFeed(text)}
       />
     </View>
     <View style={styles.iconContainer}>
     <Icon name="camera" size={20} color="#000" style={styles.icon} />
     <Icon name="image" size={20} color="#000" style={styles.icon} />
-     <Icon name="map" size={20} color="#000" style={styles.icon} />
-    <Icon  name="paperclip" size={20} color="#000" style={styles.icon} />
-    <Icon  name="smilo" size={20} color="#000" style={styles.icon} />
+    <Icon name="map-marker" size={20} color="#000" style={styles.icon} />
     </View>
     <View style={{
       top: -80,
       left: 275
     }}>
     <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={styles.buttonText}>โพสต์</Text>
+      <Text style={styles.buttonText} onPress={() => navigation.navigate('Register')}>โพสต์</Text>
     </TouchableOpacity>
     </View>
     </SafeAreaView>
@@ -56,6 +64,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF6DE',
+    paddingTop: StatusBar.currentHeight 
   },
    input: {
     height: 200,

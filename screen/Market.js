@@ -3,11 +3,12 @@ import { Appbar, Searchbar } from 'react-native-paper';
 import { Text, StyleSheet, TextInput, Button, View, Image,ScrollView,TouchableOpacity} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Shop from '../components/shop';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
+import products from '../components/DataShop';
 
 const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
-const MyComponent = () => (
+const MyComponent = ({navigation}) => (
   <View style={styles.conter}>
   <Appbar.Header style={{backgroundColor:'#FFBD59'}} >
     <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
@@ -33,9 +34,9 @@ const MyComponent = () => (
               top: 40,
               marginLeft: 30,
             }}
-            onPress={() => navigation.navigate('Marketpost')}
+            
           >
-            <Text>สร้างสินค้า</Text>
+            <Text onPress={() => navigation.navigate('Marketpost')} >สร้างสินค้า</Text>
           </TouchableOpacity>
         </View>
   <View style={styles.loginButton}>

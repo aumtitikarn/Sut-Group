@@ -4,29 +4,11 @@ import { Card, Avatar } from 'react-native-paper';
 import { AsyncStorage } from 'react-native';
 
 
-export default function Shop(props) {
+ function Cat(props) {
   const { products } = props; 
   const [saveItem, setSaveItem] = useState([]);
-  const localStorage = window.localStorage;
 
-async function addProd(product) {
-    try {
-        localStorage.setItem('name', product);
-        setSaveItem([...saveItem, product]);
-      alert('บันทึกแล้ว' + product);
-    } catch (e) {
-      alert('Error');
-    }
-  }
-  async function get(product) {
-    try {
-      const storedValue = localStorage.getItem(product);
-      alert(storedValue);
-    } catch (e) {
-      alert('Error');
-      // error reading value
-    }
-  }
+
 
   return (
     <View style={styles.container}>
@@ -88,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
- 
+export default Cat;

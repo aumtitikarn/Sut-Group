@@ -48,8 +48,8 @@ const MyComponent = () => (
   buttonTextAfterSelection={(selectedItem, index) => {
     return selectedItem;
   }}
-  rowTextForSelection={(product, index) => {
-    return product;
+  rowTextForSelection={(item, index) => {
+    return item;
   }}
 />
 
@@ -58,7 +58,17 @@ const MyComponent = () => (
   <View style={{
     marginTop: 12
    }}>
-   <Shop products={products}  />
+   <Shop />
+  </View>
+  <View style={{
+    marginTop: 12
+   }}>
+   <Shop />
+  </View>
+  <View style={{
+    marginTop: 12
+   }}>
+   <Shop />
   </View>
   </ScrollView>
   </View>

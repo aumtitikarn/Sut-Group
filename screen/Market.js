@@ -8,62 +8,66 @@ import products from '../components/DataShop';
 
 const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
-const MyComponent = () => (
-  <View style={styles.conter}>
-  <Appbar.Header style={{backgroundColor:'#FFBD59'}} >
-    <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
-    <Appbar.Content title=" Marketplace" style={{marginRight: 30,
-    marginLeft: 30}} />
-    <Appbar.Action icon="bell" onPress={() => {}} />
-    
-  </Appbar.Header>
-  <Searchbar style={styles.search} placeholder="Search" />
-  <View style={{ top: 20,
-    marginRight: 10,
-    marginLeft: 25,}} >
-   <Ionicons name="filter" size={30}  />
-  </View>
-   <View>
-          <TouchableOpacity
-            style={{
-              borderRadius: 5,
-              borderWidth: 1,
-              backgroundColor: '#FFBD59',
-              width: 90,
-              padding: 10,
-              top: 40,
-              marginLeft: 30,
-            }}
-            onPress={() => navigation.navigate('Marketpost')}
-          >
-            <Text>สร้างสินค้า</Text>
-          </TouchableOpacity>
-        </View>
-  <View style={styles.loginButton}>
-  <SelectDropdown
-  data={type}
-  defaultButtonText="ประเภทสินค้า" // เปลี่ยนค่าเริ่มต้นที่นี่
-  onSelect={(selectedItem, index) => {
-    console.log(selectedItem, index);
-  }}
-  buttonTextAfterSelection={(selectedItem, index) => {
-    return selectedItem;
-  }}
-  rowTextForSelection={(product, index) => {
-    return product;
-  }}
-/>
+export default function MyComponent({navigation}) {
+  return(
+    <View style={styles.conter}>
+    <Appbar.Header style={{backgroundColor:'#FFBD59'}} >
+      <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
+      <Appbar.Content title=" Marketplace" style={{marginRight: 30,
+      marginLeft: 30}} />
+      <Appbar.Action icon="bell" onPress={() => {}} />
+      
+    </Appbar.Header>
+    <Searchbar style={styles.search} placeholder="Search" />
+    <View style={{ top: 20,
+      marginRight: 10,
+      marginLeft: 25,}} >
+     <Ionicons name="filter" size={30}  />
+    </View>
+     <View>
+            <TouchableOpacity
+              style={{
+                borderRadius: 5,
+                borderWidth: 1,
+                backgroundColor: '#FFBD59',
+                width: 90,
+                padding: 10,
+                top: 40,
+                marginLeft: 30,
+              }}
+              
+            >
+              <Text onPress={() => navigation.navigate('Marketpost')} >สร้างสินค้า</Text>
+            </TouchableOpacity>
+          </View>
+    <View style={styles.loginButton}>
+    <SelectDropdown
+    data={type}
+    defaultButtonText="ประเภทสินค้า" // เปลี่ยนค่าเริ่มต้นที่นี่
+    onSelect={(selectedItem, index) => {
+      console.log(selectedItem, index);
+    }}
+    buttonTextAfterSelection={(selectedItem, index) => {
+      return selectedItem;
+    }}
+    rowTextForSelection={(product, index) => {
+      return product;
+    }}
+  />
+  
+    </View>
+    <ScrollView>
+    <View style={{
+      marginTop: 12
+     }}>
+     <Shop products={products}  />
+    </View>
+    </ScrollView>
+    </View>
+  );
 
-  </View>
-  <ScrollView>
-  <View style={{
-    marginTop: 12
-   }}>
-   <Shop products={products}  />
-  </View>
-  </ScrollView>
-  </View>
-);
+} 
+
 const styles = StyleSheet.create({
 conter:{
   flex: 1,
@@ -86,5 +90,3 @@ loginButton:{
    }
  
 });
-
-export default MyComponent;

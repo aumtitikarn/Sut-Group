@@ -21,7 +21,7 @@ const [sele, setSele] = useState('all');
 const navigation = useNavigation();
 
   const handleLovePress = () => {
-    navigation.navigate('marketpost');
+    navigation.navigate('Marketpost');
   };
 
 

@@ -8,7 +8,7 @@ import products from '../components/DataShop';
 
 const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
-const MyComponent = ({navigation}) => (
+const MyComponent = () => (
   <View style={styles.conter}>
   <Appbar.Header style={{backgroundColor:'#FFBD59'}} >
     <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
@@ -34,9 +34,9 @@ const MyComponent = ({navigation}) => (
               top: 40,
               marginLeft: 30,
             }}
-            
+            onPress={() => navigation.navigate('Marketpost')}
           >
-            <Text onPress={() => navigation.navigate('Marketpost')} >สร้างสินค้า</Text>
+            <Text>สร้างสินค้า</Text>
           </TouchableOpacity>
         </View>
   <View style={styles.loginButton}>

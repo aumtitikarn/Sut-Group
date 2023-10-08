@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import { TouchableOpacity, StyleSheet, Text, View,Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
-
+import { AsyncStorage } from 'react-native';
 
 
 export default function Shop(props) {
   const { products } = props; 
+z
   return (
     <View style={styles.container}>
       {products.map((product) => (

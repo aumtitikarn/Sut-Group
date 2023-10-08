@@ -4,7 +4,7 @@ import { Card, Avatar } from 'react-native-paper';
 import { AsyncStorage } from 'react-native';
 
 
- function shop(props) {
+ function Shop(props) {
   const { products } = props; 
   const [saveItem, setSaveItem] = useState([]);
   const localStorage = window.localStorage;
@@ -88,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default shop;
+export default Shop;

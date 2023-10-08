@@ -78,13 +78,13 @@ export default function Register({navigation}) {
         placeholderTextColor="Gray"
         value={lname}
       />
-      <TextInput
-         style={styles.input}
-        onChangeText={setFaculty}
-        placeholder="สำนักวิชา"
-        placeholderTextColor="Gray"
-        value={faculty}
-      />
+       <TextInput
+            style={styles.input}
+            onChangeText={setFaculty}
+            placeholder="สำนักวิชา"
+            placeholderTextColor="Gray"
+            value={faculty}
+          />
       <TextInput
         style={styles.input}
         onChangeText={setMajor}
@@ -166,5 +166,12 @@ const styles = StyleSheet.create ({
   },
   vivi:{
     marginTop: 1,
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  picker: {
+    flex: 1,
   },
 }); 

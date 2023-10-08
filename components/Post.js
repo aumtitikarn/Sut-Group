@@ -42,7 +42,7 @@ export default function MyComponent(props) {
               subtitle="#สาขาเทคโนโลยีดิจิทัล"
               left={(props) => <Avatar.Icon {...props} icon="account-circle" />}
              /> 
-            <View style={{left: 280, top:-60  }} >
+            <View style={{left: 350, top:-60  }} >
              <TouchableOpacity onPress={handleMenuPress}>
         <Icon name="ellipsis-v" size={20} color="#000" style={{ marginRight: 20 }} />
       </TouchableOpacity> 

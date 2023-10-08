@@ -37,6 +37,9 @@ const Home = ({ navigation }) => {
     <View style={styles.iconContainer}>
     <Icon name="camera" size={20} color="#000" style={styles.icon} />
     <Icon name="image" size={20} color="#000" style={styles.icon} />
+     <Icon name="map" size={20} color="#000" style={styles.icon} />
+    <Icon  name="paperclip" size={20} color="#000" style={styles.icon} />
+    <Icon  name="smilo" size={20} color="#000" style={styles.icon} />
     </View>
     <View style={{
       top: -80,

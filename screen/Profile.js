@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView,StatusBar } from 'react-native';
 import { FIREBASE_AUTH } from 'firebase/app';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -109,7 +109,8 @@ import PostHome from '../components/PostHome';
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFF6DE',
-    flex: 1
+    flex: 1,
+    paddingTop: StatusBar.currentHeight
   },
   buttonYellow: {
     borderRadius: 5,

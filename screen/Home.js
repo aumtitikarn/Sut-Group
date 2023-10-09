@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import Search from '../components/Searchbar';
@@ -18,7 +18,7 @@ const MyComponent = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Appbar.Header style={{ backgroundColor: '#FFBD59' }}>
+        <Appbar.Header style={{ backgroundColor: '#FFBD59'  , height: 40, top:-15}}>
           <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
           <Appbar.Content title="Home" style={{ marginLeft : 75 }} />
           <Appbar.Action
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF6DE',
+    paddingTop: StatusBar.currentHeight
   },
   logo: {
     height: 50,

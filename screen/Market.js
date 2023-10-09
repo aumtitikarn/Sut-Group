@@ -1,6 +1,6 @@
 import  React from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TextInput, Button, View, Image,ScrollView,TouchableOpacity} from 'react-native';
+import { Text, StyleSheet, TextInput, Button, View, Image,ScrollView,TouchableOpacity, StatusBar} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Shop from '../components/shop';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -11,10 +11,10 @@ const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟ
 export default function MyComponent({navigation}) {
   return(
     <View style={styles.conter}>
-    <Appbar.Header style={{backgroundColor:'#FFBD59'}} >
+    <Appbar.Header style={{backgroundColor:'#FFBD59', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
-      <Appbar.Content title=" Marketplace" style={{marginRight: 30,
-      marginLeft: 30}} />
+      <Appbar.Content title=" Marketplace" style={{
+      marginLeft: 50}} />
       <Appbar.Action icon="bell" onPress={() => {}} />
       
     </Appbar.Header>
@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
 conter:{
   flex: 1,
     backgroundColor: '#FFF6DE',
+    paddingTop: StatusBar.currentHeight
+    
 },
 logo: {
     height: 50,

@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore'; // Import your Firestore instance
 import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions for fetching data
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
@@ -37,10 +37,15 @@ const Home = ({ navigation }) => {
       <ScrollView>
         {posts.map((post, index) => (
           <View key={index} style={styles.postContainer}>
+            <Text style={styles.postText}>{post.text}</Text>
             {post.photo && (
               <Image source={{ uri: post.photo }} style={styles.postImage} />
             )}
-            <Text style={styles.postText}>{post.text}</Text>
+            <View style={styles.iconContainer}>
+              <Icon name="heart" size={30} color="#000" style={styles.icon} />
+              <Icon name="comment" size={30} color="#000" style={styles.icon} />
+              <Icon name="share" size={30} color="#000" style={styles.icon} />
+  </View>
           </View>
         ))}
       </ScrollView>
@@ -55,9 +60,17 @@ const styles = StyleSheet.create({
     // Add your styles here
   },
   postContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderWidth: 1, // Use "borderWidth" instead of "border"
+    borderColor: '#000', // Set the border color
+    backgroundColor: '#FBE5AD',
+    shadowColor: 'rgba(0, 0, 0, 0.25)', // Set shadow color
+    shadowOffset: { width: 0, height: 4 }, // Set shadow offset
+    shadowRadius: 4, // Set shadow radius
+    elevation: 4, // Add elevation for Android
+    margin: 20,
+    borderRadius: 50, // Set borderRadius to 50
+    overflow: 'hidden', // Hide content outside the borderRadius
+    padding: 40,
   },
   postImage: {
     width: 200,
@@ -68,6 +81,13 @@ const styles = StyleSheet.create({
   postText: {
     fontSize: 16,
     // Add your text styles here
+  },
+  iconContainer: {
+    flexDirection: 'row', // จัดเรียงแนวนอน
+    justifyContent: 'space-between', // กระจายไอคอนให้เท่ากัน
+    paddingHorizontal: 20, // ระยะห่างด้านข้าง
+    alignItems: 'center', // จัดวางไอคอนให้ตรงกลาง
+    top:30
   },
 });
 

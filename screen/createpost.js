@@ -1,17 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View,
    Text,  
    SafeAreaView, 
    StyleSheet, 
    TextInput, 
    TouchableOpacity,
-   StatusBar } from 'react-native';
+   StatusBar,
+   Image,
+  Platform,
+  Alert, } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
+import { addDoc,
+    collection,
+    serverTimestamp,
+    } from 'firebase/firestore';
+    import * as ImagePicker from 'expo-image-picker';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
+  const [photo, setPhoto] = useState(null);
+  const db = FIRESTORE_DB;
+  const storage = FIREBASE_STORAGE;
+
+  //โพสต์ข้อความ
+
+  const handlePost = async () => {
+      try {
+  
+        const docRef = await addDoc(collection(db, 'post'), {
+          text: feed,
+          timestamp: serverTimestamp(),
+          photo: photo, // Include the 'photo' state in the Firestore document
+        });
+        console.log('Document written with ID: ', docRef.id);
+        navigation.navigate('Home')
+        setFeed('');
+        setPhoto(null); 
+      } catch (error) {
+        console.error('Error adding document: ', error);
+      }
+  };
+
+  // เข้าถึงกล้อง
+
+  const camera = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  // เข้าถึงคลังรูปภาพ
+  const openlib = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+ 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,19 +107,20 @@ const Home = ({ navigation }) => {
         onChangeText={(text) => setFeed(text)}
       />
     </View>
+    {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
     <View style={styles.iconContainer}>
-    <Icon name="camera" size={20} color="#000" style={styles.icon} />
-    <Icon name="image" size={20} color="#000" style={styles.icon} />
-    <Icon name="map-marker" size={20} color="#000" style={styles.icon} />
+    <Icon name="camera" size={20} color="#000" style={styles.icon} onPress={camera}/>
+    <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openlib}/>
     </View>
     <View style={{
       top: -80,
       left: 275
     }}>
     <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={styles.buttonText} onPress={() => navigation.navigate('Register')}>โพสต์</Text>
+      <Text style={styles.buttonText} onPress={handlePost}>โพสต์</Text>
     </TouchableOpacity>
     </View>
+      
     </SafeAreaView>
   );
 };
@@ -77,13 +141,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
   },
   iconContainer: {
-    flexDirection: 'row', // จัดเรียงแนวนอน
-    alignItems: 'center', // จัดวางไอคอนให้ตรงกลาง
+    flexDirection: 'row',
+    alignItems: 'center', 
     top:-50,
     marginLeft: 105
   },
   icon: {
-    marginRight: 10, // ระยะห่างระหว่างไอคอน
+    marginRight: 10,
   },
    buttonYellow: {
     borderRadius: 5,
@@ -91,9 +155,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFBD59',
     width: 100,
     padding:5,
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', 
+    alignItems: 'center',
     margin: 5
+  },
+  selectedImage: {
+    width: 200,
+    height: 110,
+    alignSelf: 'center', 
   },
 });
 export default Home;

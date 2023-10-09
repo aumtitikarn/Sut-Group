@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView } from 'react-native';
-import Post from '../components/Post';
+import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView,StatusBar } from 'react-native';
+import { FIREBASE_AUTH } from 'firebase/app';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { FIREBASE_AUTH } from '../firestore';
+import  Createpost  from './createpost';
+import PostHome from '../components/PostHome';
 
   const Profile = () => {
   const navigation = useNavigation();
@@ -11,7 +12,7 @@ import { FIREBASE_AUTH } from '../firestore';
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
+      await auth().signOut();
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch (error) {
       console.error(error);
@@ -99,7 +100,7 @@ import { FIREBASE_AUTH } from '../firestore';
     <View style={{
       top: 120,
     }}>
-    <Post />
+    <PostHome />
     </View>
     </ScrollView>
     </SafeAreaView>
@@ -108,7 +109,8 @@ import { FIREBASE_AUTH } from '../firestore';
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFF6DE',
-    flex: 1
+    flex: 1,
+    paddingTop: StatusBar.currentHeight
   },
   buttonYellow: {
     borderRadius: 5,

@@ -4,6 +4,7 @@ import { FIREBASE_AUTH } from 'firebase/app';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import  Createpost  from './createpost';
+import PostHome from '../components/PostHome';
 
   const Profile = () => {
   const navigation = useNavigation();
@@ -99,7 +100,7 @@ import  Createpost  from './createpost';
     <View style={{
       top: 120,
     }}>
-    <Post />
+    <PostHome />
     </View>
     </ScrollView>
     </SafeAreaView>

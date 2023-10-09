@@ -4,11 +4,20 @@ import { Text, StyleSheet, TextInput, Button, View, Image,ScrollView,TouchableOp
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Shop from '../components/shop';
 import SelectDropdown from 'react-native-select-dropdown';
-import products from '../components/DataShop';
+
+import { useNavigation } from '@react-navigation/native';
+
 
 const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
 export default function MyComponent({navigation}) {
+  const navigation = useNavigation(); 
+  const handleMarketPostPress = () => {
+   
+    navigation.navigate('marketpost');
+
+  };
+
   return(
     <View style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FFBD59', height: 40, top:-15}} >
@@ -37,7 +46,7 @@ export default function MyComponent({navigation}) {
               }}
               
             >
-              <Text onPress={() => navigation.navigate('Marketpost')} >สร้างสินค้า</Text>
+              <Text onPress={handleMarketPostPress} >สร้างสินค้า</Text>
             </TouchableOpacity>
           </View>
     <View style={styles.loginButton}>
@@ -54,13 +63,12 @@ export default function MyComponent({navigation}) {
       return product;
     }}
   />
-  
     </View>
     <ScrollView>
     <View style={{
       marginTop: 12
      }}>
-     <Shop products={products}  />
+     <Shop  />
     </View>
     </ScrollView>
     </View>

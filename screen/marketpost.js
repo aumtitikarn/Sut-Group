@@ -4,42 +4,70 @@ import {Icon} from '@rneui/themed';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { addDoc,
+  collection,
+  
+  } from 'firebase/firestore';
 
 export default function Marketpost() {
-
-  
-const navigation = useNavigation();
-
-  const handleMarketPress = () => {
-    navigation.navigate('Market');
-  };
 
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
+  const db = FIRESTORE_DB;
+  const storage = FIREBASE_STORAGE;
 
-async function Shoppost() {
-    
+const navigation = useNavigation();
+
+  const handleMarketPress = async () => {//แก้tryทั้งหมด
+
     try {
-      const response = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password);
-      console.log('User registration response:', response);
-      const uid = response.shop.uid;
-      const data = {
-         id: uid,
+    const shopRef = await addDoc(collection(db, 'post'),{
         name: dname,
         cate: tname,
         prict: pri,
-       
-      };
-      const usersRef = firebase.firestore().collection('shop');
-      await usersRef.doc(uid).set(data);
-    } catch (error) {
-      console.error('Error during user registration:', error);
-      setError(error.message);
+    });
+    console.log('Document written with ID: ', shopRef.id);
+        setFeed('');
+        setPhoto(null); 
+      navigation.navigate('Market');
     }
-  }
+      catch (error) {
+        console.error('Error adding document: ', error);
+    }
+   
+  };
+//เข้าถึงกล้อง
+const camera = async () => {
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
+
+if (!result.canceled) {
+  setPhoto(result.assets[0].uri);
+}
+};
+
+// เข้าถึงคลังรูปภาพ
+const openlib = async () => {
+let result = await ImagePicker.launchImageLibraryAsync({
+  mediaTypes: ImagePicker.MediaTypeOptions.All,
+  allowsEditing: true,
+  aspect: [10, 10],
+  quality: 1,
+});
+
+console.log(result);
+
+if (!result.canceled) {
+  setPhoto(result.assets[0].uri);
+}
+};
+
+
   return (
     <SafeAreaView style={styles.container}>
     <View>

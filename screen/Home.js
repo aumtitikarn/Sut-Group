@@ -4,9 +4,7 @@ import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaVi
 import { useNavigation } from '@react-navigation/native'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import Search from '../components/Searchbar';
-import Post from '../components/Post';
-import postts from '../components/DataPost';
-
+import Post2 from '../components/Post2';
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
@@ -47,7 +45,7 @@ const MyComponent = () => {
           </TouchableOpacity>
         </View>
         <View style={{ marginTop: 12 }}>
-        <Post postts={postts}/>
+        <Post2 />
         </View>
       </ScrollView>
     </SafeAreaView>

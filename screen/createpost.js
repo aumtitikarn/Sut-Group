@@ -9,9 +9,47 @@ import { View,
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FIRESTORE_DB } from '../firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
+  const [photo, setPhoto] = useState(null);
+  const handlePost = async () => {
+    const handlePost = async () => {
+      try {
+        const db = FIRESTORE_DB;
+  
+        const docRef = await addDoc(collection(db, 'post'), {
+          text: feed,
+          timestamp: serverTimestamp(),
+          photo: photo, // Include the 'photo' state in the Firestore document
+        });
+  
+        console.log('Document written with ID: ', docRef.id);
+        setFeed('');
+        setPhoto(null); // Clear the 'photo' state after posting
+      } catch (error) {
+        console.error('Error adding document: ', error);
+      }
+    };
+  };
+    const openImagePicker = async () => {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+      if (permissionResult.granted === false) {
+        alert('Permission to access camera roll is required!');
+        return;
+      }
+  
+      const result = await ImagePicker.launchImageLibraryAsync();
+  
+      if (!result.cancelled) {
+        console.log('Selected Image Result:', result);
+        setPhoto(result.uri);
+      }
+    };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,7 +84,7 @@ const Home = ({ navigation }) => {
     </View>
     <View style={styles.iconContainer}>
     <Icon name="camera" size={20} color="#000" style={styles.icon} />
-    <Icon name="image" size={20} color="#000" style={styles.icon} />
+    <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openImagePicker}/>
     <Icon name="map-marker" size={20} color="#000" style={styles.icon} />
     </View>
     <View style={{
@@ -54,7 +92,7 @@ const Home = ({ navigation }) => {
       left: 275
     }}>
     <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={styles.buttonText} onPress={() => navigation.navigate('Register')}>โพสต์</Text>
+      <Text style={styles.buttonText} onPress={handlePost}>โพสต์</Text>
     </TouchableOpacity>
     </View>
     </SafeAreaView>

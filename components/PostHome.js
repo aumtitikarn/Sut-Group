@@ -78,7 +78,7 @@ const Home = ({ navigation }) => {
                 </View>
             </View>
         </View>
-            <View style={{ alignItems: 'center', top: -40 }}>
+            <View style={{  top: -40 }}>
               <Text style={styles.postText}>{post.text}</Text>
               {post.photo && (
                 <Image source={{ uri: post.photo }} style={styles.postImage} />
@@ -118,11 +118,12 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     resizeMode: 'cover',
+    margin:10
   },
   postText: {
     fontSize: 28,
     fontWeight: 'bold',
-    left: -65
+    left: -10
   },
   iconContainer: {
     flexDirection: 'row',

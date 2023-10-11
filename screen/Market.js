@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
-export default function MyComponent({navigation}) {
+export default function MyComponent() {
   const navigation = useNavigation(); 
   const handleMarketPostPress = () => {
    

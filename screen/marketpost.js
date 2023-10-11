@@ -1,6 +1,5 @@
 import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-paper';
-import {Icon} from '@rneui/themed';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

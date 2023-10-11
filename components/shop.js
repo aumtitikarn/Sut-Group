@@ -1,19 +1,47 @@
 import React, {useState} from 'react';
 import { TouchableOpacity, StyleSheet, Text, View,Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
+import { collection, getDocs } from 'firebase/firestore'; 
+import { FIRESTORE_DB } from '../firestore';
 
 
+export default function Shop() {
+  const [dname, setDname] = useState('');
+  const [tname, setTname] = useState('');
+  const [pri, setPri] = useState('');
+  const [shop, setShop] = useState([]); // State to store fetched posts
+  const db = FIRESTORE_DB;
 
-export default function Shop(props) {
-  const { products } = props; 
+
+  const fetchShop = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'shop'));
+      const shopData = [];
+
+      querySnapshot.forEach((doc) => {
+        const shopData = doc.data();
+        shopData.push(shopData);
+      });
+
+      setPosts(shopData);
+    } catch (error) {
+      console.error('Error fetching shop: ', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchShop();
+  }, []);
 
   return (
     <View style={styles.container}>
-      {products.map((product) => (
-       <TouchableOpacity key={product.id} style={styles.product} onPress={() => addProd(product.name)}>
+      {shop.map((shop, index) => (
+       <TouchableOpacity key={shop.id} style={styles.product} onPress={() => addProd(shop.name)}>
           <Card style={styles.card}>
           <View>
-        <Image source={{ uri: product.pic }} style={{ width: 100, height: 100 ,marginLeft:50}} />
+          {shop.photo && (
+        <Image source={{ uri: shop.photo }} style={{ width: 100, height: 100 ,marginLeft:50}} />
+        )}
           </View>
           <View style={{margin:1}}>
             <Card.Title
@@ -23,12 +51,12 @@ export default function Shop(props) {
               left={(props) => <Avatar.Icon {...props} icon="account-circle" />}
             />
              <Text style={{ fontSize: 16, fontWeight: 'bold' ,marginLeft:10  }}>
-                {product.cate}  {product.name}
+                {shop.cate}  {shop.name}
               </Text>
               </View>
             <View style={styles.conta}>
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                ราคา: {product.price}
+                ราคา: {shop.price}
               </Text>
             
             </View>

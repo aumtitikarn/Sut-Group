@@ -4,7 +4,7 @@ import { FIREBASE_AUTH } from '../firestore';
 import { useNavigation } from '@react-navigation/native';
 import { signOut } from "firebase/auth";
 import  Createpost  from './createpost';
-import PostHome from '../components/PostHome';
+import PostProfile from '../components/postProfile';
 import UserData from '../components/userData';
 
   const Profile = () => {
@@ -79,7 +79,7 @@ import UserData from '../components/userData';
     <View style={{
       top :-130
     }}>
-    <PostHome />
+    <PostProfile />
     </View>
     </ScrollView>
     </SafeAreaView>

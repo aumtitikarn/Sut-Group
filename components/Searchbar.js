@@ -13,7 +13,8 @@ const MyComponent = () => {
       value={searchQuery}
       style = {{ 
         backgroundColor: '#FFF',
-        marginTop: 20
+        marginTop: 20,
+        margin: 10
       }}
     />
   );

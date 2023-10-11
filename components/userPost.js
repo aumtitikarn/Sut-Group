@@ -9,9 +9,6 @@ import { Avatar } from 'react-native-paper';
 
 const UserData = ({ navigation }) => {
     const [userData, setUserData] = useState({});
-    const facultyTextRef = useRef(null);
-    const [facultyWidth, setFacultyWidth] = useState(0);
-    const [facultyHeight, setFacultyHeight] = useState(0);
     const db = FIRESTORE_DB;
     const auth = FIREBASE_AUTH;
     

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { TouchableOpacity, StyleSheet, Text, View,Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { collection, getDocs } from 'firebase/firestore'; 

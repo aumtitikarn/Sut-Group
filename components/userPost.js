@@ -43,7 +43,7 @@ const UserData = ({ navigation }) => {
                 <Avatar.Icon icon="account-circle" size={50} style={{top : 80, left: 30}} />
             </View>
             <View style={styles.userDataContainer}>
-                <Text style={styles.userDataText}> {userData.username}</Text>
+                <Text style={{fontSize:14, fontWeight:'bold'}}> {userData.username}</Text>
                 <View>
                   <Text style={styles.userDataText}> #{userData.faculty}</Text>
                 </View>

@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView,StatusBar } from 'react-native';
-import { FIREBASE_AUTH } from 'firebase/app';
-import { Avatar } from 'react-native-paper';
+import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { FIREBASE_AUTH } from '../firestore';
 import { useNavigation } from '@react-navigation/native';
+import { signOut } from "firebase/auth";
 import  Createpost  from './createpost';
 import PostHome from '../components/PostHome';
+import UserData from '../components/userData';
 
   const Profile = () => {
   const navigation = useNavigation();
   const auth = FIREBASE_AUTH;
+  
 
   const handleLogout = async () => {
-    try {
-      await auth().signOut();
+    signOut(auth).then(() => {
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    }).catch((error) => {
+      console.log(error.message);
+    });
+  };  
+
 
  const handleCreatePostPress = () => {
     navigation.navigate('Createpost');
@@ -32,35 +34,14 @@ import PostHome from '../components/PostHome';
       style={{width: 450, height: 150}}
       />
   </View>
-  <View
-   style={{
-      position: 'absolute',
-      top: 120,
-      left: 20, 
-    }}>
-    <Avatar.Icon icon="account-circle" size={80} />
-    </View>
     <View  style={{
-      position: 'absolute',
-      top: 150, // ปรับตำแหน่งตามที่คุณต้องการ
+      top: -70, // ปรับตำแหน่งตามที่คุณต้องการ
       left: 110, // ปรับตำแหน่งตามที่คุณต้องการ
     }}>
-    <Text style={{fontWeight: 'bold', padding:5}}>PHORNTHI</Text>
-    <TouchableOpacity style={{
-    borderRadius: 30,
-    backgroundColor: '#FFF',
-    width: 200,
-    height: 30,
-    padding: 2,
-    borderWidth: 1,
-    borderColor: 'black'
-    }}>
-    <Text >#สำนักวิชาศาสตร์และศิลป์ดิจิทัล</Text>
-    </TouchableOpacity>
+    <UserData />
     </View>
     <View style={{
-      position: 'absolute',
-      top: 220, 
+      top: -60, 
       left: 10
     }}>
     <TouchableOpacity style={styles.buttonYellow}>
@@ -68,8 +49,7 @@ import PostHome from '../components/PostHome';
     </TouchableOpacity>
     </View>
     <View style={{
-      position: 'absolute',
-      top: 225,
+      top: -101,
       left: 130
     }}>
     <TouchableOpacity style={{borderRadius: 5,
@@ -84,8 +64,7 @@ import PostHome from '../components/PostHome';
     </TouchableOpacity>
     </View>
      <View style={{
-      position: 'absolute',
-      top: 220, 
+      top: -142, 
       left: 235
     }}>
     <TouchableOpacity style={{borderRadius: 5,
@@ -98,7 +77,7 @@ import PostHome from '../components/PostHome';
     </TouchableOpacity>
     </View>
     <View style={{
-      top: 120,
+      top :-130
     }}>
     <PostHome />
     </View>

@@ -21,9 +21,6 @@ function MyTabs() {
   return (
     <Tab.Navigator barStyle={styles.tabbarStyle}
       initialRouteName="Home"
-      tabBarOptions={{
-        activeTintColor: '#e91e63',
-      }}
         screenOptions={{
           headerShown: false,
         }}>
@@ -33,7 +30,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={30} />
+            <MaterialCommunityIcons name="home"  size={30} />
           ),
         }}
       />

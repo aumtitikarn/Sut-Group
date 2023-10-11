@@ -16,32 +16,38 @@ import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
 import { addDoc,
     collection,
     serverTimestamp,
-    } from 'firebase/firestore';
-    import * as ImagePicker from 'expo-image-picker';
+    } 
+from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
+import { FIREBASE_AUTH } from '../firestore';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
   const [photo, setPhoto] = useState(null);
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
+  const auth = FIREBASE_AUTH;
 
   //โพสต์ข้อความ
 
   const handlePost = async () => {
-      try {
-  
-        const docRef = await addDoc(collection(db, 'post'), {
-          text: feed,
-          timestamp: serverTimestamp(),
-          photo: photo, // Include the 'photo' state in the Firestore document
-        });
-        console.log('Document written with ID: ', docRef.id);
-        navigation.navigate('Home')
-        setFeed('');
-        setPhoto(null); 
-      } catch (error) {
-        console.error('Error adding document: ', error);
-      }
+    try {
+      const userUid = auth.currentUser.uid;
+      const newCollectionName = 'postHome';
+      const userCollectionRef = collection(db, 'users', userUid, newCollectionName);
+      const post = {
+        text: feed,
+        timestamp: serverTimestamp(),
+        photo: photo,
+      };
+      await addDoc(userCollectionRef, post);
+      console.log('Document written with ID: ', userUid);
+      setFeed('');
+      setPhoto(null);
+      navigation.navigate('Home'); // นำผู้ใช้กลับไปยังหน้า Home
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
   };
 
   // เข้าถึงกล้อง

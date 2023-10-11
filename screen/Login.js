@@ -25,21 +25,22 @@ export default function Login({ navigation }) {
     // Check authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        onAuthStateChanged(FIREBASE_AUTH, (user) => {
+          if (user) {
+            // ผู้ใช้ล็อกอินอยู่
+            console.log("User is logged in:", user);
+      
+          } else {
+            // ผู้ใช้ไม่ได้ล็อกอิน
+            console.log("User is not logged in");
+          }
+        });
         navigation.navigate('MyTabs');
       }
     });
     return () => unsubscribe();
   }, [navigation, auth]);
-  onAuthStateChanged(FIREBASE_AUTH, (user) => {
-    if (user) {
-      // ผู้ใช้ล็อกอินอยู่
-      console.log("User is logged in:", user);
-
-    } else {
-      // ผู้ใช้ไม่ได้ล็อกอิน
-      console.log("User is not logged in");
-    }
-  });
+ 
 
 
   return (

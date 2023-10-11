@@ -47,6 +47,10 @@ const MyComponent = () => {
         <View style={{ marginTop: 12 }}>
         <PostHome />
         </View>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
       </ScrollView>
     </SafeAreaView>
   );

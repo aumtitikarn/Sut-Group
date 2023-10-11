@@ -6,7 +6,7 @@ import { FIRESTORE_DB } from '../firestore';
 import { collection, getDocs, doc, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FIREBASE_AUTH } from '../firestore';
-import UserProfile from './userProfile';
+import UserProfile from './userPost';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');

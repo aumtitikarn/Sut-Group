@@ -5,10 +5,9 @@ import {
 import { FIRESTORE_DB } from '../firestore';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore'; // Import Firestore functions for fetching data
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FIREBASE_AUTH } from '../firestore';
 import UserProfile from './userPost';
 import { Avatar } from 'react-native-paper';
-
+import { FIREBASE_AUTH } from '../firestore';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
@@ -17,47 +16,49 @@ const Home = ({ navigation }) => {
   const [userData, setUserData] = useState({});
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
-
-  const fetchUsers = async () => {
-    try {
-      const userUid = auth.currentUser.uid;
-      const userCollectionRef = collection(db, 'users');
-      const userDocRef = doc(userCollectionRef, userUid);
   
-      const userDoc = await getDoc(userDocRef); // เปลี่ยนเป็น getDoc
-      const userData = userDoc.data();
-  
-      setUserData(userData);
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
 
   useEffect(() => {
-    // สร้างอ้างอิงของคอลเลคชัน 'users'
-    const usersCollectionRef = collection(db, 'users');
-
-    const fetchPosts = async () => {
-  const userPosts = [];
-  const querySnapshot = await getDocs(usersCollectionRef);
-
-  for (const userDoc of querySnapshot.docs) {
-    const userUid = userDoc.id;
-    const postHomeCollectionRef = collection(userDoc.ref, 'postHome');
-    const postHomeQuerySnapshot = await getDocs(postHomeCollectionRef);
-
-    postHomeQuerySnapshot.forEach((postDoc) => {
-      const postData = postDoc.data();
-      const userData = { username: userDoc.data().username, faculty: userDoc.data().faculty };
-      userPosts.push({ userId: userUid, ...postData, userData });
-    });
-  }
-
-  setPosts(userPosts);
+    const fetchUserData = async () => {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    
+      try {
+        const userDoc = await getDoc(userDocRef);
+        const userData = userDoc.data();
+        console.log('Fetched user data:', userData); // Add this line
+        setUserData(userData);
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
     };
-    fetchUsers();
+    
+    // Inside the `fetchPosts` function
+    const fetchPosts = async () => {
+      const usersCollectionRef = collection(db, 'users');
+      const allUserPosts = [];
+    
+      try {
+        const querySnapshot = await getDocs(usersCollectionRef);
+        for (const userDoc of querySnapshot.docs) {
+          const postHomeCollectionRef = collection(userDoc.ref, 'postHome');
+          const postHomeQuerySnapshot = await getDocs(postHomeCollectionRef);
+          console.log('Fetched posts for user:', userDoc.id, postHomeQuerySnapshot.docs.map((postDoc) => postDoc.data()));
+    
+          postHomeQuerySnapshot.forEach((postDoc) => {
+            const postData = postDoc.data();
+            const userData = { username: userDoc.data().username, faculty: userDoc.data().faculty };
+            allUserPosts.push({ userId: userDoc.id, ...postData, userData });
+          });
+        }
+        console.log('All user posts:', allUserPosts);
+        setPosts(allUserPosts); // Ensure this is called
+      } catch (error) {
+        console.error('Error fetching posts: ', error);
+      }
+    };
+    fetchUserData();
     fetchPosts();
-  }, []);
+  }, []); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,20 +66,20 @@ const Home = ({ navigation }) => {
         {posts.map((post, index) => (
           <View key={index} style={styles.postContainer}>
             <View>
-            <View style={{
-              top: -40,
-              left: -100
-            }}>
-                <Avatar.Icon icon="account-circle" size={50} style={{top : 30, left: 90}} />
-            </View>
-            <View style={styles.userDataContainer}>
-                <Text style={{fontSize:14, fontWeight:'bold'}}> {post.userData.username}</Text>
+              <View style={{
+                top: -40,
+                left: -100
+              }}>
+                <Avatar.Icon icon="account-circle" size={50} style={{ top: 30, left: 90 }} />
+              </View>
+              <View style={styles.userDataContainer}>
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }}> {post.userData.username}</Text>
                 <View>
                   <Text style={styles.userDataText}> #{post.userData.faculty}</Text>
                 </View>
+              </View>
             </View>
-        </View>
-            <View style={{  top: -40 }}>
+            <View style={{ top: -40 }}>
               <Text style={styles.postText}>{post.text}</Text>
               {post.photo && (
                 <Image source={{ uri: post.photo }} style={styles.postImage} />
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     resizeMode: 'cover',
-    margin:10
+    margin: 10
   },
   postText: {
     fontSize: 28,

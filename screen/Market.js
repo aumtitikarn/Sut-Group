@@ -1,20 +1,18 @@
 import  React from 'react';
-import { Appbar, Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TextInput, Button, View, Image,ScrollView,TouchableOpacity, StatusBar} from 'react-native';
+import { Appbar, Searchbar,Card } from 'react-native-paper';
+import { Text, StyleSheet, TextInput,  View, Image,ScrollView,TouchableOpacity, StatusBar} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Shop from '../components/shop';
+import PostShop from '../components/PostShop';
 import SelectDropdown from 'react-native-select-dropdown';
-
 import { useNavigation } from '@react-navigation/native';
 
+    const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
-const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
-
-export default function MyComponent() {
+export default function MyComponent({navigation}) {
   const navigation = useNavigation(); 
-  const handleMarketPostPress = () => {
+  const handleMarketPost = () => {
    
-    navigation.navigate('marketpost');
+    navigation.navigate('Marketpost');
 
   };
 
@@ -46,7 +44,7 @@ export default function MyComponent() {
               }}
               
             >
-              <Text onPress={handleMarketPostPress} >สร้างสินค้า</Text>
+              <Text onPress={handleMarketPost} >สร้างสินค้า</Text>
             </TouchableOpacity>
           </View>
     <View style={styles.loginButton}>
@@ -65,11 +63,13 @@ export default function MyComponent() {
   />
     </View>
     <ScrollView>
+    
     <View style={{
       marginTop: 12
      }}>
-     <Shop  />
+     <PostShop />
     </View>
+   
     </ScrollView>
     </View>
   );
@@ -96,7 +96,7 @@ logo: {
     
 loginButton:{
     top: -60,
-    marginLeft:70,
+    marginLeft:70, 
    }
  
 });

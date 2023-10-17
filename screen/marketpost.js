@@ -5,37 +5,78 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { addDoc,
   collection,
-  
+  serverTimestamp,doc,
+  getDoc
   } from 'firebase/firestore';
+import {FIRESTORE_DB,FIREBASE_STORAGE} from '../firestore';
+import { FIREBASE_AUTH } from '../firestore';
+
+
 
 export default function Marketpost() {
 
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
+  const [photo, setPhoto]= useState('');
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
+  const auth = FIREBASE_AUTH;
 
 const navigation = useNavigation();
+useEffect(() => {
+  const userUid = auth.currentUser?.uid;
+  if (userUid) {
+    const userCollectionRef = collection(db, 'users');
+    const userDocRef = doc(userCollectionRef, userUid);
 
-  const handleMarketPress = async () => {//แก้tryทั้งหมด
+    getDoc(userDocRef)
+      .then((userDoc) => {
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User Data:', userData);
+          setUsername(userData.username);
+          setFaculty(userData.faculty);
+          console.log('Name:', username);
+      console.log('Faculty:', faculty);
+        } else {
+          console.error('User document does not exist.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching user data: ', error);
+      });
+  }
+}, [auth.currentUser]);
+
+  const handleMarket = async () => {
 
     try {
-    const shopRef = await addDoc(collection(db, 'post'),{
+      const userUid = auth.currentUser.uid;
+      if (userUid) {
+        const postShopCollectionRef = collection(db, 'users', userUid, 'postShop');
+        const newCollectionName = 'allpostShop';
+        const allpostHomeCollectionRef = collection(db, newCollectionName);
+    const shop ={
         name: dname,
         cate: tname,
         prict: pri,
-    });
-    console.log('Document written with ID: ', shopRef.id);
-        setFeed('');
+        timestamp: serverTimestamp(),
+    };
+    await addDoc(postShopCollectionRef, shop);
+    await addDoc(allpostHomeCollectionRef, shop);
+    
+     console.log('Document written with ID: ', userUid);
+    navigation.navigate('Marketplace');
         setPhoto(null); 
-      navigation.navigate('Market');
+      }
     }
-      catch (error) {
+      catch (error) { 
         console.error('Error adding document: ', error);
     }
    
   };
+  
 //เข้าถึงกล้อง
 const camera = async () => {
   const result = await ImagePicker.launchCameraAsync({
@@ -95,8 +136,9 @@ if (!result.canceled) {
         placeholderTextColor="Gray"
         textAlignVertical="top" // Align text to the top
         multiline={true}
-        onChangeText={setDname}
-        value={dname}
+        value={tname}
+        onChangeText={setTname}
+        
       />
     </View>
       <View
@@ -111,8 +153,8 @@ if (!result.canceled) {
         placeholderTextColor="Gray"
         textAlignVertical="top" // Align text to the top
         multiline={true}
-        onChangeText={setTname}
-        value={tname}
+        value={dname}
+        onChangeText={setDname}
       />
     </View>
       <View
@@ -127,17 +169,14 @@ if (!result.canceled) {
         placeholderTextColor="Gray"
         textAlignVertical="top" // Align text to the top
         multiline={true}
-        onChangeText={setPri}
         value={pri}
+        onChangeText={setPri}
       />
     </View>
+    {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
     <View style={styles.iconContainer}>
-    <Icon name="camera" type="antdesign"  size={20} color="#000" style={styles.icon} />
-    <Icon name="image"  size={20} color="#000" style={styles.icon} />
-     <Icon name="enviromento" type="antdesign" size={20} color="#000" style={styles.icon} />
-    <Icon  name="paperclip" type="antdesign" size={20} color="#000" style={styles.icon} />
-    <Icon  name="emoji-happy" type="entypo" size={20} color="#000" style={styles.icon} />
-    
+    <MaterialCommunityIcons name="camera" size={20}   color="#000" style={styles.icon} onPress={camera}/>
+    <MaterialCommunityIcons name="image" size={20}   color="#000" style={styles.icon} onPress={openlib}/>
     </View>
     <View style={{
       top: -40,
@@ -146,7 +185,7 @@ if (!result.canceled) {
     
     <TouchableOpacity style={styles.buttonYellow}>
 
-      <Text style={styles.buttonText} onPress={handleMarketPress} >โพสต์</Text>
+      <Text style={styles.buttonText} onPress={handleMarket} >โพสต์</Text>
 
     </TouchableOpacity>
     </View>

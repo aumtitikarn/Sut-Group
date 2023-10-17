@@ -3,7 +3,7 @@ import {
   Text, StyleSheet, View, Image, ScrollView, SafeAreaView
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore'; // Import your Firestore instance
-import { collection, getDoc, doc } from 'firebase/firestore'; // Import Firestore functions for fetching data
+import { collection, getDoc, doc, onSnapshot } from 'firebase/firestore'; // Import Firestore functions for fetching data
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 
@@ -13,23 +13,34 @@ const UserData = ({ navigation }) => {
     const auth = FIREBASE_AUTH;
     
     const fetchUsers = async () => {
-        try {
-          const userUid = auth.currentUser.uid;
-          const userCollectionRef = collection(db, 'users');
-          const userDocRef = doc(userCollectionRef, userUid);
-      
-          const userDoc = await getDoc(userDocRef); // เปลี่ยนเป็น getDoc
-          const userData = userDoc.data();
-      
-          setUserData(userData);
-        } catch (error) {
-          console.error('Error fetching user data: ', error);
-        }
-      };
+      try {
+        const userUid = auth.currentUser.uid;
+        const userCollectionRef = collection(db, 'users');
+        const userDocRef = doc(userCollectionRef, userUid);
+    
+        // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
+        const unsubscribe = onSnapshot(userDocRef, (doc) => {
+          if (doc.exists()) {
+            const userData = doc.data();
+            setUserData(userData);
+          }
+        });
+    
+        // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
+        return unsubscribe;
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
 
       useEffect(() => {
-        fetchUsers();
+        const unsubscribe = fetchUsers();
+        return () => {
+          unsubscribe();
+        };
       }, []);
+
+     
 
       return (
         <View>

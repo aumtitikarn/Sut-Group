@@ -52,9 +52,15 @@ const Home = ({ navigation }) => {
               )}
             </View>
             <View style={styles.iconContainer}>
+              <TouchableOpacity>
               <Icon name="heart" size={30} color="#000" style={styles.icon} />
+              </TouchableOpacity>
+              <TouchableOpacity>
               <Icon name="comment" size={30} color="#000" style={styles.icon} />
+              </TouchableOpacity>
+              <TouchableOpacity>
               <Icon name="share" size={30} color="#000" style={styles.icon} />
+              </TouchableOpacity>
             </View>
           </View>
         ))}

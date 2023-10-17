@@ -10,9 +10,10 @@ import Chat from './screen/Chat';
 import Profile from './screen/Profile';
 import Login from './screen/Login';
 import Register from './screen/Register';
-import Createpost from './screen/createpost'
-import NotiScreen from './screen/notiscreen'
-import Marketpost from './screen/marketpost'
+import Createpost from './screen/createpost';
+import NotiScreen from './screen/notiscreen';
+import Marketpost from './screen/marketpost';
+import EditProfile from './screen/EditProfile';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -79,6 +80,7 @@ export default function Page() {
         <Stack.Screen name="Createpost" component={Createpost} />
         <Stack.Screen name="NotiScreen" component={NotiScreen} />
         <Stack.Screen name="Marketpost" component={Marketpost} />
+        <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
       </Stack.Navigator>
     </NavigationContainer>

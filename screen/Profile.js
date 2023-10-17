@@ -44,7 +44,7 @@ import UserData from '../components/userData';
       top: -60, 
       left: 10
     }}>
-    <TouchableOpacity style={styles.buttonYellow}>
+    <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('EditProfile')}>
       <Text style={styles.buttonText}>แก้ไขโปรไฟล์</Text>
     </TouchableOpacity>
     </View>

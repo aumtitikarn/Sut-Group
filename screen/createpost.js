@@ -16,6 +16,8 @@ import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
 import { addDoc,
     collection,
     serverTimestamp,
+    doc,
+    getDoc
     } 
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,31 +26,70 @@ import { FIREBASE_AUTH } from '../firestore';
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
   const [photo, setPhoto] = useState(null);
+  const [username, setUsername] = useState(''); // เก็บค่า name ของผู้ใช้ที่เข้าสู่ระบบ
+  const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
 
-  //โพสต์ข้อความ
+  useEffect(() => {
+    const userUid = auth.currentUser?.uid;
+    if (userUid) {
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
+  
+      getDoc(userDocRef)
+        .then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User Data:', userData);
+            setUsername(userData.username);
+            setFaculty(userData.faculty);
+            console.log('Name:', username);
+        console.log('Faculty:', faculty);
+          } else {
+            console.error('User document does not exist.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data: ', error);
+        });
+    }
+  }, [auth.currentUser]);
+
+  // ดึงข้อมูลผู้ใช้ที่เข้าสู่ระบบ
+
 
   const handlePost = async () => {
     try {
-      const userUid = auth.currentUser.uid;
-      const newCollectionName = 'postHome';
-      const userCollectionRef = collection(db, 'users', userUid, newCollectionName);
-      const post = {
-        text: feed,
-        timestamp: serverTimestamp(),
-        photo: photo,
-      };
-      await addDoc(userCollectionRef, post);
-      console.log('Document written with ID: ', userUid);
-      setFeed('');
-      setPhoto(null);
-      navigation.navigate('Home'); // นำผู้ใช้กลับไปยังหน้า Home
+      const userUid = auth.currentUser?.uid;
+      if (userUid) {
+        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
+        const newCollectionName = 'allpostHome';
+        const allpostHomeCollectionRef = collection(db, newCollectionName);
+    
+        const post = {
+          name: username,
+          faculty: faculty,
+          text: feed,
+          timestamp: serverTimestamp(),
+          photo: photo,
+        };
+    
+        await addDoc(postHomeCollectionRef, post);
+        await addDoc(allpostHomeCollectionRef, post);
+    
+        console.log('Document written with ID: ', userUid);
+        setFeed('');
+        setPhoto(null);
+        navigation.navigate('Home');
+      }
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
+
+
 
   // เข้าถึงกล้อง
 

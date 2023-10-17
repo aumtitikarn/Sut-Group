@@ -73,7 +73,7 @@ import UserData from '../components/userData';
     width: 70,
     padding: 8,
     top:5}} onPress={handleLogout}>
-      <Text style={styles.buttonText}>Logout</Text>
+      <Text style={styles.buttonText}>Log out</Text>
     </TouchableOpacity>
     </View>
     <View style={{

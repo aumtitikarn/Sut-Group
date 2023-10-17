@@ -69,21 +69,20 @@ const Home = ({ navigation }) => {
         const allpostHomeCollectionRef = collection(db, newCollectionName);
     
         const post = {
-          name: username,
+          username: username,
           faculty: faculty,
           text: feed,
           timestamp: serverTimestamp(),
           photo: photo,
-          id: userUid
+          userId: userUid
         };
     
         await addDoc(postHomeCollectionRef, post);
         await addDoc(allpostHomeCollectionRef, post);
-    
+        navigation.navigate('Home');
         console.log('Document written with ID: ', userUid);
         setFeed('');
         setPhoto(null);
-        navigation.navigate('Home');
       }
     } catch (error) {
       console.error('Error adding document: ', error);

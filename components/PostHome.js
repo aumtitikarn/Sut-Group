@@ -42,7 +42,7 @@ const Home = ({ navigation }) => {
           <View key={index} style={styles.postContainer}>
             <View style={{ top: -50, left: 70 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{top : 40, left: -60}} />
-            <Text style={{top:-5, fontWeight: 'bold'}}>{post.name}</Text>
+            <Text style={{top:-5, fontWeight: 'bold'}}>{post.username}</Text>
             <Text style={styles.userData}>#{post.faculty}</Text>
             </View>
             <View style={{ top: -30, left: 30 }}>

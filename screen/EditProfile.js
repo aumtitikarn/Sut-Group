@@ -11,7 +11,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
-import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore'; 
+import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch } from 'firebase/firestore'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
@@ -142,27 +142,40 @@ const UserData = ({ navigation }) => {
       const userDocRef = doc(db, 'users', userUid);
   
       // สร้างอ็อบเจกต์ที่ใช้เพื่อเก็บข้อมูลที่ควรอัปเดต
-      const updatedData = {};
+      const updatedUserData = {};
   
       // ตรวจสอบและเพิ่มข้อมูลเฉพาะเมื่อมีค่าใน newData
       if (newData.username) {
-        updatedData.username = newData.username;
+        updatedUserData.username = newData.username;
       }
       if (newData.email) {
-        updatedData.email = newData.email;
+        updatedUserData.email = newData.email;
       }
       if (newData.faculty) {
-        updatedData.faculty = newData.faculty;
+        updatedUserData.faculty = newData.faculty;
       }
       if (newData.major) {
-        updatedData.major = newData.major;
+        updatedUserData.major = newData.major;
       }
   
       // ตรวจสอบว่ามีข้อมูลที่ควรอัปเดตหรือไม่
-      if (Object.keys(updatedData).length > 0) {
-        await updateDoc(userDocRef, updatedData);
-        alert('update', updatedData)
-        navigation.navigate('Profile')
+      if (Object.keys(updatedUserData).length > 0) {
+        // อัปเดตข้อมูลผู้ใช้
+        await updateDoc(userDocRef, updatedUserData);
+        
+        // อัปเดตข้อมูลในคอลเลกชัน allpostHome
+        const allPostsQuery = query(collection(db, 'allpostHome'), where('userId', '==', userUid));
+        const allPostsSnapshot = await getDocs(allPostsQuery);
+        
+        const batch = writeBatch(db);
+        allPostsSnapshot.forEach((doc) => {
+          const postRef = doc(db, 'allpostHome', doc.id);
+          batch.update(postRef, updatedUserData);
+        });
+        await batch.commit();
+  
+        alert('Data updated');
+        navigation.navigate('Profile');
       } else {
         console.error('No valid data to update');
       }
@@ -170,7 +183,6 @@ const UserData = ({ navigation }) => {
       console.error('Error updating user data:', error.message);
     }
   };
-  
 
       return (
         <SafeAreaView style={styles.container}>

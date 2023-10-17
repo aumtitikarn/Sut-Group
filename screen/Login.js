@@ -64,7 +64,7 @@ export default function Login({ navigation }) {
         placeholderTextColor="Gray"
       />
       <View style={styles.loginButton}>
-        <Button color="#000001" title="Login" onPress={() => UserLogin()} />
+        <Button color="#000001" title="Log in" onPress={() => UserLogin()} />
       </View>
       <Text
         style={styles.register}

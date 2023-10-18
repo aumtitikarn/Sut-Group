@@ -116,13 +116,13 @@ if (!result.canceled) {
     <View>
     <MaterialCommunityIcons 
       name="arrow-left-thick"  
-      size={50} style={{margin:10}} 
+      size={50} style={{margin:10, top: 20}} 
      onPress={() => navigation.goBack()}
       />
     </View>
       <View
    style={{
-      top: 10,
+      top: 20,
       left: 20, 
     }}>
     <Avatar.Icon icon="account-circle" size={50} />

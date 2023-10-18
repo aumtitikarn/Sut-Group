@@ -74,7 +74,7 @@ const Home = ({ navigation }) => {
           text: feed,
           timestamp: serverTimestamp(),
           photo: photo,
-          userId: userUid
+          userUid: userUid
         };
     
         await addDoc(postHomeCollectionRef, post);

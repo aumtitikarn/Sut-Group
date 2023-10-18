@@ -162,16 +162,18 @@ const UserData = ({ navigation }) => {
       if (Object.keys(updatedUserData).length > 0) {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
-        
-        // อัปเดตข้อมูลในคอลเลกชัน allpostHome
-        const allPostsQuery = query(collection(db, 'allpostHome'), where('userId', '==', userUid));
-        const allPostsSnapshot = await getDocs(allPostsQuery);
-        
+  
+        // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
+        const userPostHomeCollectionRef = collection(db, 'allpostHome');
+        const userPostHomeQuery = query(userPostHomeCollectionRef, where('userUid', '==', userUid));
+  
+        const userPostHomeSnapshot = await getDocs(userPostHomeQuery);
         const batch = writeBatch(db);
-        allPostsSnapshot.forEach((doc) => {
-          const postRef = doc(db, 'allpostHome', doc.id);
-          batch.update(postRef, updatedUserData);
+  
+        userPostHomeSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
         });
+  
         await batch.commit();
   
         alert('Data updated');

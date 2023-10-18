@@ -18,6 +18,8 @@ export default function Marketpost() {
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
+  const [faculty,setFaculty] = useState('');
+  const [username,setUsername]= useState('');
   const [photo, setPhoto]= useState('');
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
@@ -56,7 +58,7 @@ useEffect(() => {
       if (userUid) {
         const postShopCollectionRef = collection(db, 'users', userUid, 'postShop');
         const newCollectionName = 'allpostShop';
-        const allpostHomeCollectionRef = collection(db, newCollectionName);
+        const allpostShopCollectionRef = collection(db, newCollectionName);
     const shop ={
         name: dname,
         cate: tname,
@@ -64,7 +66,7 @@ useEffect(() => {
         timestamp: serverTimestamp(),
     };
     await addDoc(postShopCollectionRef, shop);
-    await addDoc(allpostHomeCollectionRef, shop);
+    await addDoc(allpostShopCollectionRef, shop);
     
      console.log('Document written with ID: ', userUid);
     navigation.navigate('Marketplace');

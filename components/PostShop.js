@@ -9,7 +9,6 @@ import UserData from './userPost';
 export default function PostShop() {
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
-  const [username, setUsername] = useState([]);
   const [userData, setUserData] = useState({});
   const db = FIRESTORE_DB;
   const auth = getAuth();

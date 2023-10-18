@@ -64,6 +64,7 @@ useEffect(() => {
         cate: tname,
         prict: pri,
         timestamp: serverTimestamp(),
+        userUid: userUid
     };
     await addDoc(postShopCollectionRef, shop);
     await addDoc(allpostShopCollectionRef, shop);

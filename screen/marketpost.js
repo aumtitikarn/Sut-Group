@@ -1,4 +1,5 @@
-import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity, } from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
 import { Avatar } from 'react-native-paper';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +11,7 @@ import { addDoc,
   } from 'firebase/firestore';
 import {FIRESTORE_DB,FIREBASE_STORAGE} from '../firestore';
 import { FIREBASE_AUTH } from '../firestore';
-
+import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 export default function Marketpost() {
@@ -24,6 +25,8 @@ export default function Marketpost() {
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
+
+  const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
 const navigation = useNavigation();
 useEffect(() => {
@@ -51,34 +54,34 @@ useEffect(() => {
   }
 }, [auth.currentUser]);
 
-  const handleMarket = async () => {
-
-    try {
-      const userUid = auth.currentUser.uid;
-      if (userUid) {
-        const postShopCollectionRef = collection(db, 'users', userUid, 'postShop');
-        const newCollectionName = 'allpostShop';
-        const allpostShopCollectionRef = collection(db, newCollectionName);
-    const shop ={
-        name: dname,
-        cate: tname,
-        prict: pri,
+const handleMarket = async () => {
+  try {
+    const userUid = auth.currentUser.uid;
+    if (userUid) {
+      const postShopCollectionRef = collection(db, 'users', userUid, 'postShop');
+      const newCollectionName = 'allpostShop';
+      const allpostShopCollectionRef = collection(db, newCollectionName);
+      const shop = {
+        name: dname, // ชื่อสินค้า
+        cate: tname, // ประเภทสินค้าที่ผู้ใช้เลือก
+        prict: pri, // ราคาสินค้า
         timestamp: serverTimestamp(),
         userUid: userUid
-    };
-    await addDoc(postShopCollectionRef, shop);
-    await addDoc(allpostShopCollectionRef, shop);
-    
-     console.log('Document written with ID: ', userUid);
-    navigation.navigate('Marketplace');
-        setPhoto(null); 
-      }
+      };
+      await addDoc(postShopCollectionRef, shop); // เพิ่มข้อมูลลงในโปรไฟล์ของผู้ใช้
+      await addDoc(allpostShopCollectionRef, shop); // เพิ่มข้อมูลลงในโปรไฟล์ทั้งหมด
+      console.log('Document written with ID: ', userUid);
+      navigation.navigate('Marketplace');
+      setPhoto(null);
+      // เซ็ต tname เป็นค่าเริ่มต้นหลังจากใช้ข้อมูล
+      setTname('');
     }
-      catch (error) { 
-        console.error('Error adding document: ', error);
-    }
-   
-  };
+  } catch (error) {
+    console.error('Error adding document: ', error);
+  }
+};
+
+
   
 //เข้าถึงกล้อง
 const camera = async () => {
@@ -112,6 +115,7 @@ if (!result.canceled) {
 
 
   return (
+    <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
     <View>
     <MaterialCommunityIcons 
@@ -127,22 +131,37 @@ if (!result.canceled) {
     }}>
     <Avatar.Icon icon="account-circle" size={50} />
     </View>
-     <View
-   style={{
-     top: -30,
-      left: 100, 
-       margin: 5
-    }}>
-      <TextInput
-        style={styles.input}
-        placeholder="ประเภท เช่น คอม ผัก ผลไม้.."
-        placeholderTextColor="Gray"
-        textAlignVertical="top" // Align text to the top
-        multiline={true}
-        value={tname}
-        onChangeText={setTname}
-        
-      />
+     <View           style={{
+            top: -30,
+            left: 100,
+            margin: 5,
+            width: 216,
+            borderRadius: 5,
+            borderWidth: 1,
+          }}
+>
+     <SelectDropdown
+            selectedValue={tname}
+            accessibilityLabel="Choose Service"
+            placeholder="ประเภทสินค้า"
+            defaultButtonText="ประเภทสินค้า"
+            data={type}
+            onSelect={(selectedItem) => setTname(selectedItem)}
+            
+            buttonTextAfterSelection={(selectedItem) => {
+              // callback after selection
+              // if (selectedItem) {
+              //   // do something with the selected item
+              // }
+              return selectedItem;
+            }}
+            rowTextForSelection={(product, item) => {
+              return product;
+              // single name for a selected item
+              // if item is object, return item.name
+              // return item;
+            }}
+          />
     </View>
       <View
    style={{
@@ -193,6 +212,7 @@ if (!result.canceled) {
     </TouchableOpacity>
     </View>
     </SafeAreaView>
+    </NativeBaseProvider>
   );
 };
 const styles = StyleSheet.create({

@@ -3,47 +3,165 @@ import {
   Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
-import { collection, getDocs, doc, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
-import UserProfile from './userPost';
 import { Avatar } from 'react-native-paper';
 
 const Home = ({ navigation }) => {
-  const [feed, setFeed] = useState('');
-  const [photo, setPhoto] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [userData, setUserData] = useState({});
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
+  const [isLiked, setIsLiked] = useState([]);
+  const [likeCount, setLikeCount] = useState([]);
 
   useEffect(() => {
-    // สร้างคิวรีสำหรับคอลเลคชัน "allpostHome" และเรียกใช้ onSnapshot
     const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedPosts = [];
+      const updatedIsLiked = {};
+      const updatedLikeCount = {};
+
       snapshot.forEach((doc) => {
-        updatedPosts.push({ id: doc.id, ...doc.data() });
+        const post = { id: doc.id, ...doc.data() };
+        updatedPosts.push(post);
+        updatedIsLiked[post.id] = false;
+        updatedLikeCount[post.id] = post.like;
       });
+
       setPosts(updatedPosts);
+      setIsLiked(updatedIsLiked);
+      setLikeCount(updatedLikeCount);
     });
 
     return () => {
-      // ยกเลิกการสั่งสอบถามเมื่อคอมโพนเมนต์ถูกถอนออก
       unsubscribe();
-    }
+    };
   }, []);
 
+  const updateLike = async (post) => {
+    try {
+      const userUid = auth.currentUser.uid;
+      const postRef = doc(db, 'allpostHome', post.id);
+      const postDoc = await getDoc(postRef);
+  
+      if (postDoc.exists()) {
+        const likedBy = postDoc.data().likedBy || [];
+  
+        if (likedBy.includes(userUid)) {
+          const updatedLikedBy = likedBy.filter((uid) => uid !== userUid);
+          const newLikeCount = Math.max(post.like - 1, 0);
+  
+          const updateData = {
+            likedBy: updatedLikedBy,
+            like: newLikeCount,
+          };
+  
+          await updateDoc(postRef, updateData);
+  
+          if (post.id in isLiked) {
+            setIsLiked((currentIsLiked) => ({
+              ...currentIsLiked,
+              [post.id]: false,
+            }));
+          }
+          // อัปเดตข้อมูลการไลค์ไปยังคอลเลคชัน "postHome" ใน Firestore
+          await updateLikeInPostHome(userUid, post.id, updatedLikedBy, newLikeCount);
+        } else {
+          const updatedLikedBy = [...likedBy, userUid];
+          const newLikeCount = post.like + 1;
+  
+          const updateData = {
+            likedBy: updatedLikedBy,
+            like: newLikeCount,
+          };
+  
+          await updateDoc(postRef, updateData);
+  
+          if (post.id in isLiked) {
+            setIsLiked((currentIsLiked) => ({
+              ...currentIsLiked,
+              [post.id]: true,
+            }));
+          }
+          // อัปเดตข้อมูลการไลค์ไปยังคอลเลคชัน "postHome" ใน Firestore
+          await updateLikeInPostHome(userUid, post.id, updatedLikedBy, newLikeCount);
+        }
+      } else {
+        console.error('ไม่พบข้อมูลโพสต์: ', post.id);
+      }
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการกดไลค์: ', error);
+    }
+  };
+
+  const updateLikeInPostHome = async (userUid, postId, likedBy, likeCount) => {
+    const postHomeRef = doc(db, 'users', userUid, 'postHome', postId);
+    
+    const postHomeDoc = await getDoc(postHomeRef);
+    if (postHomeDoc.exists()) {
+      const updateData = {
+        likedBy: likedBy,
+        like: likeCount,
+      };
+
+      await updateDoc(postHomeRef, updateData);
+    }
+  };
+  
+  
+    
+ const formatPostTime = (timestamp) => {
+  if (timestamp) {
+    // ดึงค่าเวลาปัจจุบัน
+    const now = new Date().getTime();
+
+    // แปลง timestamp เป็น milliseconds ให้กับ JavaScript Date Object
+    const postTime = new Date(timestamp.toDate());
+
+    // คำนวณความต่างระหว่างเวลาปัจจุบันกับเวลาโพสต์
+    const timeDifference = now - postTime.getTime();
+
+    // แปลง milliseconds เป็นวินาที
+    const seconds = Math.floor(timeDifference / 1000);
+
+    // แปลงวินาทีเป็นนาที
+    const minutes = Math.floor(seconds / 60);
+
+    // แปลงนาทีเป็นชั่วโมง
+    const hours = Math.floor(minutes / 60);
+
+    // แปลงชั่วโมงเป็นวัน
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `เมื่อ ${days} วันที่แล้ว`;
+    } else if (hours > 0) {
+      return `เมื่อ ${hours} ชั่วโมงที่แล้ว`;
+    } else if (minutes > 0) {
+      return `เมื่อ ${minutes} นาทีที่แล้ว`;
+    } else if (seconds > 0) {
+      return `เมื่อ ${seconds} วินาทีที่แล้ว`;
+    } else {
+      return 'เมื่อไม่นานมานี้';
+    }
+  } else {
+    return 'ไม่มีข้อมูลวันที่';
+  }
+}
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {posts.map((post, index) => (
-          <View key={index} style={styles.postContainer}>
+        {posts.map((post) => (
+          <View key={post.id} style={styles.postContainer}>
             <View style={{ top: -50, left: 70 }}>
-            <Avatar.Icon icon="account-circle" size={50} style={{top : 40, left: -60}} />
-            <Text style={{top:-5, fontWeight: 'bold'}}>{post.username}</Text>
-            <Text style={styles.userData}>#{post.faculty}</Text>
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+              <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+              <Text style={styles.userData}>#{post.faculty}</Text>
+              <Text style={{color: '#777267'}}>{formatPostTime(post.timestamp)}</Text>
             </View>
             <View style={{ top: -30, left: 30 }}>
               <Text style={styles.postText}>{post.text}</Text>
@@ -52,14 +170,21 @@ const Home = ({ navigation }) => {
               )}
             </View>
             <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => updateLike(post)}>
+              <Icon
+              name={isLiked[post.id] ? 'heart' : 'heart-o'}
+              size={30}
+              color={isLiked[post.id] ? 'orange' : '#000'}
+              />
+            </TouchableOpacity>
+            <View>
+            <Text style={{top: 25, left:-73}}>{likeCount[post.id]}</Text>
+            </View>
               <TouchableOpacity>
-              <Icon name="heart" size={30} color="#000" style={styles.icon} />
+                <Icon name="comment-o" size={30} color="#000" style={{ left:-20}} />
               </TouchableOpacity>
               <TouchableOpacity>
-              <Icon name="comment" size={30} color="#000" style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity>
-              <Icon name="share" size={30} color="#000" style={styles.icon} />
+              <MaterialCommunityIcons name='share-outline' color="#000" size={40}  />
               </TouchableOpacity>
             </View>
           </View>
@@ -68,7 +193,6 @@ const Home = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -92,23 +216,23 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     resizeMode: 'cover',
-    margin:10
+    margin: 10,
   },
   postText: {
     fontSize: 28,
     fontWeight: 'bold',
-    left: -10
+    left: -10,
   },
   iconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     alignItems: 'center',
-    top: 10
+    top: -5,
   },
   userData: {
-    top:-5 
-  }
+    top: -5,
+  },
 });
 
 export default Home;

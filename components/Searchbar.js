@@ -14,7 +14,13 @@ const MyComponent = () => {
       style = {{ 
         backgroundColor: '#FFF',
         marginTop: 20,
-        margin: 10
+        margin: 10,
+        borderWidth: 1,
+        borderColoe: '#FFF',
+        shadowColor: 'rgba(0, 0, 0, 0.25)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 4,
+        elevation: 4,
       }}
     />
   );

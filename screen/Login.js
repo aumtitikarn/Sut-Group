@@ -63,6 +63,11 @@ export default function Login({ navigation }) {
         secureTextEntry={hidePassword}
         placeholderTextColor="Gray"
       />
+      <Text
+        style={{color: 'white', left:40}}
+        onPress={() => navigation.navigate('Forgot')}>
+        ลืมรหัสผ่าน?
+      </Text>
       <View style={styles.loginButton}>
         <Button color="#000001" title="Log in" onPress={() => UserLogin()} />
       </View>

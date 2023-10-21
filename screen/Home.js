@@ -17,7 +17,6 @@ const MyComponent = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
         <Appbar.Header style={{ backgroundColor: '#FFBD59'  , height: 40, top:-15}}>
           <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
           <Appbar.Content title="Home" style={{ marginLeft : 75 }} />
@@ -27,6 +26,7 @@ const MyComponent = () => {
             onPress={() => navigation.navigate('NotiScreen')}
           />
         </Appbar.Header>
+        <ScrollView>
         <Search style={styles.search} />
         <View>
           <TouchableOpacity

@@ -17,7 +17,8 @@ import { addDoc,
     collection,
     serverTimestamp,
     doc,
-    getDoc
+    getDoc,
+    setDoc
     } 
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,6 +26,9 @@ import { FIREBASE_AUTH } from '../firestore';
 
 const Home = ({ navigation }) => {
   const [feed, setFeed] = useState('');
+  const [like, setLike] = useState('');
+  const [comment, setComment] = useState('');
+  const [share, setShare] = useState('');
   const [photo, setPhoto] = useState(null);
   const [username, setUsername] = useState(''); // เก็บค่า name ของผู้ใช้ที่เข้าสู่ระบบ
   const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
@@ -62,32 +66,42 @@ const Home = ({ navigation }) => {
 
   const handlePost = async () => {
     try {
-      const userUid = auth.currentUser?.uid;
-      if (userUid) {
-        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
-        const newCollectionName = 'allpostHome';
-        const allpostHomeCollectionRef = collection(db, newCollectionName);
-    
-        const post = {
-          username: username,
-          faculty: faculty,
-          text: feed,
-          timestamp: serverTimestamp(),
-          photo: photo,
-          userUid: userUid
-        };
-    
-        await addDoc(postHomeCollectionRef, post);
-        await addDoc(allpostHomeCollectionRef, post);
-        navigation.navigate('Home');
-        console.log('Document written with ID: ', userUid);
-        setFeed('');
-        setPhoto(null);
-      }
+        const userUid = auth.currentUser?.uid;
+        if (userUid) {
+            // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
+            const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
+
+            const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
+            const post = {
+                username: username,
+                faculty: faculty,
+                text: feed,
+                timestamp: serverTimestamp(),
+                photo: photo,
+                userUid: userUid,
+                postid: id,
+                like: 0
+            };
+
+            // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
+            const allpostHomeCollectionRef = collection(db, 'allpostHome');
+
+            // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
+            await setDoc(doc(allpostHomeCollectionRef, id), post);
+            await setDoc(doc(postHomeCollectionRef, id), post);
+
+            navigation.navigate('Home');
+            console.log('Document written with ID: ', id);
+            setFeed('');
+            setPhoto(null);
+        }
     } catch (error) {
-      console.error('Error adding document: ', error);
+        console.error('Error adding document: ', error);
     }
-  };
+};
+
+
+
 
 
 

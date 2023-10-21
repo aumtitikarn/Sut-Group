@@ -12,61 +12,22 @@ export default function PostShop() {
   const [userData, setUserData] = useState({});
   const db = FIRESTORE_DB;
   const auth = getAuth();
-
-  const fetchUsers = async () => {
-    try {
-      
-      const userUid = auth.currentUser.uid;
-      const userCollectionRef = collection(db, 'users');
-      const userDocRef = doc(userCollectionRef, userUid);
-  
-      const userDoc = await getDoc(userDocRef); // เปลี่ยนเป็น getDoc
-      const userData = userDoc.data();
-  
-      setUserData(userData);
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
-
   useEffect(() => {
-    // สร้างอ้างอิงของคอลเลคชัน 'users'
-    const usersCollectionRef = collection(db, 'users');
-
-    const fetchPosts = async () => {
-  const userPosts = [];
-  const querySnapshot = await getDocs(usersCollectionRef);
-
-  for (const userDoc of querySnapshot.docs) {
-    const userUid = userDoc.id;
-    const postShopCollectionRef = collection(userDoc.ref, 'postShop');
-    const postShopQuerySnapshot = await getDocs(postShopCollectionRef);
-
-    postShopQuerySnapshot.forEach((postDoc) => {
-      const postData = postDoc.data();
-      const userData = { username: userDoc.data().username, faculty: userDoc.data().faculty };
-      userPosts.push({ userId: userUid, ...postData, userData });
-    });
-  }
-
-  setShops(userPosts);
-    };
+    // สร้างคิวรีสำหรับคอลเลคชัน "allpostHome" และเรียกใช้ onSnapshot
     const q = query(collection(db, 'allpostShop'), orderBy('timestamp', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedShop = [];
+      const updatedShops = [];
       snapshot.forEach((doc) => {
-        updatedShop.push({ id: doc.id, ...doc.data() });
+        updatedShops.push({ id: doc.id, ...doc.data() });
       });
-      setShops(updatedShop);
+      setShops(updatedShops);
     });
 
     return () => {
       // ยกเลิกการสั่งสอบถามเมื่อคอมโพนเมนต์ถูกถอนออก
       unsubscribe();
-    };
-    fetchUsers();
-    fetchPosts();
+    }
   }, []);
   
 

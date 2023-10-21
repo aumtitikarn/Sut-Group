@@ -55,7 +55,7 @@ import UserData from '../components/userData';
     <TouchableOpacity style={{borderRadius: 5,
     borderWidth: 1,
     backgroundColor: '#FFBD59',
-    width: 90,
+    width: 85,
     padding: 8,
     }}
     onPress={handleCreatePostPress}

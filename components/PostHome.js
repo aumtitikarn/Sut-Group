@@ -152,6 +152,7 @@ const Home = ({ navigation }) => {
   }
 }
   
+<<<<<<< HEAD
 return (
   <SafeAreaView style={styles.container}>
     <ScrollView>
@@ -175,31 +176,52 @@ return (
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => updateLike(post)}>
+=======
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        {posts.map((post) => (
+          <View key={post.id} style={styles.postContainer}>
+            <View style={{ top: -50, left: 70 }}>
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+              <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+              <Text style={styles.userData}>#{post.faculty}</Text>
+              <Text style={{color: '#777267'}}>{formatPostTime(post.timestamp)}</Text>
+            </View>
+            <View style={{ top: -30, left: 30 }}>
+              <Text style={styles.postText}>{post.text}</Text>
+              {post.photo && (
+                <Image source={{ uri: post.photo }} style={styles.postImage} />
+              )}
+            </View>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => updateLike(post)}>
+>>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f
               <Icon
-                name={isLiked[post.id] ? 'heart' : 'heart'}
-                size={25}
-                color={isLiked[post.id] ? 'orange' : '#000'}
-                style={{marginLeft: 30}}
+              name={isLiked[post.id] ? 'heart' : 'heart-o'}
+              size={30}
+              color={isLiked[post.id] ? 'orange' : '#000'}
               />
             </TouchableOpacity>
             <View>
-              <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
+            <Text style={{top: 25, left:-73}}>{likeCount[post.id]}</Text>
             </View>
-            <TouchableOpacity>
-              <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top:-3 }} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-            <Icon name="share" size={25} color="#000" style={{ marginLeft: 60, top:-2 }} />
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Icon name="comment-o" size={30} color="#000" style={{ left:-20}} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+              <MaterialCommunityIcons name='share-outline' color="#000" size={40}  />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
-    </ScrollView>
-  </SafeAreaView>
-);
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
 container: {
   flex: 1,
   backgroundColor: '#fff5e8',
@@ -235,6 +257,46 @@ iconContainer: {
 userData: {
   top: -5,
 },
+=======
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF6DE',
+  },
+  postContainer: {
+    borderWidth: 1,
+    borderColor: '#000',
+    backgroundColor: '#FBE5AD',
+    shadowColor: 'rgba(0, 0, 0, 0.25)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 4,
+    elevation: 4,
+    margin: 20,
+    borderRadius: 50,
+    overflow: 'hidden',
+    padding: 30,
+  },
+  postImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
+    margin: 10,
+  },
+  postText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    left: -10,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    top: -5,
+  },
+  userData: {
+    top: -5,
+  },
+>>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f
 });
 
 export default Home;

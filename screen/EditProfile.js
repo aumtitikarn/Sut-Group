@@ -192,8 +192,14 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
   
+<<<<<<< HEAD
         // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
+=======
+        // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
+        const userPostHomeCollectionRef = collection(db, 'allpostHome');
+        const userPostHomeQuery = query(userPostHomeCollectionRef, where('userUid', '==', userUid));
+>>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f
   
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const batch = writeBatch(db);
@@ -204,19 +210,6 @@ const EditProfile = ({ navigation }) => {
   
         await batch.commit();
   
-        // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
-        const allPostHomeCollectionRef = collection(db, 'allpostHome');
-        const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
-  
-        const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
-        const allPostHomeBatch = writeBatch(db);
-  
-        allPostHomeSnapshot.forEach((doc) => {
-          allPostHomeBatch.update(doc.ref, updatedUserData);
-        });
-  
-        await allPostHomeBatch.commit();
-  
         alert('Data updated');
         navigation.navigate('Profile');
       } else {
@@ -226,7 +219,6 @@ const EditProfile = ({ navigation }) => {
       console.error('Error updating user data:', error.message);
     }
   };
-  
 
       return (
         <SafeAreaView style={styles.container}>
@@ -320,7 +312,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: '#ffdd59',
         borderRadius: 12,
         marginTop: 12,
         padding: 10,
@@ -338,4 +330,8 @@ const styles = StyleSheet.create({
       },
       });
       
+<<<<<<< HEAD
 export default EditProfile;
+=======
+export default UserData;
+>>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f

@@ -16,6 +16,7 @@ import Marketpost from './screen/marketpost';
 import EditProfile from './screen/EditProfile';
 import EditPostHome from './screen/EditPostHome';
 import Forgot from './screen/Forgot';
+import EditPostShop from './screen/EditPostshop';
 
 const Tab =  createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -64,7 +65,7 @@ function MyTabs() {
       <Tab.Screen
         name="Marketplace"
         component={Marketplace}
-        options={{
+        options={{ 
           tabBarLabel: 'Marketplace',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="basket" color={color} size={30} />
@@ -98,6 +99,7 @@ export default function Page() {
         <Stack.Screen name="NotiScreen" component={NotiScreen} />
         <Stack.Screen name="Marketpost" component={Marketpost} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
+        <Stack.Screen name="EditPostShop" component={EditPostShop} />
         <Stack.Screen name="EditPostHome" component={EditPostHome} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
       </Stack.Navigator>

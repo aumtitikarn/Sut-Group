@@ -192,14 +192,8 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
   
-<<<<<<< HEAD
         // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
-=======
-        // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
-        const userPostHomeCollectionRef = collection(db, 'allpostHome');
-        const userPostHomeQuery = query(userPostHomeCollectionRef, where('userUid', '==', userUid));
->>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f
   
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const batch = writeBatch(db);
@@ -330,8 +324,4 @@ const styles = StyleSheet.create({
       },
       });
       
-<<<<<<< HEAD
 export default EditProfile;
-=======
-export default UserData;
->>>>>>> 772af14c901de55bfed7b5d579fafbb5b7654f0f

@@ -13,6 +13,7 @@ import {
 import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
 import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch } from 'firebase/firestore'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
 import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';

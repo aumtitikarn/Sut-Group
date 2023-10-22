@@ -158,7 +158,11 @@ return (
       {posts.map((post) => (
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
-            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+            <Image
+              source={{ uri: post.profileImg }}
+              style={{ width: 50, height: 50, left: -60, top: 40, borderRadius: 50, position: 'absolute' }}
+            />
             <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
             <Text style={styles.userData}>#{post.faculty}</Text>
             <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
@@ -198,21 +202,16 @@ return (
 const styles = StyleSheet.create({
 container: {
   flex: 1,
-  backgroundColor: '#FFF6DE',
+  backgroundColor: '#fff5e8',
 },
 postContainer: {
   borderWidth: 1,
   borderColor: '#000',
-  backgroundColor: '#FBE5AD',
-  shadowColor: 'rgba(0, 0, 0, 0.25)',
-  shadowOffset: { width: 0, height: 4 },
-  shadowRadius: 4,
-  elevation: 4,
-  margin: 20,
+  backgroundColor: '#ffebce',
+  margin: 15,
   borderRadius: 50,
   overflow: 'hidden',
   padding: 20,
-
 },
 postImage: {
   width: 200,

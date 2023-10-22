@@ -59,7 +59,7 @@ const MyComponent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#fff5e8',
     paddingTop: StatusBar.currentHeight
   },
   logo: {

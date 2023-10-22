@@ -99,12 +99,6 @@ const Home = ({ navigation }) => {
         console.error('Error adding document: ', error);
     }
 };
-
-
-
-
-
-
   // เข้าถึงกล้อง
 
   const camera = async () => {
@@ -151,7 +145,7 @@ const Home = ({ navigation }) => {
       top: 10,
       left: 20, 
     }}>
-    <Avatar.Icon icon="account-circle" size={80} />
+    <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'orange'}} color={'#FFF'} />
     </View>
      <View
    style={{
@@ -188,7 +182,7 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#fffae8',
     paddingTop: StatusBar.currentHeight 
   },
    input: {

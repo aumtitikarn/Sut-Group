@@ -87,7 +87,7 @@ import UserData from '../components/userData';
 }
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#fffae8',
     flex: 1,
     paddingTop: StatusBar.currentHeight
   },

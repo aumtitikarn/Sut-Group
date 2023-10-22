@@ -79,7 +79,7 @@ export default function MyComponent() {
 const styles = StyleSheet.create({
 conter:{
   flex: 1,
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#fffae8',
     paddingTop: StatusBar.currentHeight
     
 },

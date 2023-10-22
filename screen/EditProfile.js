@@ -17,14 +17,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
 import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const UserData = ({ navigation }) => {
+const EditProfile = ({ navigation }) => {
     const [userData, setUserData] = useState({});
     const facultyTextRef = useRef(null);
     const [newData, setNewData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [uid, setUid] = useState('');
     const [photo, setPhoto] = useState('');
-    const [bigImg, setBigImg] = useState('');
+    const [bigImg, setBigImg] = useState(null);
     const [profileImg, setProfileImg] = useState(null);
     const storage = FIREBASE_STORAGE;
     const db = FIRESTORE_DB;
@@ -55,45 +55,74 @@ const UserData = ({ navigation }) => {
         }
       };
       
-  const openlib = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [10, 10],
-      quality: 1,
+      const openlib = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [10, 10],
+          quality: 1,
+        });
+      
+        console.log(result);
+      
+        if (!result.canceled) {
+          setPhoto(result.assets[0].uri);
+          uploadImage(result.assets[0].uri, 'profileImg'); // ส่ง 'profileImg' เพื่อระบุการอัปโหลดรูปภาพสำหรับ profile
+        }
+      };
+      
+      const uploadImage = async (uri, imageType) => {
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `${uid}-${imageType}.jpg`); // ใช้ UID และ imageType ในชื่อไฟล์
+    await uploadBytes(storageRef, blob);
+
+    // หลังจากอัปโหลดสำเร็จ รับ URI จาก Storage
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // อัปเดตข้อมูลของผู้ใช้ใน Firestore ด้วย URI รูปภาพใหม่
+    const userRef = doc(db, 'users', auth.currentUser.uid);
+
+    // ตรวจสอบ imageType เพื่อเลือกที่จะอัปเดต
+    const updateData = {};
+    updateData[imageType] = downloadURL;
+
+    await updateDoc(userRef, updateData);
+
+    // อัปเดต state สำหรับแสดงรูปภาพใหม่
+    if (imageType === 'profileImg') {
+      setProfileImg(downloadURL);
+    }
+
+    // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
+    const allPostHomeCollectionRef = collection(db, 'allpostHome');
+    const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
+
+    const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
+    const allPostHomeBatch = writeBatch(db);
+
+    allPostHomeSnapshot.forEach((doc) => {
+      allPostHomeBatch.update(doc.ref, updateData);
     });
 
-    console.log(result);
+    await allPostHomeBatch.commit();
 
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-      setBigImg(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
-    }
-  };
+    // อัปเดตข้อมูลในคอลเลคชัน postHome ด้วยข้อมูลใหม่
+    const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
 
-  const uploadImage = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const storageRef = ref(storage, `${uid}.jpg`); // ใช้ UID ของผู้ใช้เป็นชื่อไฟล์
-      await uploadBytes(storageRef, blob);
+    const postHomeSnapshot = await getDocs(userPostHomeCollectionRef);
+    const postHomeBatch = writeBatch(db);
 
-      // หลังจากอัปโหลดสำเร็จ รับ URI จาก Storage
-      const downloadURL = await getDownloadURL(storageRef);
+    postHomeSnapshot.forEach((doc) => {
+      postHomeBatch.update(doc.ref, updateData);
+    });
 
-      // อัปเดตข้อมูลของผู้ใช้ใน Firestore ด้วย URI รูปภาพใหม่
-      const userRef = doc(db, 'users', auth.currentUser.uid);
-      await setDoc(userRef, {
-        profileImg: downloadURL, // เพิ่ม URI รูปภาพใหม่
-      }, { merge: true });
-
-      // อัปเดต state สำหรับแสดงรูปภาพใหม่
-      setProfileImg(downloadURL);
-    } catch (error) {
-      console.error('Error uploading image: ', error);
-    }
-  };
+    await postHomeBatch.commit();
+  } catch (error) {
+    console.error('Error uploading image: ', error);
+  }
+};
 
   const Lib = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -164,10 +193,9 @@ const UserData = ({ navigation }) => {
         await updateDoc(userDocRef, updatedUserData);
   
         // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
-        const userPostHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
-        const userPostHomeQuery = query(userPostHomeCollectionRef, where('userUid', '==', userUid));
+        const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
   
-        const userPostHomeSnapshot = await getDocs(userPostHomeQuery);
+        const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const batch = writeBatch(db);
   
         userPostHomeSnapshot.forEach((doc) => {
@@ -236,7 +264,7 @@ const UserData = ({ navigation }) => {
               left: 150
               
             }}>
-                <Avatar.Icon icon="account-circle" size={100} />
+                <Avatar.Icon icon="account-circle" size={100} style={{ backgroundColor:'orange' }} color={'#FFF'}/>
                 {profileImg && <Image source={{ uri: profileImg }} style={{ width: 100, height: 100, Left: 150, top: 0, borderRadius: 50, position: 'absolute',}} />}
             </View>
             <TouchableOpacity onPress={openlib}>
@@ -310,4 +338,4 @@ const styles = StyleSheet.create({
       },
       });
       
-export default UserData;
+export default EditProfile;

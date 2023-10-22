@@ -8,13 +8,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
-const Home = ({ navigation }) => {
+const postProfile = () => {
   const [posts, setPosts] = useState([]);
+  const navigation = useNavigation();
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [isLiked, setIsLiked] = useState([]);
   const [likeCount, setLikeCount] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const userUid = auth.currentUser.uid;
@@ -151,50 +154,77 @@ const Home = ({ navigation }) => {
     }
   };
 
+  const handleIconBarsPress = (postId) => {
+    setShowDropdown((prevShowDropdown) => ({
+      ...prevShowDropdown,
+      [postId]: !prevShowDropdown[postId],
+    }));
+  };
   
+  const handleEditPost = (postId, navigation) => {
+    console.log("กดแก้ไขโพสต์ที่ postId:", postId);
+    navigation.navigate('EditPostHome', {postId});
+  };
+  const handleDeletePost = (postId) => {
+    console.log("กดลบโพสต์ที่ postId:", postId);
+  };
+  
+  //-------------------------------------------------------------------------------------//
+
   return (
     <SafeAreaView style={styles.container}>
-    <ScrollView>
-      {posts.map((post) => (
-        <View key={post.id} style={styles.postContainer}>
-          <TouchableOpacity>
-              <Icon name="bars" size={23} color="#000" style={{ left: 280 }} />
-            </TouchableOpacity>
-          <View style={{ top: -70, left: 55 }}>
-            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
-            <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
-            <Text style={styles.userData}>#{post.faculty}</Text>
-            <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
-          </View>
-          <View style={{ top: -50, left: 30 }}>
-            <Text style={styles.postText}>{post.text}</Text>
-            {post.photo && (
-              <Image source={{ uri: post.photo }} style={styles.postImage} />
-            )}
-          </View>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => updateLike(post)}>
-              <Icon
-                name={isLiked[post.id] ? 'heart' : 'heart'}
-                size={25}
-                color={isLiked[post.id] ? 'orange' : '#000'}
-                style={{left: 30}}
-              />
-            </TouchableOpacity>
-            <View>
-              <Text style={{ left: 40 }}>{likeCount[post.id]}</Text>
-            </View>
-            <TouchableOpacity>
-              <Icon name="comment" size={25} color="#000" style={{ left: 90, top:-3 }} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-            <Icon name="share" size={25} color="#000" style={{ left: 150, top:-2 }} />
-            </TouchableOpacity>
-          </View>
+  <ScrollView>
+    {posts.map((post) => (
+      <View key={post.id} style={styles.postContainer}>
+        <TouchableOpacity onPress={() => handleIconBarsPress(post.id)} style={{ left: 290 }}>
+          <Icon name="bars" size={23} color="#000" />
+        </TouchableOpacity>
+        {showDropdown[post.id] && (
+  <View style={styles.dropdown}>
+     <TouchableOpacity onPress={() => handleEditPost(post.id, navigation)}>
+          <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
+      </TouchableOpacity>
+    <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
+    <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
+      <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
+    </TouchableOpacity>
+  </View>
+)}
+        <View style={{ top: -70, left: 55, width:230}}>
+          <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+          <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+          <Text style={styles.userData}>#{post.faculty}</Text>
+          <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
         </View>
-      ))}
-    </ScrollView>
-  </SafeAreaView>
+        <View style={{ top: -50, left: 30 }}>
+          <Text style={styles.postText}>{post.text}</Text>
+          {post.photo && (
+            <Image source={{ uri: post.photo }} style={styles.postImage} />
+          )}
+        </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => updateLike(post)}>
+            <Icon
+              name={isLiked[post.id] ? 'heart' : 'heart'}
+              size={25}
+              color={isLiked[post.id] ? 'orange' : '#000'}
+              style={{ marginLeft: 30 }}
+            />
+          </TouchableOpacity>
+          <View>
+            <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
+          </View>
+          <TouchableOpacity>
+            <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Icon name="share" size={25} color="#000" style={{ marginLeft: 60, top: -2 }} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    ))}
+  </ScrollView>
+</SafeAreaView>
 );
 };
 
@@ -215,13 +245,14 @@ postContainer: {
   borderRadius: 50,
   overflow: 'hidden',
   padding: 20,
-  height: 215
+
 },
 postImage: {
   width: 200,
   height: 200,
   resizeMode: 'cover',
-  margin: 10,
+  left: 30,
+  top: 10
 },
 postText: {
   fontSize: 25,
@@ -237,6 +268,20 @@ iconContainer: {
 userData: {
   top: -5,
 },
+dropdown: {
+  position: 'absolute',
+  top: 30, // ปรับตำแหน่ง Dropdown ตามความเหมาะสม
+  right: 0, // ปรับตำแหน่ง Dropdown ตามความเหมาะสม
+  backgroundColor: '#FFF', // สีพื้นหลังของ Dropdown
+  borderWidth: 1, // หรือคุณสามารถใช้ shadow แทน
+  borderColor: '#000', // สีขอบของ Dropdown
+  padding: 5,
+  zIndex: 1, // คุณอาจต้องกำหนด zIndex เพื่อให้ Dropdown อยู่เหนือกับเนื้อหาอื่น
+  borderRadius: 10,
+  top: 20,
+  marginRight:70,
+  backgroundColor: '#fff5e2'
+},
 });
-
-export default Home;
+  
+export default postProfile;

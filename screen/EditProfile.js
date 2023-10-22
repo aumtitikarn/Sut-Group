@@ -163,8 +163,8 @@ const UserData = ({ navigation }) => {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
   
-        // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
-        const userPostHomeCollectionRef = collection(db, 'allpostHome');
+        // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
+        const userPostHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
         const userPostHomeQuery = query(userPostHomeCollectionRef, where('userUid', '==', userUid));
   
         const userPostHomeSnapshot = await getDocs(userPostHomeQuery);
@@ -176,6 +176,19 @@ const UserData = ({ navigation }) => {
   
         await batch.commit();
   
+        // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
+        const allPostHomeCollectionRef = collection(db, 'allpostHome');
+        const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
+  
+        const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
+        const allPostHomeBatch = writeBatch(db);
+  
+        allPostHomeSnapshot.forEach((doc) => {
+          allPostHomeBatch.update(doc.ref, updatedUserData);
+        });
+  
+        await allPostHomeBatch.commit();
+  
         alert('Data updated');
         navigation.navigate('Profile');
       } else {
@@ -185,6 +198,7 @@ const UserData = ({ navigation }) => {
       console.error('Error updating user data:', error.message);
     }
   };
+  
 
       return (
         <SafeAreaView style={styles.container}>

@@ -14,6 +14,7 @@ import Createpost from './screen/createpost';
 import NotiScreen from './screen/notiscreen';
 import Marketpost from './screen/marketpost';
 import EditProfile from './screen/EditProfile';
+import EditPostHome from './screen/EditPostHome';
 import Forgot from './screen/Forgot';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -83,6 +84,7 @@ export default function Page() {
         <Stack.Screen name="NotiScreen" component={NotiScreen} />
         <Stack.Screen name="Marketpost" component={Marketpost} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
+        <Stack.Screen name="EditPostHome" component={EditPostHome} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,116 +1,134 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Text,
-    StyleSheet,
-    View,
-    Image, 
-    ScrollView, 
-    SafeAreaView, 
-    StatusBar,
-    TextInput,
-    TouchableOpacity
-} from 'react-native';
-import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
-import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch } from 'firebase/firestore'; 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import { Avatar } from 'react-native-paper';
-import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
-const UserData = ({ navigation }) => {
-    const [userData, setUserData] = useState({});
-    const facultyTextRef = useRef(null);
-    const [newData, setNewData] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
-    const [uid, setUid] = useState('');
-    const [photo, setPhoto] = useState('');
-    const [bigImg, setBigImg] = useState('');
-    const [profileImg, setProfileImg] = useState(null);
-    const storage = FIREBASE_STORAGE;
-    const db = FIRESTORE_DB;
-    const auth = FIREBASE_AUTH;
-    return (
-        <SafeAreaView style={styles.container}>
-        <View>
+const EditPostHome = ({ route, navigation }) => {
+  const { postId } = route.params;
+  const [feed, setFeed] = useState('');
+  const db = FIRESTORE_DB;
+  const auth = FIREBASE_AUTH;
+  console.log('ค่า param ที่ต้องการแก้ไข >> ',postId)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = auth.currentUser;
+  
+        if (user) {
+          // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ postId
+          const allpostHomeRef = doc(db, 'AllpostHome', postId);
+  
+          const allpostHomeSnapshot = await getDoc(allpostHomeRef);
+  
+          if (allpostHomeSnapshot.exists()) {
+            const allpostHomeData = allpostHomeSnapshot.data();
+  
+            if (allpostHomeData) {
+              setFeed(allpostHomeData.text);
+              // ตั้งค่าค่า placeholder ด้วย feed
+              document.getElementById("myInput").placeholder = `ข้อมูลเดิม: ${allpostHomeData.text}`;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล: ', error);
+      }
+    };
+  
+    fetchData();
+  }, [postId, auth.currentUser]);
+
+  const handleUpdatePost = async () => {
+    try {
+      const user = auth.currentUser;
+
+      if (user) {
+        // ทำการอัปเดตโพสต์ใน Firestore ด้วยค่าใหม่ที่อยู่ใน "feed"
+        const allpostHomeRef = doc(db, 'AllpostHome', postId);
+        await setDoc(allpostHomeRef, { text: feed }, { merge: true });
+
+        // เปลี่ยนโพสต์ใน postHome ใน "users" collection ด้วยขั้นตอนเดียวกันที่คุณใช้ใน allpostHome collection
+        const postHomeRef = doc(db, 'users', user.uid, 'postHome', postId);
+        await setDoc(postHomeRef, { text: feed }, { merge: true });
+
+        // เปลี่ยนโพสต์เสร็จแล้วทำอย่างอื่น (เช่น แสดงข้อความยืนยัน)
+      }
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการเปลี่ยนโพสต์: ', error);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View>
         <MaterialCommunityIcons 
           name="arrow-left-thick"  
-          size={50} style={{margin:10}} 
-          onPress={() => navigation.navigate('Home')} 
-          />
-        </View>
-          <View
-       style={{
-          top: 10,
-          left: 20, 
-        }}>
+          size={50} 
+          style={{ margin: 10 }} 
+          onPress={() => navigation.navigate('Profile')} 
+        />
+      </View>
+      <Text style={{ left: 70, top: -50, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
+      <View style={{ top: -20, left: 20 }}>
         <Avatar.Icon icon="account-circle" size={80} />
-        </View>
-         <View
-       style={{
-         top: -60,
-          left: 110, 
-        }}>
-          <TextInput
-        style={styles.input}
-        placeholder={`${userData.text || ''}`}
-        onChangeText={(text) => setNewData({ ...newData, text: text })}
-      />
-        </View>
-        {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
-        <View style={styles.iconContainer}>
-        <Icon name="camera" size={20} color="#000" style={styles.icon} onPress={camera}/>
-        <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openlib}/>
-        </View>
-        <View style={{
-          top: -80,
-          left: 275
-        }}>
-        <TouchableOpacity style={styles.buttonYellow}>
-          <Text style={styles.buttonText} onPress={handlePost}>บันทึกข้อมูล</Text>
+      </View>
+      <View style={{ top: -90, left: 110 }}>
+        <TextInput
+          style={styles.input}
+          placeholder={`ข้อมูลเดิม: ${feed}`}
+          placeholderTextColor="Black"
+          textAlignVertical="top" 
+          multiline={true}
+          value={feed}
+          onChangeText={(text) => setFeed(text)}
+        />
+        <TouchableOpacity style={styles.buttonYellow} onPress={handleUpdatePost}>
+          <Text style={styles.buttonText}>โพสต์</Text>
         </TouchableOpacity>
-        </View>
-          
-        </SafeAreaView>
-      );
-    };
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        backgroundColor: '#FFF6DE',
-        paddingTop: StatusBar.currentHeight 
-      },
-       input: {
-        height: 200,
-        width: 275,
-        borderWidth: 1,
-        borderRadius:10,
-        padding: 10,
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-      },
-      iconContainer: {
-        flexDirection: 'row',
-        alignItems: 'center', 
-        top:-50,
-        marginLeft: 105
-      },
-      icon: {
-        marginRight: 10,
-      },
-       buttonYellow: {
-        borderRadius: 5,
-        borderWidth: 1,
-        backgroundColor: '#FFBD59',
-        width: 100,
-        padding:5,
-        justifyContent: 'center', 
-        alignItems: 'center',
-        margin: 5
-      },
-      selectedImage: {
-        width: 200,
-        height: 110,
-        alignSelf: 'center', 
-      },
-    });
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF6DE',
+    paddingTop: StatusBar.currentHeight 
+  },
+  input: {
+    height: 200,
+    width: 275,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    top: -50,
+    marginLeft: 105
+  },
+  icon: {
+    marginRight: 10,
+  },
+  buttonYellow: {
+    borderRadius: 5,
+    borderWidth: 1,
+    backgroundColor: '#FFBD59',
+    width: 275,
+    padding: 5,
+    justifyContent: 'center', 
+    alignItems: 'center',
+    margin: 6,
+    left: -5
+  },
+});
+
+export default EditPostHome;

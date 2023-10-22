@@ -157,10 +157,7 @@ return (
     <ScrollView>
       {posts.map((post) => (
         <View key={post.id} style={styles.postContainer}>
-          <TouchableOpacity>
-              <Icon name="bars" size={23} color="#000" style={{ left: 280 }} />
-            </TouchableOpacity>
-          <View style={{ top: -70, left: 55 }}>
+          <View style={{ top: -50, left: 55 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
             <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
             <Text style={styles.userData}>#{post.faculty}</Text>
@@ -178,17 +175,17 @@ return (
                 name={isLiked[post.id] ? 'heart' : 'heart'}
                 size={25}
                 color={isLiked[post.id] ? 'orange' : '#000'}
-                style={{left: 30}}
+                style={{marginLeft: 30}}
               />
             </TouchableOpacity>
             <View>
-              <Text style={{ left: 40 }}>{likeCount[post.id]}</Text>
+              <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
             </View>
             <TouchableOpacity>
-              <Icon name="comment" size={25} color="#000" style={{ left: 90, top:-3 }} />
+              <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top:-3 }} />
             </TouchableOpacity>
             <TouchableOpacity>
-            <Icon name="share" size={25} color="#000" style={{ left: 150, top:-2 }} />
+            <Icon name="share" size={25} color="#000" style={{ marginLeft: 60, top:-2 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -215,23 +212,25 @@ postContainer: {
   borderRadius: 50,
   overflow: 'hidden',
   padding: 20,
-  height: 215
+
 },
 postImage: {
   width: 200,
   height: 200,
   resizeMode: 'cover',
-  margin: 10,
+  left: 30,
+  top:20
 },
 postText: {
   fontSize: 25,
   left: -10,
+  top: 15
 },
 iconContainer: {
   flexDirection: 'row',
   paddingHorizontal: 20,
   alignItems: 'center',
-  top: -25,
+  top: -10,
   left: 15
 },
 userData: {

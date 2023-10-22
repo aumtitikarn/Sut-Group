@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, ScrollView, StatusBar, useWindowDimensions } from 'react-native';
 import { FIREBASE_AUTH } from '../firestore';
 import { useNavigation } from '@react-navigation/native';
 import { signOut } from "firebase/auth";
-import  Createpost  from './createpost';
 import PostProfile from '../components/postProfile';
+import { TabView, SceneMap } from 'react-native-tab-view';
 import UserData from '../components/userData';
 
   const Profile = () => {

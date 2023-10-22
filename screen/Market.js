@@ -21,7 +21,7 @@ export default function MyComponent() {
     <Appbar.Header style={{backgroundColor:'#FFBD59', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
       <Appbar.Content title=" Marketplace" style={{
-      marginLeft: 50}} />
+      marginLeft: 50, textAlign: 'center'}} />
       <Appbar.Action icon="bell" onPress={() => {}} />
       
     </Appbar.Header>

@@ -1,4 +1,4 @@
-import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity, } from 'react-native';
+import { View, Text,  SafeAreaView, StyleSheet, TextInput, TouchableOpacity,  Image } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Avatar } from 'react-native-paper';
 import React, { useState, useEffect } from 'react';
@@ -7,10 +7,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { addDoc,
   collection,
   serverTimestamp,doc,
-  getDoc
+  getDoc,setDoc
   } from 'firebase/firestore';
 import {FIRESTORE_DB,FIREBASE_STORAGE} from '../firestore';
 import { FIREBASE_AUTH } from '../firestore';
+import * as ImagePicker from 'expo-image-picker';
 import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
@@ -21,7 +22,7 @@ export default function Marketpost() {
   const [pri, setPri] = useState('');
   const [faculty,setFaculty] = useState('');
   const [username,setUsername]= useState('');
-  const [photo, setPhoto]= useState('');
+  const [photo, setPhoto] = useState(null);
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
@@ -58,24 +59,34 @@ const handleMarket = async () => {
   try {
     const userUid = auth.currentUser.uid;
     if (userUid) {
+       // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
+       const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
       const postShopCollectionRef = collection(db, 'users', userUid, 'postShop');
-      const newCollectionName = 'allpostShop';
-      const allpostShopCollectionRef = collection(db, newCollectionName);
       const shop = {
+        username: username,
+        faculty: faculty,
         name: dname, // ชื่อสินค้า
         cate: tname, // ประเภทสินค้าที่ผู้ใช้เลือก
         prict: pri, // ราคาสินค้า
         timestamp: serverTimestamp(),
-        userUid: userUid
+        photo: photo,
+        userUid: userUid,
+        shopid: id,
+        like: 0
       };
-      await addDoc(postShopCollectionRef, shop); // เพิ่มข้อมูลลงในโปรไฟล์ของผู้ใช้
-      await addDoc(allpostShopCollectionRef, shop); // เพิ่มข้อมูลลงในโปรไฟล์ทั้งหมด
-      console.log('Document written with ID: ', userUid);
+      // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
+      const allpostShopCollectionRef = collection(db, 'allpostShop');
+  
+      // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
+      await setDoc(doc(allpostShopCollectionRef, id), shop);
+      await setDoc(doc(postShopCollectionRef, id), shop);
       navigation.navigate('Marketplace');
+      console.log('Document written with ID: ', id);
       setPhoto(null);
       // เซ็ต tname เป็นค่าเริ่มต้นหลังจากใช้ข้อมูล
       setTname('');
     }
+   
   } catch (error) {
     console.error('Error adding document: ', error);
   }
@@ -83,35 +94,36 @@ const handleMarket = async () => {
 
 
   
-//เข้าถึงกล้อง
-const camera = async () => {
-  const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [10, 10],
-    quality: 1,
-  });
+  // เข้าถึงกล้อง
 
-if (!result.canceled) {
-  setPhoto(result.assets[0].uri);
-}
-};
+  const camera = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
 
-// เข้าถึงคลังรูปภาพ
-const openlib = async () => {
-let result = await ImagePicker.launchImageLibraryAsync({
-  mediaTypes: ImagePicker.MediaTypeOptions.All,
-  allowsEditing: true,
-  aspect: [10, 10],
-  quality: 1,
-});
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
 
-console.log(result);
+  // เข้าถึงคลังรูปภาพ
+  const openlib = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
 
-if (!result.canceled) {
-  setPhoto(result.assets[0].uri);
-}
-};
+    console.log(result);
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
 
 
   return (
@@ -131,7 +143,7 @@ if (!result.canceled) {
     }}>
     <Avatar.Icon icon="account-circle" size={50} />
     </View>
-     <View           style={{
+     <View  style={{
             top: -30,
             left: 100,
             margin: 5,
@@ -155,7 +167,7 @@ if (!result.canceled) {
               // }
               return selectedItem;
             }}
-            rowTextForSelection={(product, item) => {
+            rowTextForSelection={(product) => {
               return product;
               // single name for a selected item
               // if item is object, return item.name

@@ -3,7 +3,7 @@ import {
   Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
@@ -165,8 +165,22 @@ const postProfile = () => {
     console.log("กดแก้ไขโพสต์ที่ postId:", postId);
     navigation.navigate('EditPostHome', {postId});
   };
-  const handleDeletePost = (postId) => {
-    console.log("กดลบโพสต์ที่ postId:", postId);
+  const handleDeletePost = async (postId) => {
+    try {
+      const userUid = auth.currentUser.uid;
+  
+      // 1. ลบโพสต์จาก "postHome" collection ใน Firestore
+      const postHomeRef = doc(db, 'users', userUid, 'postHome', postId);
+      await deleteDoc(postHomeRef);
+  
+      // 2. ลบโพสต์จาก "allpostHome" collection ใน Firestore
+      const allpostHomeRef = doc(db, 'allpostHome', postId);
+      await deleteDoc(allpostHomeRef);
+  
+      console.log('ลบโพสต์สำเร็จ');
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
+    }
   };
   
   //-------------------------------------------------------------------------------------//

@@ -16,7 +16,6 @@ import Marketpost from './screen/marketpost';
 import EditProfile from './screen/EditProfile';
 import EditPostHome from './screen/EditPostHome';
 import Forgot from './screen/Forgot';
-import DeletePostHome from './screen/DeletePostHome';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,7 +85,6 @@ export default function Page() {
         <Stack.Screen name="Marketpost" component={Marketpost} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="EditPostHome" component={EditPostHome} />
-        <Stack.Screen name="DeletePostHome" component={DeletePostHome} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
 import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const UserData = ({ navigation }) => {
+const EditPostHome = ({ navigation }) => {
     const [userData, setUserData] = useState({});
     const facultyTextRef = useRef(null);
     const [newData, setNewData] = useState({});
@@ -114,3 +114,4 @@ const UserData = ({ navigation }) => {
         alignSelf: 'center', 
       },
     });
+    export default EditPostHome;

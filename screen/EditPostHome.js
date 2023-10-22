@@ -16,20 +16,18 @@ const EditPostHome = ({ route, navigation }) => {
     const fetchData = async () => {
       try {
         const user = auth.currentUser;
-  
+
         if (user) {
           // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ postId
-          const allpostHomeRef = doc(db, 'AllpostHome', postId);
-  
+          const allpostHomeRef = doc(db, 'allpostHome', postId);
+
           const allpostHomeSnapshot = await getDoc(allpostHomeRef);
-  
+
           if (allpostHomeSnapshot.exists()) {
             const allpostHomeData = allpostHomeSnapshot.data();
-  
+
             if (allpostHomeData) {
               setFeed(allpostHomeData.text);
-              // ตั้งค่าค่า placeholder ด้วย feed
-              document.getElementById("myInput").placeholder = `ข้อมูลเดิม: ${allpostHomeData.text}`;
             }
           }
         }
@@ -37,7 +35,7 @@ const EditPostHome = ({ route, navigation }) => {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูล: ', error);
       }
     };
-  
+
     fetchData();
   }, [postId, auth.currentUser]);
 
@@ -47,7 +45,7 @@ const EditPostHome = ({ route, navigation }) => {
 
       if (user) {
         // ทำการอัปเดตโพสต์ใน Firestore ด้วยค่าใหม่ที่อยู่ใน "feed"
-        const allpostHomeRef = doc(db, 'AllpostHome', postId);
+        const allpostHomeRef = doc(db, 'allpostHome', postId);
         await setDoc(allpostHomeRef, { text: feed }, { merge: true });
 
         // เปลี่ยนโพสต์ใน postHome ใน "users" collection ด้วยขั้นตอนเดียวกันที่คุณใช้ใน allpostHome collection
@@ -55,6 +53,7 @@ const EditPostHome = ({ route, navigation }) => {
         await setDoc(postHomeRef, { text: feed }, { merge: true });
 
         // เปลี่ยนโพสต์เสร็จแล้วทำอย่างอื่น (เช่น แสดงข้อความยืนยัน)
+        navigation.navigate('Profile');
       }
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการเปลี่ยนโพสต์: ', error);
@@ -78,7 +77,6 @@ const EditPostHome = ({ route, navigation }) => {
       <View style={{ top: -90, left: 110 }}>
         <TextInput
           style={styles.input}
-          placeholder={`ข้อมูลเดิม: ${feed}`}
           placeholderTextColor="Black"
           textAlignVertical="top" 
           multiline={true}

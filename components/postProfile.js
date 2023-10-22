@@ -249,16 +249,12 @@ const postProfile = () => {
 const styles = StyleSheet.create({
 container: {
   flex: 1,
-  backgroundColor: '#FFF6DE',
+  backgroundColor: '#fff5e8',
 },
 postContainer: {
   borderWidth: 1,
   borderColor: '#000',
-  backgroundColor: '#FBE5AD',
-  shadowColor: 'rgba(0, 0, 0, 0.25)',
-  shadowOffset: { width: 0, height: 4 },
-  shadowRadius: 4,
-  elevation: 4,
+  backgroundColor: '#ffebce',
   margin: 20,
   borderRadius: 50,
   overflow: 'hidden',

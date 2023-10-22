@@ -161,7 +161,7 @@ return (
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
             <Image
               source={{ uri: post.profileImg }}
-              style={{ width: 50, height: 50, left: -60, top: 40, borderRadius: 50, position: 'absolute' }}
+              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             />
             <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
             <Text style={styles.userData}>#{post.faculty}</Text>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './screen/Home';
@@ -18,23 +18,37 @@ import EditPostHome from './screen/EditPostHome';
 import Forgot from './screen/Forgot';
 import EditPostShop from './screen/EditPostshop';
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab =  createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MyTabs() {
   return (
-    <Tab.Navigator barStyle={styles.tabbarStyle}
+    <Tab.Navigator
       initialRouteName="Home"
-        screenOptions={{
-          headerShown: false,
-        }}>
+      screenOptions={{
+        tabBarActiveTintColor: '#001e1d',
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#f9bc60',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          position: 'absolute',
+          width: '100%',
+          height: 70,
+        },
+        tabBarLabelStyle: {
+          fontSize: 17, // ปรับขนาดตัวอักษรตรงนี้
+          top: -7
+        },
+        
+      }}>
       <Tab.Screen
         name="Home"
         component={Home}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home"  color={color} size={30} />
+            <MaterialCommunityIcons name="home" color={color} size={30} />
           ),
         }}
       />
@@ -93,22 +107,3 @@ export default function Page() {
   );
   
 }
-const styles = StyleSheet.create({
-  tabbarStyle: {
-    backgroundColor: '#FFBD59',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    overflow: 'hidden',
-    position: 'absolute',
-    width: '100%',
-    //marginTop: -60,
-    shadowOffset: {
-      width: 10,
-      height: 30,
-    },
-    shadowOpacity: 0.58,
-    shadowRadius: 60.0,
-    elevation: 10,
-  },
-}); 
-

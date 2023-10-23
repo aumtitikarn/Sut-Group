@@ -245,7 +245,7 @@ return (
               <Icon
                 name={isLiked[post.id] ? 'heart' : 'heart'}
                 size={25}
-                color={isLiked[post.id] ? 'orange' : '#000'}
+                color={isLiked[post.id] ? '#000' : '#000'}
                 style={{marginLeft: 30}}
               />
             </TouchableOpacity>

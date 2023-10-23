@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
-import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc } from 'firebase/firestore'; 
+import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,updateDoc } from 'firebase/firestore'; 
 import { FIRESTORE_DB } from '../firestore';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
@@ -11,52 +11,157 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // นำเข้า�
 export default function PostShop() {
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
-  const [userData, setUserData] = useState({});
+  const [isLiked, setIsLiked] = useState([]);
+  const [likeCount, setLikeCount] = useState([]);
+
+  const [currentUser, setCurrentUser] = useState(null);  
   const db = FIRESTORE_DB;
   const auth = getAuth();
   const navigation = useNavigation();
   useEffect(() => {
-    // สร้างคิวรีสำหรับคอลเลคชัน "allpostHome" และเรียกใช้ onSnapshot
     const q = query(collection(db, 'allpostShop'), orderBy('timestamp', 'desc'));
-
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+  
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      const updatedIsLiked = {};
+      const updatedLikeCount = {};
       const updatedShops = [];
       snapshot.forEach((doc) => {
-        updatedShops.push({ id: doc.id, ...doc.data() });
+        const shop = { id: doc.id, ...doc.data() };
+        updatedShops.push(shop);
+        updatedIsLiked[shop.id] = false;
+        updatedLikeCount[shop.id] = shop.like;
       });
       setShops(updatedShops);
+      setIsLiked(updatedIsLiked);
+      setLikeCount(updatedLikeCount);
     });
-
+  
     return () => {
-      // ยกเลิกการสั่งสอบถามเมื่อคอมโพนเมนต์ถูกถอนออก
+      // ยกเลิก subscription เมื่อ component ถูก unmounted
+      unsubscribeAuth();
       unsubscribe();
-    }
-    
+    };
   }, []);
+  
   const handleEdit = (shopId) => {
     // นำผู้ใช้ไปที่หน้าแก้ไขโพสต์ (ให้กำหนดค่า postId ใน navigation params)
-    navigation.navigate('EditPostShop',{shopId});
-  };
-  
-  const handleDelete = async (shopId) => {
-    try {
+    const shop = shops.find((shop) => shop.id === shopId);
+
+    if (shop.userUid === currentUser.uid) {
       
-      // ลบโพสต์จากฐานข้อมูล
-      await deleteShop(shopId);
-      // หลังจากลบโพสต์สำเร็จ คุณอาจต้องโหลดโพสต์ใหม่หรือทำอย่างอื่นตามที่คุณต้องการ
+      navigation.navigate('EditPostShop', { shopId });
+    } else {
+
+      console.log('คุณไม่มีสิทธิ์ในการแก้ไขโพสต์นี้');
+    }
+  
+  };
+  const deleteShop = async (shopId) => {
+    const shop = shops.find((shop) => shop.id === shopId);
+    try {
+      // สร้าง reference ของโพสต์ที่ต้องการลบใน allpostShop collection
+      const shopRefAll = doc(db, 'allpostShop', shopId);
+      // สร้าง reference ของโพสต์ที่ต้องการลบใน shops state
+      const shopRefState = doc(db, 'postShop', shopId);
+  
+      // ดึงข้อมูลของโพสต์ที่ต้องการลบจาก allpostShop collection
+      const shopDocAll = await getDoc(shopRefAll);
+      const shopDataAll = shopDocAll.data();
+  
+      // ดึงข้อมูลของโพสต์ที่ต้องการลบจาก shops state
+      const shopDocState = await getDoc(shopRefState);
+      const shopDataState = shopDocState.data();
+  
+      // ตรวจสอบว่าโพสต์ที่ต้องการลบถูกโพสต์โดย user ที่ login หรือไม่
+      if (shopDataAll.userUid === currentUser.uid ) {
+        // ลบโพสต์จาก allpostShop collection
+        await deleteDoc(shopRefAll);
+        await deleteDoc(shopRefState);
+  
+        // ลบโพสต์จาก shops state
+        setShops((prevShops) => prevShops.filter((shop) => shop.id !== shopId));
+  
+        console.log('โพสต์ถูกลบเรียบร้อยแล้ว');
+      } else {
+        console.log('คุณไม่มีสิทธิ์ในการลบโพสต์นี้');
+      }
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
     }
   };
-  const deleteShop = async (shopId) => {
+  
+  const updateLike = async (shop) => {
     try {
-      const shopRef = doc(db, 'allpostShop', shopId, );
-      await deleteDoc(shopRef);
-      console.log('โพสต์ถูกลบเรียบร้อยแล้ว');
+      const userUid = auth.currentUser.uid;
+      const shopRef = doc(db, 'allpostShop', shop.id);
+      const shopDoc = await getDoc(shopRef);
+  
+      if (shopDoc.exists()) {
+        const likedBy = shopDoc.data().likedBy || []; // กำหนดค่าเริ่มต้นเป็นอาร์เรย์ว่างหากไม่มีค่า
+  
+        if (likedBy.includes(userUid)) {
+          const updatedLikedBy = likedBy.filter((uid) => uid !== userUid);
+          const newLikeCount = Math.max(shop.like - 1, 0);
+  
+          const updateData = {
+            likedBy: updatedLikedBy,
+            like: newLikeCount,
+          };
+  
+          await updateDoc(shopRef, updateData);
+  
+          setIsLiked((currentIsLiked) => ({
+            ...currentIsLiked,
+            [shop.id]: false,
+          }));
+          await updateLikeInPostShop(userUid, shop.id, updatedLikedBy, newLikeCount);
+          // อัปเดตจำนวนไลค์ใน Firestore หรือที่ต้องการอัปเดต
+        } else {
+          const updatedLikedBy = [...likedBy, userUid];
+          const newLikeCount = shop.like + 1;
+  
+          const updateData = {
+            likedBy: updatedLikedBy,
+            like: newLikeCount,
+          };
+  
+          await updateDoc(shopRef, updateData);
+  
+          setIsLiked((currentIsLiked) => ({
+            ...currentIsLiked,
+            [shop.id]: true,
+          }));
+          await updateLikeInPostShop(userUid, shop.id, updatedLikedBy, newLikeCount);
+          // อัปเดตจำนวนไลค์ใน Firestore หรือที่ต้องการอัปเดต
+        }
+      } else {
+        console.error('ไม่พบข้อมูลโพสต์: ', shop.id);
+      }
     } catch (error) {
-      throw new Error('เกิดข้อผิดพลาดในการลบโพสต์');
+      console.error('เกิดข้อผิดพลาดในการกดไลค์: ', error);
+    }
+    const updateLikeInPostShop = async (userUid, shopId, likedBy, likeCount) => {
+      const postShopRef = doc(db, 'users', userUid, 'postShop', shopId);
+      
+      const postShopDoc = await getDoc(postShopRef);
+      if (postShopDoc.exists()) {
+        const updateData = {
+          likedBy: likedBy,
+          like: likeCount,
+        };
+  
+        await updateDoc(postShopRef, updateData);
+      }
     }
   };
+  
+  
+
+  
+  
   
   
   const formatPostTime = (timestamp) => {
@@ -103,70 +208,98 @@ export default function PostShop() {
 
   return (
     <View style={styles.container}>
-      {shops.map((shop, index) => (
-       <TouchableOpacity key={index} style={styles.product}>
+      {shops.map((shop, index) => {
+         return(
+          <TouchableOpacity key={index} style={styles.product}>
           <Card style={styles.card}>
-           
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => handleEdit(shop.id)}>
-              <Icon name="edit" size={24} color="#3498db" style={styles.icon} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDelete(shop.id)}>
-              <Icon name="trash" size={24} color="#e74c3c" style={styles.icon} />
-            </TouchableOpacity>          
-          </View>
-           <Card style={{ width: 200, height: 100 ,left:70}} >{shop.photo && (
-        <Image source={{ uri: shop.photo }} style={{ width: 200, height: 100 ,marginRight:20}} />
-        )}</Card>
-          <View style={{top:-40}}>
-            <View style={{left:60}} >
-              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
-           <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
-              <Text style={{ top: -5,}}>#{shop.faculty}</Text>
-             
-            </View>
-             <Text style={{ fontSize: 16, fontWeight: 'bold' ,marginLeft:40 ,top:10 }}>
-                {shop.cate}  {shop.name}
-              </Text>
+              <View style={styles.iconContainer}>
+              {shop.userUid === currentUser?.uid && (
+                  <>
+                <TouchableOpacity onPress={() => handleEdit(shop.id)}>
+                  <Icon name="edit" size={24} color="#3498db" style={{left:285,top:2}} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteShop(shop.id)}>
+                  <Icon name="trash" size={24} color="#e74c3c" style={styles.icon} />
+                </TouchableOpacity>  
+                </>  
+              )}    
               </View>
-            <View style={styles.conta}>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                ราคา: {shop.prict } บาท
+            <Card style={{ width: 200, height: 100, left: 70 }}>
+              {shop.photo && (
+                <Image source={{ uri: shop.photo }} style={{ width: 200, height: 100, marginRight: 20 }} />
+              )}
+            </Card>
+            <View style={{ top: -40 }}>
+              <View style={{ left: 60 }}>
+                <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+                <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
+                <Text style={{ top: -5 }}>#{shop.faculty}</Text>
+                <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
+              </View>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
+                {shop.cate}      {shop.name}
               </Text>
             </View>
-            </Card>
+            <View style={styles.conta}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ราคา: {shop.prict} บาท</Text>
+            </View>
+            <View style={styles.cont}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
+            </View>
+            <View >
+            <TouchableOpacity
+    style={{ left: 290 }}
+    onPress={() => updateLike(shop)}
+    // ป้องกันไม่ให้กดได้อีกเมื่อถูกกดแล้ว
+>
+    <Icon
+        name= {isLiked[shops.id] ?'heart' : 'heart-o'}
+        size={30}
+        color={isLiked[shops.id] ? 'orange' : '#000'} // กำหนดสีตามสถานะ
+    />
+</TouchableOpacity>
+           
+            <View>
+            <Text style={{top: 25, left:-73}}>{likeCount[shops.id]}</Text>
+            </View>
+          </View>
+          </Card>
         </TouchableOpacity>
-      ))}
+        );
+           })}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'comlum',
-    flexWrap: 'wrap',
+    flex: 1, // ให้ container ขยายตามพื้นที่ของ parent component
+    flexDirection: 'column',
     justifyContent: 'center',
-     // แยกแต่ละ Card ด้วยระยะห่าง
   },
   product: {
     margin: 10,
-    
-     // ให้แต่ละ Card มีความกว้าง 45% ของหน้าจอ
   },
   card: {
-    width: 370,
+    width: '90%', // กำหนดขนาดของ card เป็น 90% ของหน้าจอ
+    alignSelf: 'center', // จัดการแสดงตำแหน่งตาม center
     padding: 10,
-    margin: 20,
-    height:250
-  
-
+    margin: 10,
   },
+
   conta: {
     fontSize: 10,
     fontWeight: 'bold',
     margin: 1,
     left: 40,
-    top:-30
+    top: -20,
+  },
+  cont: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    margin: 1,
+    left: 40,
+    top: -10,
   },
   iconContainer: {
     flexDirection: 'row',
@@ -175,6 +308,5 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 2,
-   
   },
 });

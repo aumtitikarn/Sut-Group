@@ -21,10 +21,10 @@ export default function MyComponent() {
     <Appbar.Header style={{backgroundColor:'#FFBD59', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
       <Appbar.Content title=" Marketplace" style={{
-      marginLeft: 50, textAlign: 'center'}} />
-      <Appbar.Action icon="bell" onPress={() => {}} />
+      marginRight: 50, textAlign: 'center'}} />
+      <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
       
-    </Appbar.Header>
+    </Appbar.Header> 
     <Searchbar style={styles.search} placeholder="Search" />
     <View style={{ top: 20,
       marginRight: 10,

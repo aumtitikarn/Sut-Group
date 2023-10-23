@@ -11,7 +11,7 @@ const Home = ({ navigation }) => {
         <MaterialCommunityIcons 
           name="arrow-left-thick"  
           size={50} style={{ margin: 10 }} 
-          onPress={() => navigation.navigate('Home')} 
+          onPress={() => navigation.goBack()} 
         />
         <View style={{left:80, top:-45}}>
         <Text style={{ fontWeight: 'bold'}}>Notification</Text>

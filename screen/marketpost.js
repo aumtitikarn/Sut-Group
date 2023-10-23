@@ -20,6 +20,7 @@ export default function Marketpost() {
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
+  const [phon, setPhon] = useState('');
   const [faculty,setFaculty] = useState('');
   const [username,setUsername]= useState('');
   const [photo, setPhoto] = useState(null);
@@ -68,6 +69,7 @@ const handleMarket = async () => {
         name: dname, // ชื่อสินค้า
         cate: tname, // ประเภทสินค้าที่ผู้ใช้เลือก
         prict: pri, // ราคาสินค้า
+        phon:phon,
         timestamp: serverTimestamp(),
         photo: photo,
         userUid: userUid,
@@ -205,6 +207,22 @@ const handleMarket = async () => {
         multiline={true}
         value={pri}
         onChangeText={setPri}
+      />
+    </View>
+    <View
+   style={{
+     top: -30,
+      left: 100, 
+       margin: 5
+    }}>
+      <TextInput
+        style={styles.input}
+        placeholder="ช่องทางการติดต่อ"
+        placeholderTextColor="Gray"
+        textAlignVertical="top" // Align text to the top
+        multiline={true}
+        value={phon}
+        onChangeText={setPhon}
       />
     </View>
     {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}

@@ -11,7 +11,7 @@ import {
     TouchableOpacity,camera
 } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
-import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch } from 'firebase/firestore'; 
+import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch,updatedData } from 'firebase/firestore'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
@@ -20,133 +20,94 @@ import SelectDropdown from 'react-native-select-dropdown';
 
 
 const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
-const EditPostShop = ({ navigation }) => {
-    const [userData, setUserData] = useState({});
-    const facultyTextRef = useRef(null);
-    const [newData, setNewData] = useState({
-      name: '', // Default value for name
-      prict: '', // Default value for prict
-      cate: '', // Default value for cate
-    });
-    
-    const [uid, setUid] = useState('');
-    const [photo, setPhoto] = useState('');
-    
-    const storage = FIREBASE_STORAGE;
-    const db = FIRESTORE_DB;
-    const auth = FIREBASE_AUTH;
-    const fetchUserData = async () => {
-      const user = FIREBASE_AUTH.currentUser;
-    
-      if (user) {
-        const userid = user.uid;
-        const userDocRef = doc(FIRESTORE_DB, 'users', userid);
-    
-        try {
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserData(userData);
-    
-            // ตรงนี้คุณควรเรียก setProfileImg และ setBigImg โดยใช้ข้อมูลจาก Firestore
-           
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error.message);
-        }
-    
-      }
-    };
-    
-const openlib = async () => {
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [10, 10],
-    quality: 1,
+const EditPostShop = ({ route, navigation }) => {
+  const [userData, setUserData] = useState({});
+  const [shop,setShop]=useState({});
+  const [newData, setNewData] = useState({
+      name: '',
+      prict: '',
+      cate: '',
+      photo: '', // สร้าง key สำหรับเก็บ URL ของรูปภาพ
   });
+  const db = FIRESTORE_DB;
+  const [photo, setPhoto] = useState('');
+  const [shopData, setShopData] = useState(null); // สร้าง state ใหม่เพื่อเก็บข้อมูลโพสต์
 
-  console.log(result);
-
-  if (!result.canceled) {
-    setPhoto(result.assets[0].uri);
-   
-   
-  }
-};
-const fetchExistingData = async () => {
-  try {
-      const userUid = auth.currentUser.uid;
-      const userDocRef = doc(db, 'PostShop', userUid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-          const existingData = userDoc.data();
-          setNewData({
-              name: existingData.name || '',
-              prict: existingData.prict || '',
-              cate: existingData.cate || '',
-          });
-      }
-  } catch (error) {
-      console.error('Error fetching existing data:', error.message);
-  }
-};
-useEffect(() => {
-  fetchUserData();
-  fetchExistingData();
-}, []);
+  const { shopId } = route.params;
+  // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ postId
   
-const handleSaveChanges = async () => {
-  try {
-    const userUid = auth.currentUser.uid;
-    const userDocRef = doc(db, 'PostShop', userUid);
-
-    // สร้างอ็อบเจกต์ที่ใช้เพื่อเก็บข้อมูลที่ควรอัปเดต
-    const updatedUserData = {};
-
-    // ตรวจสอบและเพิ่มข้อมูลเฉพาะเมื่อมีค่าใน newData
-    if (newData.name) {
-      updatedUserData.name = newData.name;
+  const fetchShopData = async () => {
+    const shopDocRef = doc(db, 'postShop', shopId);
+    
+    try {
+      const shopDoc = await getDoc(shopDocRef);
+      if (shopDoc.exists()) {
+        const shop = shopDoc.data();
+        setNewData({
+          name: shop.name || '',
+          prict: shop.prict || '',
+          cate: shop.cate || '',
+          photo: shop.photo || '', // ตั้งค่า URL ของรูปภาพ (ถ้ามี)
+        });
+      } else {
+        console.log('ไม่พบโพสต์ที่ต้องการแก้ไข');
+      }
+    } catch (error) {
+      console.error('Error fetching post data:', error.message);
     }
-    if (newData.prict) {
-      updatedUserData.prict = newData.prict;
-    }
-    if (newData.cate) {
-      updatedUserData.cate = newData.cate;
-    }
-    if (newData.photo) {
-      updatedUserData.photo = newData.photo;
-    }
+  };
+  
 
-    // ตรวจสอบว่ามีข้อมูลที่ควรอัปเดตหรือไม่
-    if (Object.keys(updatedUserData).length > 0) {
-      // อัปเดตข้อมูลผู้ใช้
-      await updateDoc(userDocRef, updatedUserData);
+  // ใช้ useEffect เพื่อดึงข้อมูลโพสต์เมื่อ component โหลด
+  useEffect(() => {
+      fetchShopData();
+  }, []);
 
-      // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
-      const userPostShopCollectionRef = collection(db, 'allpostShop');
-      const userPostShopQuery = query(userPostShopCollectionRef, where('userUid', '==', userUid));
+  // ฟังก์ชันเมื่อกดบันทึกการแก้ไข
+  const handleSaveChanges = async () => {
+      const shopDocRef = doc(db, 'postShop', shopId);
 
-      const userPostShopSnapshot = await getDocs(userPostShopQuery);
-      const batch = writeBatch(db);
+      try {
+          // สร้างอ็อบเจกต์ที่ใช้เพื่อเก็บข้อมูลที่ควรอัปเดต
+          const updatedData = { ...newData };
 
-      userPostShopSnapshot.forEach((doc) => {
-        batch.update(doc.ref, updatedUserData);
+          // ตรวจสอบและเพิ่มข้อมูลเฉพาะเมื่อมีค่าใน newData
+          if (newData.name) {
+              updatedData.name = newData.name;
+          }
+          if (newData.prict) {
+              updatedData.prict = newData.prict;
+          }
+          if (newData.cate) {
+              updatedData.cate = newData.cate;
+          }
+          if (newData.photo) {
+              updatedData.photo = newData.photo;
+          }
+
+          // อัปเดตข้อมูลใน Firestore
+          await updateDoc(shopDocRef, updatedData);
+          alert('บันทึกข้อมูลแล้ว');
+          navigation.navigate('Market'); // หลังจากบันทึกเสร็จให้กลับไปยังหน้า Market
+      } catch (error) {
+          console.error('Error updating post data:', error.message);
+      }
+  };
+
+  // ฟังก์ชันเมื่อเลือกรูปภาพจากไลบรารี
+  const openLibrary = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [10, 10],
+          quality: 1,
       });
 
-      await batch.commit();
-
-      alert('Data updated');
-      navigation.navigate('Market');
-    } else {
-      console.error('No valid data to update');
-    }
-  } catch (error) {
-    console.error('Error updating user data:', error.message);
-  }
-};
-   
+      if (!result.cancelled && result.uri) {
+          setPhoto(result.uri);
+          setNewData({ ...newData, photo: result.uri }); // ตั้งค่า URL ของรูปภาพให้กับ newData
+      }
+  };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -166,37 +127,36 @@ const handleSaveChanges = async () => {
         </View>
         <View style={{ top: -30, left: 100, margin: 5 }}>
             <SelectDropdown
-                accessibilityLabel="Choose Service"
+               
                 placeholder="ประเภทสินค้า"
-                defaultButtonText="ประเภทสินค้า"
                 data={type}
                 onChangeText={(cate) => setNewData({ ...newData, cate: cate })}
-                defaultValue={newData.cate} // Set the defaultValue prop to display the data
+                value={newData.cate}
             />
         </View>
         <View style={{ top: -30, left: 100, margin: 5 }}>
-            <TextInput
+        <TextInput
                 style={styles.input}
                 placeholder="ชื่อสินค้า"
                 onChangeText={(name) => setNewData({ ...newData, name: name })}
-                value={newData.name} // Set the value prop to display the data
+                value={newData.name}
             />
         </View>
         <View style={{ top: -30, left: 100, margin: 5 }}>
-            <TextInput
+        <TextInput
                 style={styles.input}
-                placeholder={`${userData.prict || ''}`}
+                placeholder= "ราคา" 
                 onChangeText={(prict) => setNewData({ ...newData, prict: prict })}
-                value={newData.prict} // Set the value prop to display the data
+                value={newData.prict}
             />
+
         </View>
-        
-        {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
-        
-        <View style={styles.iconContainer}>
-        <MaterialCommunityIcons name="camera" size={20}   color="#000" style={styles.icon} onPress={camera}/>
-        <MaterialCommunityIcons name="image" size={20}   color="#000" style={styles.icon} onPress={openlib}/>
-        </View>
+        <View style={{left:80}}>
+        <TouchableOpacity style={styles.buttonYellow} onPress={openLibrary}>
+                <Text style={styles.buttonText}>เลือกรูปภาพ</Text>
+            </TouchableOpacity>
+            </View>
+            {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100 }} />}
         <View style={{
           top: -40,
           left: 275
@@ -239,7 +199,7 @@ const handleSaveChanges = async () => {
         borderRadius: 5,
         borderWidth: 1,
         backgroundColor: '#FFBD59',
-        width: 70,
+        width: 100,
         padding:5,
         justifyContent: 'center', // Center vertically
         alignItems: 'center', // Center horizontally

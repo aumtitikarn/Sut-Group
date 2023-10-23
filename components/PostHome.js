@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView
+  Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, Alert
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
@@ -8,7 +8,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
-import { Alert, Space } from 'antd';
 
 const Home = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -17,6 +16,7 @@ const Home = ({ navigation }) => {
   const auth = FIREBASE_AUTH;
   const [isLiked, setIsLiked] = useState([]);
   const [likeCount, setLikeCount] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
@@ -51,6 +51,7 @@ const Home = ({ navigation }) => {
     };
   }, []);
 
+ 
   const updateLike = async (post) => {
     try {
       const userUid = auth.currentUser.uid;
@@ -180,6 +181,10 @@ const sharePost = async (userId, postId, postData) => {
       ...prevIsShared,
       [postId]: true,
     }));
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000); // ตรวจสอบว่า setShowAlert(false) ถูกเรียกที่ต้องการ
   } catch (error) {
     console.error('เกิดข้อผิดพลาดในการบันทึกโพสต์: ', error);
   }
@@ -194,16 +199,21 @@ const cancelSharePost = async (userId, postId) => {
     await deleteDoc(postHomeRef);
 
     console.log('ลบโพสต์สำเร็จ');
-
+  
     // อัปเดต isShared เมื่อยกเลิกการแชร์โพสต์สำเร็จ
     setIsShared((prevIsShared) => ({
       ...prevIsShared,
       [postId]: false,
     }));
+    setShowAlert(true);
+    setTimeout(() => {
+      setIsShared(false);
+    }, 3000); // ตรวจสอบว่า setShowAlert(false) ถูกเรียกที่ต้องการ
   } catch (error) {
     console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
   }
 };
+
 
 
 const handleSharePost = (post) => {
@@ -217,6 +227,10 @@ const handleSharePost = (post) => {
   } else {
     // ถ้าโพสต์ยังไม่ถูกแชร์ให้ทำการแชร์
     sharePost(userId, postId, post);
+    setShowAlert(true); // แสดง Alert
+    setTimeout(() => {
+      setIsShared(false); // ปิด Alert หลังจาก 2 วินาที
+    }, 2000);
   }
 };
   
@@ -224,6 +238,13 @@ return (
   <SafeAreaView style={styles.container}>
     <ScrollView>
       {posts.map((post) => (
+        <View key={post.id}>
+        {isShared[post.id] && (
+          <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 30, height:50}}>
+            <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
+            <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
+          </View>
+        )}
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
@@ -266,6 +287,7 @@ return (
   />
 </TouchableOpacity>
           </View>
+        </View>
         </View>
       ))}
     </ScrollView>

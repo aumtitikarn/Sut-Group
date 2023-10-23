@@ -179,14 +179,14 @@ const Share = () => {
     {posts.map((post) => (
       <View key={post.id} style={styles.postContainer}>
         <View style={{ top: -70, left: 55, width:230}}>
-        <Avatar.Icon icon="account-circle" size={50} style={{ top: 70, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+        <Avatar.Icon icon="account-circle" size={50} style={{ top: 55, left: -70 , backgroundColor:'orange'}} color={'#FFF'} />
           <Image
               source={{ uri: post.profileImg }}
-              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 70 }}
+              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -70, top: 55 }}
             />
-          <Text style={{ top: 15, fontWeight: 'bold' }}>{post.username}</Text>
+          <Text style={{ top: 10, fontWeight: 'bold', left: -5 }}>{post.username}</Text>
           <Text style={styles.userData}>#{post.faculty}</Text>
-          <Text style={{ color: '#777267', top: 25 }}>{formatPostTime(post.timestamp)}</Text>
+          <Text style={{ color: '#777267', top: 15, left: -5 }}>{formatPostTime(post.timestamp)}</Text>
         </View>
         <View style={{ top: -50, left: 30 }}>
           <Text style={styles.postText}>{post.text}</Text>
@@ -245,7 +245,7 @@ postImage: {
 postText: {
   fontSize: 25,
   left: -10,
-  marginTop: 30
+  marginTop: 20
 },
 iconContainer: {
   flexDirection: 'row',
@@ -255,7 +255,8 @@ iconContainer: {
   left: 15
 },
 userData: {
-  top: 20,
+  top: 10,
+  left: -5
 },
 dropdown: {
   position: 'absolute',

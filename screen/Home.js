@@ -17,7 +17,7 @@ const MyComponent = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-        <Appbar.Header style={{ backgroundColor: '#FFBD59'  , height: 40, top:-15}}>
+        <Appbar.Header style={{ backgroundColor: '#FFBD59'  , height: 30, top:-15}}>
           <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
           <Appbar.Content title="Home" style={{ marginLeft : 75 }} />
           <Appbar.Action

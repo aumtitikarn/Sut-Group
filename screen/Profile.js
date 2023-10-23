@@ -6,14 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import { signOut } from "firebase/auth";
 import PostProfile from '../components/postProfile'; // Use the imported component
 import UserData from '../components/userData';
+import Share from '../components/Share.js';
 
 const market = () => (
   <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
 );
 
-const share = () => (
-  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
-);
 
 export default function TabViewExample() {
   const layout = useWindowDimensions();
@@ -45,7 +43,7 @@ export default function TabViewExample() {
   const renderScene = SceneMap({
     postProfile: PostProfile, // Use lowercase 'postProfile' here
     market: market,
-    share: share
+    share: Share
   });
 
   const renderTabBar = (props) => (

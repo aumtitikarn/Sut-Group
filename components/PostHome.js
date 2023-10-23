@@ -3,7 +3,7 @@ import {
   Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
@@ -11,6 +11,7 @@ import { Avatar } from 'react-native-paper';
 
 const Home = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
+  const [isShared, setIsShared] = useState([]);
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [isLiked, setIsLiked] = useState([]);
@@ -23,18 +24,26 @@ const Home = ({ navigation }) => {
       const updatedPosts = [];
       const updatedIsLiked = {};
       const updatedLikeCount = {};
+      const updatedIsShared = {};
 
       snapshot.forEach((doc) => {
         const post = { id: doc.id, ...doc.data() };
         updatedPosts.push(post);
         updatedIsLiked[post.id] = false;
         updatedLikeCount[post.id] = post.like;
+  
+        // ตรวจสอบว่าโพสต์ถูกแชร์ไปหรือยังและกำหนดค่าให้กับ isShared
+        const isSharedByUser = post.sharedBy && post.sharedBy.includes(auth.currentUser.uid);
+        updatedIsShared[post.id] = isSharedByUser;
       });
+      console.log(updatedIsShared); // เพิ่มบรรทัดนี้เพื่อตรวจสอบค่า
 
       setPosts(updatedPosts);
       setIsLiked(updatedIsLiked);
       setLikeCount(updatedLikeCount);
+      setIsShared(updatedIsShared); // ตั้งค่า isShared ที่คำนวณแล้ว
     });
+  
 
     return () => {
       unsubscribe();
@@ -151,6 +160,64 @@ const Home = ({ navigation }) => {
     return 'ไม่มีข้อมูลวันที่';
   }
 }
+
+const sharePost = async (userId, postId, postData) => {
+  const userDocRef = doc(db, 'users', userId);
+  const shareCollectionRef = collection(userDocRef, 'share');
+  const postDocRef = doc(shareCollectionRef, postId);
+
+  try {
+    // เพิ่มฟิลด์ timeshare ที่เก็บเวลาและวันที่ของการแชร์
+    const currentTime = new Date();
+    postData.timeshare = currentTime;
+
+    await setDoc(postDocRef, postData);
+    console.log('บันทึกโพสต์ลงในคอลเลกชัน "share" เรียบร้อยแล้ว');
+
+    // อัปเดต isShared เมื่อแชร์โพสต์สำเร็จ
+    setIsShared((prevIsShared) => ({
+      ...prevIsShared,
+      [postId]: true,
+    }));
+  } catch (error) {
+    console.error('เกิดข้อผิดพลาดในการบันทึกโพสต์: ', error);
+  }
+};
+
+const cancelSharePost = async (userId, postId) => {
+  try {
+    const userUid = auth.currentUser.uid;
+
+    // 1. ลบโพสต์จาก "postHome" collection ใน Firestore
+    const postHomeRef = doc(db, 'users', userUid, 'share', postId);
+    await deleteDoc(postHomeRef);
+
+    console.log('ลบโพสต์สำเร็จ');
+
+    // อัปเดต isShared เมื่อยกเลิกการแชร์โพสต์สำเร็จ
+    setIsShared((prevIsShared) => ({
+      ...prevIsShared,
+      [postId]: false,
+    }));
+  } catch (error) {
+    console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
+  }
+};
+
+
+const handleSharePost = (post) => {
+  const userId = auth.currentUser.uid;
+  const postId = post.id;
+  const isAlreadyShared = isShared[post.id]; // ตรวจสอบว่าโพสต์ถูกแชร์ไปแล้วหรือยัง
+  console.log(isAlreadyShared);
+  if (isAlreadyShared) {
+    // ถ้าโพสต์ถูกแชร์ไปแล้วให้ยกเลิกการแชร์
+    cancelSharePost(userId, postId);
+  } else {
+    // ถ้าโพสต์ยังไม่ถูกแชร์ให้ทำการแชร์
+    sharePost(userId, postId, post);
+  }
+};
   
 return (
   <SafeAreaView style={styles.container}>
@@ -188,9 +255,15 @@ return (
             <TouchableOpacity>
               <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top:-3 }} />
             </TouchableOpacity>
-            <TouchableOpacity>
-            <Icon name="share" size={25} color="#000" style={{ marginLeft: 60, top:-2 }} />
-            </TouchableOpacity>
+            <TouchableOpacity
+  onPress={() => handleSharePost(post)}
+  style={{ marginLeft: 60, top: -2 }}>
+  <Icon
+    name={isShared[post.id] ? 'share' : 'share'} 
+    size={25}
+    color={isShared[post.id] ? 'orange' : '#000'}   
+  />
+</TouchableOpacity>
           </View>
         </View>
       ))}

@@ -10,7 +10,7 @@ import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
-const postProfile = () => {
+const PostProfile = () => {
   const [posts, setPosts] = useState([]);
   const navigation = useNavigation();
   const db = FIRESTORE_DB;
@@ -182,6 +182,7 @@ const postProfile = () => {
       console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
     }
   };
+
   
   //-------------------------------------------------------------------------------------//
 
@@ -298,4 +299,4 @@ dropdown: {
 },
 });
   
-export default postProfile;
+export default PostProfile;

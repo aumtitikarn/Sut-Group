@@ -25,7 +25,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { FIREBASE_AUTH } from '../firestore';
 
-const createpost = ({ navigation }) => {
+const Createpost = ({ navigation }) => {
   const [feed, setFeed] = useState('');
   const [like, setLike] = useState('');
   const [comment, setComment] = useState('');
@@ -241,4 +241,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center', 
   },
 });
-export default createpost;
+export default Createpost;

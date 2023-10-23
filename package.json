@@ -30,6 +30,7 @@
     "react-native-image-picker": "^7.0.0",
     "react-native-paper": "^5.10.6",
     "react-native-select-dropdown": "^3.4.0",
+    "react-native-tab-view": "^3.5.2",
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {

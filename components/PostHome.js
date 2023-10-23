@@ -223,7 +223,7 @@ postImage: {
 postText: {
   fontSize: 25,
   left: -10,
-  top: 15
+  top: 15,
 },
 iconContainer: {
   flexDirection: 'row',

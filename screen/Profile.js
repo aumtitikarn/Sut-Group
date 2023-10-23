@@ -3,9 +3,9 @@ import { Text, TouchableOpacity, View, StyleSheet, Image, Button, SafeAreaView, 
 import { FIREBASE_AUTH } from '../firestore';
 import { useNavigation } from '@react-navigation/native';
 import { signOut } from "firebase/auth";
-import  Createpost  from './createpost';
 import PostProfile from '../components/postProfile';
 import UserData from '../components/userData';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
   const Profile = () => {
   const navigation = useNavigation();

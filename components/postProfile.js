@@ -205,7 +205,7 @@ const postProfile = () => {
   </View>
 )}
         <View style={{ top: -70, left: 55, width:230}}>
-          <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 }} />
+        <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
           <Image
               source={{ uri: post.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
@@ -255,12 +255,12 @@ postContainer: {
   borderWidth: 1,
   borderColor: '#000',
   backgroundColor: '#ffebce',
-  margin: 20,
+  margin: 15,
   borderRadius: 50,
   overflow: 'hidden',
   padding: 20,
-
 },
+
 postImage: {
   width: 200,
   height: 200,

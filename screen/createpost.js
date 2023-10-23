@@ -22,9 +22,10 @@ import { addDoc,
     } 
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { FIREBASE_AUTH } from '../firestore';
 
-const Home = ({ navigation }) => {
+const createpost = ({ navigation }) => {
   const [feed, setFeed] = useState('');
   const [like, setLike] = useState('');
   const [comment, setComment] = useState('');
@@ -32,6 +33,7 @@ const Home = ({ navigation }) => {
   const [photo, setPhoto] = useState(null);
   const [username, setUsername] = useState(''); // เก็บค่า name ของผู้ใช้ที่เข้าสู่ระบบ
   const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
+  const [profileImg, setProfileImg] = useState(''); 
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
@@ -49,6 +51,7 @@ const Home = ({ navigation }) => {
             console.log('User Data:', userData);
             setUsername(userData.username);
             setFaculty(userData.faculty);
+            setProfileImg(userData.profileImg);
             console.log('Name:', username);
         console.log('Faculty:', faculty);
           } else {
@@ -66,69 +69,87 @@ const Home = ({ navigation }) => {
 
   const handlePost = async () => {
     try {
-        const userUid = auth.currentUser?.uid;
-        if (userUid) {
-            // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
-            const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
-
-            const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
-            const post = {
-                username: username,
-                faculty: faculty,
-                text: feed,
-                timestamp: serverTimestamp(),
-                photo: photo,
-                userUid: userUid,
-                postid: id,
-                like: 0
-            };
-
-            // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
-            const allpostHomeCollectionRef = collection(db, 'allpostHome');
-
-            // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
-            await setDoc(doc(allpostHomeCollectionRef, id), post);
-            await setDoc(doc(postHomeCollectionRef, id), post);
-
-            navigation.navigate('Home');
-            console.log('Document written with ID: ', id);
-            setFeed('');
-            setPhoto(null);
+      const userUid = auth.currentUser?.uid;
+      if (userUid) {
+        // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
+        const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
+  
+        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome');
+  
+        // สร้างอ็อบเจกต์ข้อมูลโพสต์
+        const post = {
+          username: username,
+          faculty: faculty,
+          text: feed,
+          timestamp: serverTimestamp(),
+          userUid: userUid,
+          postid: id,
+          like: 0,
+          profileImg: profileImg
+        };
+  
+        if (photo) {
+          // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
+          const fileName = `${id}.jpg`;
+        
+          // อัปโหลดรูปภาพไปยัง Firebase Storage
+          const storageRef = ref(storage, 'photo_post/' + fileName); // ต้องใช้ ref() แทน storage.ref()
+        
+          const response = await fetch(photo);
+          const blob = await response.blob();
+        
+          await uploadBytes(storageRef, blob);
+        
+          // อัปเดตค่า 'photo' ด้วย URI ที่อ้างอิงจาก Firebase Storage
+          const downloadURL = await getDownloadURL(storageRef);
+          post.photo = downloadURL;
         }
+  
+        // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
+        const allpostHomeCollectionRef = collection(db, 'allpostHome');
+  
+        // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
+        await setDoc(doc(allpostHomeCollectionRef, id), post);
+        await setDoc(doc(postHomeCollectionRef, id), post);
+  
+        navigation.navigate('Home');
+        console.log('Document written with ID: ', id);
+        setFeed('');
+        setPhoto(null);
+      }
     } catch (error) {
-        console.error('Error adding document: ', error);
+      console.error('Error adding document: ', error);
     }
+  };
+ // เข้าถึงกล้อง
+const camera = async () => {
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
 };
-  // เข้าถึงกล้อง
 
-  const camera = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [10, 10],
-      quality: 1,
-    });
+// เข้าถึงคลังรูปภาพ
+const openlib = async () => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
 
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-    }
-  };
+  console.log(result);
 
-  // เข้าถึงคลังรูปภาพ
-  const openlib = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [10, 10],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-    }
-  };
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
  
 
   return (
@@ -220,4 +241,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center', 
   },
 });
-export default Home;
+export default createpost;

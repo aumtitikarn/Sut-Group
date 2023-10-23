@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
+import { Alert, Space } from 'antd';
 
 const Home = ({ navigation }) => {
   const [posts, setPosts] = useState([]);

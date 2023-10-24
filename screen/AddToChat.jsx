@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { doc, setDoc } from "firebase/firestore";
-import { firestoreDB } from "../config/firebase.config";
+import { firestoreDB } from "firestore";
 
 const AddToChat = () => {
   const user = useSelector((state) => state.user.user);

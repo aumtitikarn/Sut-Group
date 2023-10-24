@@ -10,7 +10,7 @@ import {
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { firestoreDB } from "../config/firebase.config";
+import { firestoreDB } from "firestore";
 import { StyleSheet, Platform, StatusBar } from "react-native";
 
 const ChatHomeScreen = () => {

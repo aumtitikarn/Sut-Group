@@ -4,7 +4,7 @@ import { Entypo, FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-i
 import { useNavigation } from "@react-navigation/native";
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { firestoreDB } from "../config/firebase.config";
+import { firestoreDB } from "firestore";
 import { StatusBar } from "expo-status-bar";
 
 const ChatScreen = ({ route }) => {

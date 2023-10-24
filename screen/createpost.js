@@ -18,7 +18,8 @@ import { addDoc,
     serverTimestamp,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    onSnapshot
     } 
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
@@ -34,9 +35,40 @@ const Createpost = ({ navigation }) => {
   const [username, setUsername] = useState(''); // เก็บค่า name ของผู้ใช้ที่เข้าสู่ระบบ
   const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
   const [profileImg, setProfileImg] = useState(''); 
+  const [userData, setUserData] = useState({});
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
+
+    const fetchUsers = async () => {
+      try {
+        const userUid = auth.currentUser.uid;
+        const userCollectionRef = collection(db, 'users');
+        const userDocRef = doc(userCollectionRef, userUid);
+
+        // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
+        const unsubscribe = onSnapshot(userDocRef, (doc) => {
+          if (doc.exists()) {
+            const userData = doc.data();
+            setUserData(userData);
+          }
+        });
+
+        // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
+        return unsubscribe;
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
+
+    useEffect(() => {
+      const unsubscribe = fetchUsers();
+      return () => {
+        if (typeof unsubscribe === 'function') {
+          unsubscribe();
+        }
+      };
+    }, []);
 
   useEffect(() => {
     const userUid = auth.currentUser?.uid;
@@ -166,7 +198,11 @@ const openlib = async () => {
       top: 10,
       left: 20, 
     }}>
-    <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'orange'}} color={'#FFF'} />
+    <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'orange',}} color={'#FFF'} />
+    <Image
+          source={{ uri: userData.profileImg }}
+          style={{ width: 80, height: 80,  borderRadius: 50, position: 'absolute' }}
+        />
     </View>
      <View
    style={{

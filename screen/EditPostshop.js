@@ -1,209 +1,125 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Text,
-    StyleSheet,
-    View,
-    Image, 
-    ScrollView, 
-    SafeAreaView, 
-    StatusBar,
-    TextInput,
-    TouchableOpacity,camera
-} from 'react-native';
-import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
-import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch,updatedData } from 'firebase/firestore'; 
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, StyleSheet,Text,Image } from 'react-native';
+import { doc, updateDoc,getDownloadURL, ref, uploadString } from 'firebase/firestore';
+import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { Avatar } from 'react-native-paper';
-import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import SelectDropdown from 'react-native-select-dropdown';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 
 const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
-const EditPostShop = ({ route, navigation }) => {
-  const [userData, setUserData] = useState({});
-  const [shop,setShop]=useState({});
-  const [newData, setNewData] = useState({
-      name: '',
-      prict: '',
-      cate: '',
-      photo: '', // สร้าง key สำหรับเก็บ URL ของรูปภาพ
-  });
-  const db = FIRESTORE_DB;
-  const [photo, setPhoto] = useState('');
-  const [shopData, setShopData] = useState(null); // สร้าง state ใหม่เพื่อเก็บข้อมูลโพสต์
+export default function EditPostShop({ route, navigation }) {
+  const { shopId, initialData } = route.params;
+  const [newShopData, setNewShopData] = useState(initialData);
+  const [photo, setPhoto] = useState(null);
 
-  const { shopId } = route.params;
-  // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ postId
-  
-  const fetchShopData = async () => {
-    const shopDocRef = doc(db, 'postShop', shopId);
+  const handleUpdatePost = async () => {
+    const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
+    console.log(newShopData);
     
     try {
-      const shopDoc = await getDoc(shopDocRef);
-      if (shopDoc.exists()) {
-        const shop = shopDoc.data();
-        setNewData({
-          name: shop.name || '',
-          prict: shop.prict || '',
-          cate: shop.cate || '',
-          photo: shop.photo || '', // ตั้งค่า URL ของรูปภาพ (ถ้ามี)
-        });
-      } else {
-        console.log('ไม่พบโพสต์ที่ต้องการแก้ไข');
-      }
+      await updateDoc(shopRef, newShopData);
+      console.log('โพสต์ถูกอัปเดตเรียบร้อยแล้ว');
+      navigation.goBack(); // หลังจากแก้ไขสำเร็จให้กลับไปที่หน้าก่อนหน้านี้
     } catch (error) {
-      console.error('Error fetching post data:', error.message);
+      console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
+    if (newShopData.photo) {
+      const photoUri = newShopData.photo;
+      const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
+      
+      // อัปโหลดรูปภาพไปยัง Firebase Storage
+      await uploadString(storageRef, photoUri, 'data_url');
+      
+      // รับ URL ของรูปภาพที่อัปโหลด
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      // อัปเดตข้อมูลโพสต์รวมถึง URL ของรูปภาพ
+      await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+    } else {
+      // ถ้าไม่มีรูปภาพถูกเลือก, อัปเดตโพสต์โดยไม่รวม URL รูปภาพ
+      await updateDoc(shopRef, newShopData);
+    }
+  
+  };
+  const openImagePicker = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (!response.didCancel) {
+        // รับ URL ของรูปภาพจาก response.uri
+        const photoUri = response.uri;
+        setNewShopData({ ...newShopData, photo: photoUri });
+      }
+    });
   };
   
 
-  // ใช้ useEffect เพื่อดึงข้อมูลโพสต์เมื่อ component โหลด
-  useEffect(() => {
-      fetchShopData();
-  }, []);
+  return (
+    <View style={styles.container}>
+      <View>
+    <MaterialCommunityIcons 
+      name="arrow-left-thick"  
+      size={50} style={{margin:10, top: 20}} 
+     onPress={() => navigation.goBack()}
+      /> 
+     
+    </View>
+    <Text style={{textAlign:'center',top:-30,fontSize:20}}>แก้ไขโพสต์</Text>
+    <View  style={{top:100}}>
+      <View  style={{ top: -10, margin: 10 }} >
+    <SelectDropdown
+  data={type.map(item => ({ value: item, label: item }))}
+ 
+  onSelect={(selectedItem) => {
+    setNewShopData({ ...newShopData, cate: selectedItem.value });
+  }}
+  buttonTextAfterSelection={(selectedItem) => {
+    return selectedItem.label;
+  }}
+  rowTextForSelection={(item) => {
+    return item.label;
+  }}
+  placeholder="ประเภท"
+/>
+</View>
+      <TextInput
+        style={styles.input}
+        placeholder="ชื่อสินค้า"
+        value={newShopData.name}
+        onChangeText={(text) => setNewShopData({ ...newShopData, name: text })}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="ราคา"
+        value={newShopData.prict}
+        onChangeText={(text) => setNewShopData({ ...newShopData, prict: text })}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="ช่องทางติดต่อ"
+        value={newShopData.phon}
+        onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
+      />
+      {/* เพิ่มฟิลด์อื่น ๆ ที่คุณต้องการให้ผู้ใช้แก้ไข */}
+      {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
+      <Button title="เลือกรูปภาพ" onPress={openImagePicker} />
 
-  // ฟังก์ชันเมื่อกดบันทึกการแก้ไข
-  const handleSaveChanges = async () => {
-      const shopDocRef = doc(db, 'postShop', shopId);
+      <Button title="บันทึกการแก้ไข" onPress={handleUpdatePost} />
+      </View>
+    </View>
+  );
+}
 
-      try {
-          // สร้างอ็อบเจกต์ที่ใช้เพื่อเก็บข้อมูลที่ควรอัปเดต
-          const updatedData = { ...newData };
-
-          // ตรวจสอบและเพิ่มข้อมูลเฉพาะเมื่อมีค่าใน newData
-          if (newData.name) {
-              updatedData.name = newData.name;
-          }
-          if (newData.prict) {
-              updatedData.prict = newData.prict;
-          }
-          if (newData.cate) {
-              updatedData.cate = newData.cate;
-          }
-          if (newData.photo) {
-              updatedData.photo = newData.photo;
-          }
-
-          // อัปเดตข้อมูลใน Firestore
-          await updateDoc(shopDocRef, updatedData);
-          alert('บันทึกข้อมูลแล้ว');
-          navigation.navigate('Market'); // หลังจากบันทึกเสร็จให้กลับไปยังหน้า Market
-      } catch (error) {
-          console.error('Error updating post data:', error.message);
-      }
-  };
-
-  // ฟังก์ชันเมื่อเลือกรูปภาพจากไลบรารี
-  const openLibrary = async () => {
-      let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [10, 10],
-          quality: 1,
-      });
-
-      if (!result.cancelled && result.uri) {
-          setPhoto(result.uri);
-          setNewData({ ...newData, photo: result.uri }); // ตั้งค่า URL ของรูปภาพให้กับ newData
-      }
-  };
-
-    return (
-        <SafeAreaView style={styles.container}>
-        <View>
-        <MaterialCommunityIcons 
-          name="arrow-left-thick"  
-          size={50} style={{margin:10, top: 20}} 
-         onPress={() => navigation.goBack()}
-          />
-        </View>
-          <View
-       style={{
-          top: 20,
-          left: 20, 
-        }}>
-        <Avatar.Icon icon="account-circle" size={50} />
-        </View>
-        <View style={{ top: -30, left: 100, margin: 5 }}>
-            <SelectDropdown
-               
-                placeholder="ประเภทสินค้า"
-                data={type}
-                onChangeText={(cate) => setNewData({ ...newData, cate: cate })}
-                value={newData.cate}
-            />
-        </View>
-        <View style={{ top: -30, left: 100, margin: 5 }}>
-        <TextInput
-                style={styles.input}
-                placeholder="ชื่อสินค้า"
-                onChangeText={(name) => setNewData({ ...newData, name: name })}
-                value={newData.name}
-            />
-        </View>
-        <View style={{ top: -30, left: 100, margin: 5 }}>
-        <TextInput
-                style={styles.input}
-                placeholder= "ราคา" 
-                onChangeText={(prict) => setNewData({ ...newData, prict: prict })}
-                value={newData.prict}
-            />
-
-        </View>
-        <View style={{left:80}}>
-        <TouchableOpacity style={styles.buttonYellow} onPress={openLibrary}>
-                <Text style={styles.buttonText}>เลือกรูปภาพ</Text>
-            </TouchableOpacity>
-            </View>
-            {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100 }} />}
-        <View style={{
-          top: -40,
-          left: 275
-        }}>
-        
-        <TouchableOpacity style={styles.buttonYellow}>
-    
-          <Text style={styles.buttonText} onPress={handleSaveChanges} >บันทึก</Text>
-    
-        </TouchableOpacity>
-        </View>
-        </SafeAreaView>
-      );
-    };
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        backgroundColor: '#FFF6DE',
-      },
-       input: {
-        height: 50,
-        width: 275,
-        borderWidth: 1,
-        borderRadius:10,
-        padding: 10,
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-      },
-      iconContainer: {
-        flexDirection: 'row', // จัดเรียงแนวนอน
-        alignItems: 'center', // จัดวางไอคอนให้ตรงกลาง
-        top:-20,
-        marginLeft: 105
-      },
-      icon: {
-        marginRight: 10, // ระยะห่างระหว่างไอคอน
-      },
-       buttonYellow: {
-        borderRadius: 5,
-        borderWidth: 1,
-        backgroundColor: '#FFBD59',
-        width: 100,
-        padding:5,
-        justifyContent: 'center', // Center vertically
-        alignItems: 'center', // Center horizontally
-        margin: 5
-      },
-    });
-    export default EditPostShop;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor:'#fff5e2'
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+});

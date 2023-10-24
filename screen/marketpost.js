@@ -9,6 +9,7 @@ import { addDoc,
   serverTimestamp,doc,
   getDoc,setDoc
   } from 'firebase/firestore';
+  import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {FIRESTORE_DB,FIREBASE_STORAGE} from '../firestore';
 import { FIREBASE_AUTH } from '../firestore';
 import * as ImagePicker from 'expo-image-picker';
@@ -76,6 +77,22 @@ const handleMarket = async () => {
         shopid: id,
         like: 0
       };
+      if (photo) {
+        // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
+        const fileName = `${id}.jpg`;
+      
+        // อัปโหลดรูปภาพไปยัง Firebase Storage
+        const storageRef = ref(storage, 'photo_post/' + fileName); // ต้องใช้ ref() แทน storage.ref()
+      
+        const response = await fetch(photo);
+        const blob = await response.blob();
+      
+        await uploadBytes(storageRef, blob);
+      
+        // อัปเดตค่า 'photo' ด้วย URI ที่อ้างอิงจาก Firebase Storage
+        const downloadURL = await getDownloadURL(storageRef);
+        shop.photo = downloadURL;
+      }
       // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
       const allpostShopCollectionRef = collection(db, 'allpostShop');
   
@@ -220,7 +237,7 @@ const handleMarket = async () => {
         onChangeText={setPhon}
       />
     </View>
-    {photo && <Image source={{ uri: photo }} style={{ width: 150, height: 150, marginLeft: 150,top: -30, margin: 10 }} />}
+    {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 150,top: -30, margin: 10 }} />}
     <View style={styles.iconContainer}>
     <MaterialCommunityIcons name="camera" size={20}   color="#000" style={styles.icon} onPress={camera}/>
     <MaterialCommunityIcons name="image" size={20}   color="#000" style={styles.icon} onPress={openlib}/>
@@ -230,9 +247,9 @@ const handleMarket = async () => {
       left: 275
     }}>
     
-    <TouchableOpacity style={styles.buttonYellow}>
+    <TouchableOpacity style={styles.buttonYellow} onPress={handleMarket} >
 
-      <Text style={styles.buttonText} onPress={handleMarket} >โพสต์</Text>
+      <Text style={styles.buttonText}  >โพสต์</Text>
 
     </TouchableOpacity>
     </View>

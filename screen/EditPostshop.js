@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet,Text,Image } from 'react-native';
+import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
 import { doc, updateDoc,getDownloadURL, ref, uploadString } from 'firebase/firestore';
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -55,15 +55,14 @@ export default function EditPostShop({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View>
+     <TouchableOpacity>
     <MaterialCommunityIcons 
       name="arrow-left-thick"  
-      size={50} style={{margin:10, top: 20}} 
+      size={50} style={{margin:10, top: 30}} 
      onPress={() => navigation.goBack()}
       /> 
-     
-    </View>
-    <Text style={{textAlign:'center',top:-30,fontSize:20}}>แก้ไขโพสต์</Text>
+     </TouchableOpacity>
+    <Text style={{textAlign:'center',top:-20,fontSize:20}}>แก้ไขโพสต์</Text>
     <View  style={{top:100}}>
       <View  style={{ top: -10, margin: 10 }} >
     <SelectDropdown

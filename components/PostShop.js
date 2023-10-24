@@ -58,27 +58,16 @@ export default function PostShop() {
   const deleteShop = async (shopId) => {
     const shop = shops.find((shop) => shop.id === shopId);
     try {
-      // สร้าง reference ของโพสต์ที่ต้องการลบใน allpostShop collection
-      const shopRefAll = doc(db, 'allpostShop', shopId);
-      // สร้าง reference ของโพสต์ที่ต้องการลบใน shops state
-      const shopRefState = doc(db, 'postShop', shopId);
-  
-      // ดึงข้อมูลของโพสต์ที่ต้องการลบจาก allpostShop collection
-      const shopDocAll = await getDoc(shopRefAll);
-      const shopDataAll = shopDocAll.data();
-  
-      // ดึงข้อมูลของโพสต์ที่ต้องการลบจาก shops state
-      const shopDocState = await getDoc(shopRefState);
-      const shopDataState = shopDocState.data();
+      
+      const allpostShopRef = doc(db, 'allpostShop', shopId);
+      const postShopRef = doc(db, 'postShop', shopId);
   
       // ตรวจสอบว่าโพสต์ที่ต้องการลบถูกโพสต์โดย user ที่ login หรือไม่
-      if (shopDataAll.userUid === currentUser.uid ) {
+      if (shop.userUid === currentUser.uid) {
         // ลบโพสต์จาก allpostShop collection
-        await deleteDoc(shopRefAll);
-        await deleteDoc(shopRefState);
-  
-        // ลบโพสต์จาก shops state
-        setShops((prevShops) => prevShops.filter((shop) => shop.id !== shopId));
+        await deleteDoc(allpostShopRef);
+        // ลบโพสต์จาก postShop collection
+        await deleteDoc(postShopRef);
   
         console.log('โพสต์ถูกลบเรียบร้อยแล้ว');
       } else {
@@ -94,14 +83,12 @@ export default function PostShop() {
       const userUid = auth.currentUser.uid;
       const shopRef = doc(db, 'allpostShop', shop.id);
       const shopDoc = await getDoc(shopRef);
-  
       if (shopDoc.exists()) {
-        const likedBy = shopDoc.data().likedBy || []; // กำหนดค่าเริ่มต้นเป็นอาร์เรย์ว่างหากไม่มีค่า
+        const likedBy = shopDoc.data().likedBy || [];
   
         if (likedBy.includes(userUid)) {
           const updatedLikedBy = likedBy.filter((uid) => uid !== userUid);
           const newLikeCount = Math.max(shop.like - 1, 0);
-  
           const updateData = {
             likedBy: updatedLikedBy,
             like: newLikeCount,
@@ -109,12 +96,12 @@ export default function PostShop() {
   
           await updateDoc(shopRef, updateData);
   
-          setIsLiked((currentIsLiked) => ({
-            ...currentIsLiked,
-            [shop.id]: false,
-          }));
-          await updateLikeInPostShop(userUid, shop.id, updatedLikedBy, newLikeCount);
-          // อัปเดตจำนวนไลค์ใน Firestore หรือที่ต้องการอัปเดต
+          if (shop.id in isLiked) {
+            setIsLiked((currentIsLiked) => ({
+              ...currentIsLiked,
+              [shop.id]: !currentIsLiked[shop.id], // สลับค่ากลับและคาดหวังว่าไอคอนจะเปลี่ยนสี
+            }));
+          }
         } else {
           const updatedLikedBy = [...likedBy, userUid];
           const newLikeCount = shop.like + 1;
@@ -126,12 +113,14 @@ export default function PostShop() {
   
           await updateDoc(shopRef, updateData);
   
-          setIsLiked((currentIsLiked) => ({
-            ...currentIsLiked,
-            [shop.id]: true,
-          }));
+          if (shop.id in isLiked) {
+            setIsLiked((currentIsLiked) => ({
+              ...currentIsLiked,
+              [shop.id]: true,
+            }));
+          }
+          // อัปเดตข้อมูลการไลค์ไปยังคอลเลคชัน "postHome" ใน Firestore
           await updateLikeInPostShop(userUid, shop.id, updatedLikedBy, newLikeCount);
-          // อัปเดตจำนวนไลค์ใน Firestore หรือที่ต้องการอัปเดต
         }
       } else {
         console.error('ไม่พบข้อมูลโพสต์: ', shop.id);
@@ -139,18 +128,19 @@ export default function PostShop() {
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการกดไลค์: ', error);
     }
-    const updateLikeInPostShop = async (userUid, shopId, likedBy, likeCount) => {
-      const postShopRef = doc(db, 'users', userUid, 'postShop', shopId);
-      
-      const postShopDoc = await getDoc(postShopRef);
-      if (postShopDoc.exists()) {
-        const updateData = {
-          likedBy: likedBy,
-          like: likeCount,
-        };
-  
-        await updateDoc(postShopRef, updateData);
-      }
+   
+  };
+  const updateLikeInPostShop = async (userUid, shopId, likedBy, likeCount) => {
+    const postShopRef = doc(db, 'users', userUid, 'postShop', shopId);
+    
+    const postShopDoc = await getDoc(postShopRef);
+    if (postShopDoc.exists()) {
+      const updateData = {
+        likedBy: likedBy,
+        like: likeCount,
+      };
+
+      await updateDoc(postShopRef, updateData);
     }
   };
   
@@ -244,19 +234,17 @@ export default function PostShop() {
             </View>
             <View >
             <TouchableOpacity
-    style={{ left: 290 }}
+    style={{ left: 270 }}
     onPress={() => updateLike(shop)}
-    // ป้องกันไม่ให้กดได้อีกเมื่อถูกกดแล้ว
 >
     <Icon
-        name= {isLiked[shops.id] ?'heart' : 'heart-o'}
+        name={isLiked[shop.id] ? 'heart' : 'heart-o'}
         size={30}
-        color={isLiked[shops.id] ? 'orange' : '#000'} // กำหนดสีตามสถานะ
+        color={isLiked[shop.id] ? 'orange' : '#000'}
     />
 </TouchableOpacity>
-           
             <View>
-            <Text style={{top: 25, left:-73}}>{likeCount[shops.id]}</Text>
+            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>

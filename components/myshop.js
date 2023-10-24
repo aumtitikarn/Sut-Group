@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
 
 
-export default function PostShop() {
+export default function MyShop() {
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
   const [isLiked, setIsLiked] = useState([]);
@@ -47,9 +47,12 @@ const [posts, setPosts] = useState([]);
       const updatedShops = [];
       snapshot.forEach((doc) => {
         const shop = { id: doc.id, ...doc.data() };
-        updatedShops.push(shop);
-        updatedIsLiked[shop.id] = false;
-        updatedLikeCount[shop.id] = shop.like;
+        // กรองโพสต์ที่เป็นของผู้ใช้ที่ login อยู่
+        if (shop.userUid === currentUser?.uid) {
+          updatedShops.push(shop);
+          updatedIsLiked[shop.id] = false;
+          updatedLikeCount[shop.id] = shop.like;
+        }
       });
       setShops(updatedShops);
       setIsLiked(updatedIsLiked);
@@ -61,7 +64,8 @@ const [posts, setPosts] = useState([]);
       unsubscribeAuth();
       unsubscribe();
     };
-  }, []);
+  }, [currentUser]); // ใส่ currentUser เป็น dependency เพื่อให้ useEffect ทำงานเมื่อ currentUser เปลี่ยนแปลง
+  
   
   const handleEdit = (shopId) => {
     const shop = shops.find((shop) => shop.id === shopId);

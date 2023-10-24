@@ -12,10 +12,15 @@ export default function EditPostShop({ route, navigation }) {
   const { shopId, initialData } = route.params;
   const [newShopData, setNewShopData] = useState(initialData);
   const [photo, setPhoto] = useState(null);
+ 
 
+
+ 
+  
   const handleUpdatePost = async () => {
     const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
     console.log(newShopData);
+    
     
     try {
       await updateDoc(shopRef, newShopData);
@@ -24,7 +29,7 @@ export default function EditPostShop({ route, navigation }) {
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
-    if (newShopData.photo) {
+    if (newShopData.photo && newShopData.photo !== null && newShopData.photo !== undefined) {
       const photoUri = newShopData.photo;
       const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
       
@@ -43,14 +48,21 @@ export default function EditPostShop({ route, navigation }) {
   
   };
   const openImagePicker = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
       if (!response.didCancel) {
-        // รับ URL ของรูปภาพจาก response.uri
         const photoUri = response.uri;
-        setNewShopData({ ...newShopData, photo: photoUri });
+        const data = await fetch(photoUri);
+        const blob = await data.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const photoDataUrl = reader.result;
+          setNewShopData({ ...newShopData, photo: photoDataUrl });
+        };
+        reader.readAsDataURL(blob);
       }
     });
   };
+  
   
 
   return (

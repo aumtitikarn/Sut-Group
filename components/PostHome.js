@@ -8,15 +8,17 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
-const Home = ({ navigation }) => {
+const PostHome = () => {
   const [posts, setPosts] = useState([]);
-  const [isShared, setIsShared] = useState([]);
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [isLiked, setIsLiked] = useState([]);
   const [likeCount, setLikeCount] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [isShared, setIsShared] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
@@ -75,7 +77,7 @@ const Home = ({ navigation }) => {
           if (post.id in isLiked) {
             setIsLiked((currentIsLiked) => ({
               ...currentIsLiked,
-              [post.id]: false,
+              [post.id]: !currentIsLiked[post.id], // สลับค่ากลับและคาดหวังว่าไอคอนจะเปลี่ยนสี
             }));
           }
           // อัปเดตข้อมูลการไลค์ไปยังคอลเลคชัน "postHome" ใน Firestore
@@ -207,7 +209,7 @@ const cancelSharePost = async (userId, postId) => {
     }));
     setShowAlert(true);
     setTimeout(() => {
-      setIsShared(false);
+      setIsShared(true);
     }, 3000); // ตรวจสอบว่า setShowAlert(false) ถูกเรียกที่ต้องการ
   } catch (error) {
     console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
@@ -229,7 +231,7 @@ const handleSharePost = (post) => {
     sharePost(userId, postId, post);
     setShowAlert(true); // แสดง Alert
     setTimeout(() => {
-      setIsShared(false); // ปิด Alert หลังจาก 2 วินาที
+      setIsShared(true); // ปิด Alert หลังจาก 2 วินาที
     }, 2000);
   }
 };
@@ -238,13 +240,6 @@ return (
   <SafeAreaView style={styles.container}>
     <ScrollView>
       {posts.map((post) => (
-        <View key={post.id}>
-        {isShared[post.id] && (
-          <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 30, height:50}}>
-            <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
-            <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
-          </View>
-        )}
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
@@ -264,18 +259,20 @@ return (
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => updateLike(post)}>
-              <Icon
-                name={isLiked[post.id] ? 'heart' : 'heart'}
-                size={25}
-                color={isLiked[post.id] ? '#000' : '#000'}
-                style={{marginLeft: 30}}
-              />
+            <Icon
+            name={isLiked[post.id] ? 'heart' : 'heart'}
+            size={25}
+            color={isLiked[post.id] ? 'orange' : 'black'} // Set the color based on the state
+            style={{ marginLeft: 30 }}
+            />
             </TouchableOpacity>
             <View>
               <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
             </View>
-            <TouchableOpacity>
-              <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top:-3 }} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Comment', { postId: post.id, navigation })} // ส่ง postId ไปยังหน้า Comment
+            >
+            <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
             </TouchableOpacity>
             <TouchableOpacity
   onPress={() => handleSharePost(post)}
@@ -287,6 +284,13 @@ return (
   />
 </TouchableOpacity>
           </View>
+        <View key={post.id}>
+        {isShared[post.id] && (
+          <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 130, height:50}}>
+            <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
+            <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
+          </View>
+        )}
         </View>
         </View>
       ))}
@@ -333,4 +337,4 @@ userData: {
 },
 });
 
-export default Home;
+export default PostHome;

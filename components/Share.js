@@ -164,7 +164,7 @@ const Share = () => {
       const postHomeRef = doc(db, 'users', userUid, 'share', postId);
       await deleteDoc(postHomeRef);
   
-      console.log('ลบโพสต์สำเร็จ');
+      console.log('ลบโพสต์สำเร็จ');ห
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
     }

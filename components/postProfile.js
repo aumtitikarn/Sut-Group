@@ -3,7 +3,7 @@ import {
   Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc,deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc,deleteDoc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
@@ -18,27 +18,36 @@ const PostProfile = () => {
   const [isLiked, setIsLiked] = useState([]);
   const [likeCount, setLikeCount] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [isShared, setIsShared] = useState([]);
 
   useEffect(() => {
     const userUid = auth.currentUser.uid;
     const q = query(collection(db, 'users', userUid, 'postHome'), orderBy('timestamp', 'desc'));
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedPosts = [];
-      const updatedIsLiked = {};
-      const updatedLikeCount = {};
-
-      snapshot.forEach((doc) => {
-        const post = { id: doc.id, ...doc.data() };
-        updatedPosts.push(post);
-        updatedIsLiked[post.id] = false;
-        updatedLikeCount[post.id] = post.like;
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const updatedPosts = [];
+        const updatedIsLiked = {};
+        const updatedLikeCount = {};
+        const updatedIsShared = {};
+  
+        snapshot.forEach((doc) => {
+          const post = { id: doc.id, ...doc.data() };
+          updatedPosts.push(post);
+          updatedIsLiked[post.id] = false;
+          updatedLikeCount[post.id] = post.like;
+    
+          // ตรวจสอบว่าโพสต์ถูกแชร์ไปหรือยังและกำหนดค่าให้กับ isShared
+          const isSharedByUser = post.sharedBy && post.sharedBy.includes(auth.currentUser.uid);
+          updatedIsShared[post.id] = isSharedByUser;
+        });
+        console.log(updatedIsShared); // เพิ่มบรรทัดนี้เพื่อตรวจสอบค่า
+  
+        setPosts(updatedPosts);
+        setIsLiked(updatedIsLiked);
+        setLikeCount(updatedLikeCount);
+        setIsShared(updatedIsShared); // ตั้งค่า isShared ที่คำนวณแล้ว
       });
-
-      setPosts(updatedPosts);
-      setIsLiked(updatedIsLiked);
-      setLikeCount(updatedLikeCount);
-    });
 
     return () => {
       unsubscribe();
@@ -183,6 +192,76 @@ const PostProfile = () => {
     }
   };
 
+  const sharePost = async (userId, postId, postData) => {
+    const userDocRef = doc(db, 'users', userId);
+    const shareCollectionRef = collection(userDocRef, 'share');
+    const postDocRef = doc(shareCollectionRef, postId);
+  
+    try {
+      // เพิ่มฟิลด์ timeshare ที่เก็บเวลาและวันที่ของการแชร์
+      const currentTime = new Date();
+      postData.timeshare = currentTime;
+  
+      await setDoc(postDocRef, postData);
+      console.log('บันทึกโพสต์ลงในคอลเลกชัน "share" เรียบร้อยแล้ว');
+  
+      // อัปเดต isShared เมื่อแชร์โพสต์สำเร็จ
+      setIsShared((prevIsShared) => ({
+        ...prevIsShared,
+        [postId]: true,
+      }));
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000); // ตรวจสอบว่า setShowAlert(false) ถูกเรียกที่ต้องการ
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการบันทึกโพสต์: ', error);
+    }
+  };
+  
+  const cancelSharePost = async (userId, postId) => {
+    try {
+      const userUid = auth.currentUser.uid;
+  
+      // 1. ลบโพสต์จาก "postHome" collection ใน Firestore
+      const postHomeRef = doc(db, 'users', userUid, 'share', postId);
+      await deleteDoc(postHomeRef);
+  
+      console.log('ลบโพสต์สำเร็จ');
+    
+      // อัปเดต isShared เมื่อยกเลิกการแชร์โพสต์สำเร็จ
+      setIsShared((prevIsShared) => ({
+        ...prevIsShared,
+        [postId]: false,
+      }));
+      setShowAlert(true);
+      setTimeout(() => {
+        setIsShared(false);
+      }, 3000); // ตรวจสอบว่า setShowAlert(false) ถูกเรียกที่ต้องการ
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
+    }
+  };
+  
+  
+  
+  const handleSharePost = (post) => {
+    const userId = auth.currentUser.uid;
+    const postId = post.id;
+    const isAlreadyShared = isShared[post.id]; // ตรวจสอบว่าโพสต์ถูกแชร์ไปแล้วหรือยัง
+    console.log(isAlreadyShared);
+    if (isAlreadyShared) {
+      // ถ้าโพสต์ถูกแชร์ไปแล้วให้ยกเลิกการแชร์
+      cancelSharePost(userId, postId);
+    } else {
+      // ถ้าโพสต์ยังไม่ถูกแชร์ให้ทำการแชร์
+      sharePost(userId, postId, post);
+      setShowAlert(true); // แสดง Alert
+      setTimeout(() => {
+        setIsShared(false); // ปิด Alert หลังจาก 2 วินาที
+      }, 2000);
+    }
+  };
   
   //-------------------------------------------------------------------------------------//
 
@@ -237,13 +316,29 @@ const PostProfile = () => {
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Icon name="share" size={25} color="#000" style={{ marginLeft: 60, top: -2 }} />
+          <TouchableOpacity
+  onPress={() => handleSharePost(post)}
+  style={{ marginLeft: 60, top: -2 }}>
+  <Icon
+    name={isShared[post.id] ? 'share' : 'share'} 
+    size={25}
+    color={isShared[post.id] ? 'orange' : '#000'}   
+  />
+</TouchableOpacity>
           </TouchableOpacity>
+          </View>
+        <View key={post.id}>
+        {isShared[post.id] && (
+          <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 130, height:50}}>
+            <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
+            <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
+          </View>
+        )}
         </View>
-      </View>
-    ))}
-  </ScrollView>
-</SafeAreaView>
+        </View>
+      ))}
+    </ScrollView>
+  </SafeAreaView>
 );
 };
 

@@ -163,17 +163,12 @@ const handleMarket = async () => {
             onSelect={(selectedItem) => setTname(selectedItem)}
             
             buttonTextAfterSelection={(selectedItem) => {
-              // callback after selection
-              // if (selectedItem) {
-              //   // do something with the selected item
-              // }
+             
               return selectedItem;
             }}
             rowTextForSelection={(product) => {
               return product;
-              // single name for a selected item
-              // if item is object, return item.name
-              // return item;
+            
             }}
           />
     </View>
@@ -225,7 +220,7 @@ const handleMarket = async () => {
         onChangeText={setPhon}
       />
     </View>
-    {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
+    {photo && <Image source={{ uri: photo }} style={{ width: 150, height: 150, marginLeft: 150,top: -30, margin: 10 }} />}
     <View style={styles.iconContainer}>
     <MaterialCommunityIcons name="camera" size={20}   color="#000" style={styles.icon} onPress={camera}/>
     <MaterialCommunityIcons name="image" size={20}   color="#000" style={styles.icon} onPress={openlib}/>

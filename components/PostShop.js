@@ -47,17 +47,13 @@ export default function PostShop() {
   }, []);
   
   const handleEdit = (shopId) => {
-    // นำผู้ใช้ไปที่หน้าแก้ไขโพสต์ (ให้กำหนดค่า postId ใน navigation params)
     const shop = shops.find((shop) => shop.id === shopId);
 
-    if (shop.userUid === currentUser.uid) {
-      
-      navigation.navigate('EditPostShop', { shopId });
+    if (shop.userUid === currentUser?.uid) {
+      navigation.navigate('EditPostShop', { shopId, initialData: shop });
     } else {
-
       console.log('คุณไม่มีสิทธิ์ในการแก้ไขโพสต์นี้');
     }
-  
   };
   const deleteShop = async (shopId) => {
     const shop = shops.find((shop) => shop.id === shopId);

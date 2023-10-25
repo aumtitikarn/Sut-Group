@@ -7,11 +7,7 @@ import { signOut } from "firebase/auth";
 import PostProfile from '../components/postProfile'; // Use the imported component
 import UserData from '../components/userData';
 import Share from '../components/Share.js';
-
-const market = () => (
-  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
-);
-
+import MyShop from '../components/myshop';
 
 export default function TabViewExample() {
   const layout = useWindowDimensions();
@@ -42,7 +38,7 @@ export default function TabViewExample() {
 
   const renderScene = SceneMap({
     postProfile: PostProfile, // Use lowercase 'postProfile' here
-    market: market,
+    market: MyShop,
     share: Share
   });
 

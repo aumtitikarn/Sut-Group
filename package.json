@@ -29,6 +29,7 @@
     "react": "18.2.0",
     "react-native": "0.72.5",
     "react-native-image-picker": "^7.0.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.10.6",
     "react-native-select-dropdown": "^3.4.0",
     "react-native-tab-view": "^3.5.2",

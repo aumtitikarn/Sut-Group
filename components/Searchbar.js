@@ -12,10 +12,10 @@ const MyComponent = () => {
       onChangeText={onChangeSearch}
       value={searchQuery}
       style = {{ 
-        backgroundColor: '#FFF',
+        backgroundColor: '#FDF4E2',
         marginTop: 20,
         margin: 10,
-        borderWidth: 1,
+        borderWidth: 2,
         borderColoe: '#FFF',
         shadowColor: 'rgba(0, 0, 0, 0.25)',
         shadowOffset: { width: 0, height: 4 },

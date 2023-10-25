@@ -229,7 +229,7 @@ const openlib = async () => {
       left: 275
     }}>
     <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={styles.buttonText} onPress={handlePost}>โพสต์</Text>
+      <Text style={{ color: "#1C1441"}} onPress={handlePost}>โพสต์</Text>
     </TouchableOpacity>
     </View>
       
@@ -239,7 +239,7 @@ const openlib = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffae8',
+    backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight 
   },
    input: {
@@ -251,6 +251,7 @@ const styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
+    backgroundColor: '#FFF'
   },
   iconContainer: {
     flexDirection: 'row',
@@ -263,8 +264,8 @@ const styles = StyleSheet.create({
   },
    buttonYellow: {
     borderRadius: 5,
-    borderWidth: 1,
-    backgroundColor: '#FFBD59',
+    borderWidth: 2,
+    backgroundColor: '#FDF4E2',
     width: 100,
     padding:5,
     justifyContent: 'center', 

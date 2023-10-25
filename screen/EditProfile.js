@@ -115,6 +115,7 @@ const EditProfile = ({ navigation }) => {
     });
 
     await allPostHomeBatch.commit();
+    await allPostShopBatch.commit();
 
     // อัปเดตข้อมูลในคอลเลคชัน postHome ด้วยข้อมูลใหม่
     const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
@@ -122,12 +123,18 @@ const EditProfile = ({ navigation }) => {
     const postHomeSnapshot = await getDocs(userPostHomeCollectionRef);
     const postShopSnapshot = await getDocs(userPostShopCollectionRef);
     const postHomeBatch = writeBatch(db);
+    const postShopBatch = writeBatch(db);
 
     postHomeSnapshot.forEach((doc) => {
       postHomeBatch.update(doc.ref, updateData);
     });
 
+    postShopSnapshot.forEach((doc) => {
+      postShopBatch.update(doc.ref, updateData);
+    });
+
     await postHomeBatch.commit();
+    await postShopBatch.commit();
   } catch (error) {
     console.error('Error uploading image: ', error);
   }
@@ -210,6 +217,9 @@ const EditProfile = ({ navigation }) => {
         const batch = writeBatch(db);
   
         userPostHomeSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
+        });
+        userPostShopSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);
         });
   

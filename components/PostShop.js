@@ -257,7 +257,7 @@ const [posts, setPosts] = useState([]);
             </View>
             <View >
             <TouchableOpacity
-    style={{ left: 290 }}
+    style={{ left: 270 }}
     onPress={() => updateLike(shop)}
 >
     <Icon
@@ -266,7 +266,9 @@ const [posts, setPosts] = useState([]);
         color={isLiked[shop.id] ? 'orange' : '#000'}
     />
 </TouchableOpacity>
-            
+            <View>
+            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
+            </View>
           </View>
           </Card>
         </TouchableOpacity>

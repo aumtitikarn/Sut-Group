@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
 import { doc, updateDoc, getDownloadURL,  } from 'firebase/firestore';
-import { getStorage, ref , uploadString  } from 'firebase/storage';;
+import {  ref, uploadBytes, DownloadURL } from 'firebase/storage';
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -12,9 +12,9 @@ const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื
 export default function EditPostShop({ route, navigation }) {
   const { shopId, initialData } = route.params;
   const [newShopData, setNewShopData] = useState(initialData);
-  const [photo, setPhoto] = useState(null);
+  const [photoURL, setPhotoURL] = useState('');
   const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
-  const [photoURL, setPhotoURL] = useState(null);
+ 
 
  useEffect(() => {
     openlib();
@@ -22,7 +22,7 @@ export default function EditPostShop({ route, navigation }) {
   
   const handleUpdatePost = async () => {
     const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
-
+  
     try {
       await updateDoc(shopRef, newShopData);
       console.log('โพสต์ถูกอัปเดตเรียบร้อยแล้ว');
@@ -31,41 +31,20 @@ export default function EditPostShop({ route, navigation }) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
   
-    if (newShopData.photo && newShopData.photo !== null && newShopData.photo !== undefined) {
-      const photoUri = newShopData.photo;
-     
-  
+    // If a new image was selected, upload and update the image URL
+    if (newShopData.photo !== initialData.photo) {
       try {
-        const response = await fetch(photoUri);
+        const response = await fetch(newShopData.photo);
         const blob = await response.blob();
-  
-        await uploadString(storageRef, blob, 'data_url');
+        await uploadBytes(storageRef, blob);
         const downloadURL = await getDownloadURL(storageRef);
   
+        // Update the shop data in Firestore with the new image URL
         await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+        setPhotoURL(downloadURL);
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: ', error);
       }
-    } else {
-      await updateDoc(shopRef, newShopData);
-    }
-  };
-  const uploadImage = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
-      await uploadString(storageRef, blob, 'data_url');
-      const downloadURL = await getDownloadURL(storageRef);
-  
-      // อัปเดตข้อมูลของ shop ใน Firestore ด้วย URL รูปภาพใหม่
-      const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
-      await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
-  
-      // อัปเดต state สำหรับแสดงรูปภาพใหม่
-      setPhotoURL(downloadURL);
-    } catch (error) {
-      console.error('Error uploading image: ', error);
     }
   };
   
@@ -81,8 +60,8 @@ export default function EditPostShop({ route, navigation }) {
     console.log(result);
   
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-      uploadImage(result.assets[0].uri, 'photo'); // ส่ง 'profileImg' เพื่อระบุการอัปโหลดรูปภาพสำหรับ profile
+      setPhotoURL(result.assets[0].uri);
+      uploadImage(result.assets[0].uri);
     }
   };
   
@@ -90,7 +69,7 @@ export default function EditPostShop({ route, navigation }) {
 
   
   
-
+ 
   return (
     <View style={styles.container}>
      <TouchableOpacity>

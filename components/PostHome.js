@@ -270,7 +270,7 @@ return (
               <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Comment', { postId: post.id, navigation })} // ส่ง postId ไปยังหน้า Comment
+              onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
             >
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
             </TouchableOpacity>

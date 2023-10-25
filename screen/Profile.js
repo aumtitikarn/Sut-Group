@@ -9,18 +9,13 @@ import UserData from '../components/userData';
 import Share from '../components/Share.js';
 import MyShop from '../components/myshop';
 
-const market = () => (
-  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
-);
-
-
 export default function TabViewExample() {
   const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'postProfile', title: 'โพสต์ของฉัน' },
-    { key: 'myshop', title: 'สินค้าของฉัน' },
+    { key: 'market', title: 'สินค้าของฉัน' },
     { key: 'share', title: 'แชร์ของฉัน' },
   ]);
 
@@ -43,7 +38,7 @@ export default function TabViewExample() {
 
   const renderScene = SceneMap({
     postProfile: PostProfile, // Use lowercase 'postProfile' here
-    market: market,
+    market: MyShop,
     share: Share
   });
 

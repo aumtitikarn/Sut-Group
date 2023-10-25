@@ -215,8 +215,8 @@ const [posts, setPosts] = useState([]);
 
   return (
     <View style={styles.container}>
+      <Text>ใช้ได้แล้วจ้า</Text>
       {shops.map((shop, index) => {
-         return(
           <TouchableOpacity key={index} style={styles.product}>
           <Card style={styles.card}>
               <View style={styles.iconContainer}>
@@ -276,7 +276,6 @@ const [posts, setPosts] = useState([]);
           </View>
           </Card>
         </TouchableOpacity>
-        );
            })}
     </View>
   );

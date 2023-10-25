@@ -8,6 +8,7 @@ import PostProfile from '../components/postProfile'; // Use the imported compone
 import UserData from '../components/userData';
 import Share from '../components/Share.js';
 import MyShop from '../components/myshop';
+import Likeshop from '../components/likeshop'; 
 
 export default function TabViewExample() {
   const layout = useWindowDimensions();
@@ -15,8 +16,9 @@ export default function TabViewExample() {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'postProfile', title: 'โพสต์ของฉัน' },
-    { key: 'market', title: 'สินค้าของฉัน' },
     { key: 'share', title: 'แชร์ของฉัน' },
+    { key: 'market', title: 'สินค้าของฉัน' },
+    { key: 'likeshop', title: 'สินค้าที่ถูกใจ' },
   ]);
 
   const navigation = useNavigation();
@@ -38,16 +40,17 @@ export default function TabViewExample() {
 
   const renderScene = SceneMap({
     postProfile: PostProfile, // Use lowercase 'postProfile' here
+    share: Share,
     market: MyShop,
-    share: Share
+    likeshop: Likeshop
   });
 
   const renderTabBar = (props) => (
     <View>
     <TabBar
       {...props}
-      style={{ backgroundColor: '#fffae8' , padding:5}}
-      labelStyle={{ color: 'black' , fontWeight: 'bold'}}
+      style={{ backgroundColor: '#fffae8' }}
+      labelStyle={{ color: 'black' , fontWeight: 'bold', fontSize: 12}}
       indicatorStyle={{ backgroundColor: 'orange' }}
     />
     </View>

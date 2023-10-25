@@ -66,7 +66,7 @@ const UserData = ({ navigation }) => {
           style={{ width: 80, height: 80, left: -90, top: 30, borderRadius: 50, position: 'absolute' }}
         />
         <View style={styles.userDataContainer}>
-          <Text style={{fontSize:18, fontWeight:'bold'}}> {userData.username}</Text>
+          <Text style={{fontSize:18, fontWeight:'bold', color: "#1C1441"}}> {userData.username}</Text>
           <View>
             <Text style={styles.userDataText}> #{userData.faculty}</Text>
           </View>
@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
   },
   userDataText: {
     fontSize: 18,
-    padding: 5
+    padding: 5,
+    color: "#1C1441"
   },
 });
 

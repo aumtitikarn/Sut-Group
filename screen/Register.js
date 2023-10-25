@@ -54,7 +54,7 @@ export default function Register({navigation}) {
     <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
     <View>
-     <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
+     <Image style={styles.logo} source={require('../assets/2.png')} />
         <Text style={styles.para}>
      ลงทะเบียน
       </Text>
@@ -126,11 +126,13 @@ export default function Register({navigation}) {
         placeholderTextColor="Gray"
         secureTextEntry
       />
+      <View style={{margin: 10}}>
       <Button
-          color="black"
+          color="#8AD1DB"
           title="Register"
           onPress={() => UserRegister()}
         />
+        </View>
        <Text
         style={styles.register}
         onPress={() => navigation.navigate('Login')}>
@@ -145,7 +147,7 @@ export default function Register({navigation}) {
 const styles = StyleSheet.create ({
   container: {
     flex:1,
-    backgroundColor: '#FFBD59',
+    backgroundColor: '#FDF4E2',
     justifyContent: 'center',
     padding: 20,
     paddingTop: StatusBar.currentHeight
@@ -167,7 +169,7 @@ const styles = StyleSheet.create ({
    backgroundColor: '#FFF',
   },
    register: {
-    color: '#FFF',
+    color: '#1C1441',
     marginRight: 30,
     alignSelf: 'flex-end',
   },

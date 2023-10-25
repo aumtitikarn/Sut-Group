@@ -49,9 +49,9 @@ export default function TabViewExample() {
     <View>
     <TabBar
       {...props}
-      style={{ backgroundColor: '#fffae8' }}
+      style={{ backgroundColor: '#FFF' }}
       labelStyle={{ color: 'black' , fontWeight: 'bold', fontSize: 12}}
-      indicatorStyle={{ backgroundColor: 'orange' }}
+      indicatorStyle={{ backgroundColor: '#1C1441' }}
     />
     </View>
   );
@@ -83,7 +83,7 @@ export default function TabViewExample() {
       }}>
       <TouchableOpacity style={{borderRadius: 5,
       borderWidth: 1,
-      backgroundColor: '#FFBD59',
+      backgroundColor: '#FDF4E2',
       width: 90,
       padding: 8,
       }}
@@ -98,10 +98,10 @@ export default function TabViewExample() {
       }}>
       <TouchableOpacity style={{borderRadius: 5,
       borderWidth: 1,
-      backgroundColor: '#FAE86C',
+      backgroundColor: '#FDF4E2',
       width: 70,
       padding: 8,
-      top:5}} onPress={handleLogout}>
+      top:4}} onPress={handleLogout}>
         <Text style={styles.buttonText}>Log out</Text>
       </TouchableOpacity>
       </View>
@@ -118,14 +118,14 @@ export default function TabViewExample() {
 }
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fffae8',
+    backgroundColor: '#FFF',
     flex: 1,
     paddingTop: StatusBar.currentHeight
   },
   buttonYellow: {
     borderRadius: 5,
     borderWidth: 1,
-    backgroundColor: '#FFBD59',
+    backgroundColor: '#FDF4E2',
     width: 100,
     padding: 8,
     margin: 5

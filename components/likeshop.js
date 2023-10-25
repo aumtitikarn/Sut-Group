@@ -16,52 +16,9 @@ export default function PostShop() {
   const db = FIRESTORE_DB;
   const auth = getAuth();
   const navigation = useNavigation();
-  const fetchUsers = async () => {
-    try {
-      const userUid = auth.currentUser.uid;
-      const userCollectionRef = collection(db, 'users');
-      const userDocRef = doc(userCollectionRef, userUid);
-  
-      // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
-      const unsubscribe = onSnapshot(userDocRef, (doc) => {
-        if (doc.exists()) {
-          const userData = doc.data();
-          setUserData(userData);
-        }
-      });
-  
-      // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
-      return unsubscribe;
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
 
   useEffect(() => {
-    const userUid = auth.currentUser?.uid;
-    const unsubscrib = fetchUsers();
     
-      if (typeof unsubscrib === 'function') {
-        unsubscrib();
-      } if (userUid) {
-        const userCollectionRef = collection(db, 'users');
-        const userDocRef = doc(userCollectionRef, userUid);
-        getDoc(userDocRef)
-        .then((userDoc) => {
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log('User Data:', userData);
-            setUserData(userData);
-            // Set the user's profile image in the state
-            
-          } else {
-            console.error('User document does not exist.');
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching user data: ', error);
-        });
-    }
     const q = query(collection(db, 'allpostShop'), orderBy('timestamp', 'desc'));
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -204,7 +161,7 @@ export default function PostShop() {
               
               <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
             <Image
-              source={{ uri: userData.profileImg }}
+              source={{ uri: shop.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             /> 
            

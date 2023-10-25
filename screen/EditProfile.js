@@ -110,8 +110,9 @@ const EditProfile = ({ navigation }) => {
 
     // อัปเดตข้อมูลในคอลเลคชัน postHome ด้วยข้อมูลใหม่
     const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
-
+    const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
     const postHomeSnapshot = await getDocs(userPostHomeCollectionRef);
+    const postShopSnapshot = await getDocs(userPostShopCollectionRef);
     const postHomeBatch = writeBatch(db);
 
     postHomeSnapshot.forEach((doc) => {
@@ -194,8 +195,10 @@ const EditProfile = ({ navigation }) => {
   
         // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
+        const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
   
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
+        const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
         const batch = writeBatch(db);
   
         userPostHomeSnapshot.forEach((doc) => {

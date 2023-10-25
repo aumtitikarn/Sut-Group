@@ -100,6 +100,7 @@ const [posts, setPosts] = useState([]);
       const userUid = auth.currentUser.uid;
       const shopRef = doc(db, 'allpostShop', shop.id);
       const shopDoc = await getDoc(shopRef);
+
       if (shopDoc.exists()) {
         const likedBy = shopDoc.data().likedBy || [];
   

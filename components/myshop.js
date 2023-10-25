@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
+    import { TouchableOpacity, StyleSheet, Text, View, Image,ScrollView } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,updateDoc,addDoc} from 'firebase/firestore'; 
 import { FIRESTORE_DB } from '../firestore';
@@ -214,9 +214,13 @@ const [posts, setPosts] = useState([]);
   
 
   return (
+    <ScrollView>
+
     <View style={styles.container}>
-      <Text>ใช้ได้แล้วจ้า</Text>
+
       {shops.map((shop, index) => {
+      if (shop.userUid === currentUser?.uid) {
+        return (
           <TouchableOpacity key={index} style={styles.product}>
           <Card style={styles.card}>
               <View style={styles.iconContainer}>
@@ -261,7 +265,7 @@ const [posts, setPosts] = useState([]);
             </View>
             <View >
             <TouchableOpacity
-    style={{ left: 270 }}
+    style={{ left: 290 }}
     onPress={() => updateLike(shop)}
 >
     <Icon
@@ -271,13 +275,17 @@ const [posts, setPosts] = useState([]);
     />
 </TouchableOpacity>
             <View>
-            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>
         </TouchableOpacity>
+        );
+      }
+      return null;
            })}
     </View>
+    </ScrollView>
+
   );
 }
 

@@ -211,6 +211,8 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลในคอลเลคชัน allpostHome ของผู้ใช้
         const allPostHomeCollectionRef = collection(db, 'allpostHome');
         const allPostShopCollectionRef = collection(db, 'allpostShop');
+        const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
+        const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
   
         // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
         const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
@@ -218,6 +220,8 @@ const EditProfile = ({ navigation }) => {
   
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
+        const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
+        const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
   
         // ใช้ Write Batch สำหรับการอัปเดตคุณสมบัติในเอกสาร
         const batch = writeBatch(db);
@@ -229,6 +233,13 @@ const EditProfile = ({ navigation }) => {
   
         // อัปเดตคุณสมบัติในเอกสารในคอลเลคชัน allpostShop
         allPostShopSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
+        });
+
+        userPostHomeSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
+        });
+        userPostShopSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);
         });
   

@@ -259,7 +259,7 @@ const handleMarket = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#8AD1DB',
   },
    input: {
     height: 50,
@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
+    backgroundColor: '#FFF'
   },
   iconContainer: {
     flexDirection: 'row', // จัดเรียงแนวนอน
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
    buttonYellow: {
     borderRadius: 5,
     borderWidth: 1,
-    backgroundColor: '#FFBD59',
+    backgroundColor: '#FDF4E2',
     width: 70,
     padding:5,
     justifyContent: 'center', // Center vertically

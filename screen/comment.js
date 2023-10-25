@@ -33,11 +33,49 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Comment = () => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
+  const storage = FIREBASE_STORAGE;
+  const [userData, setUserData] = useState('');
   const [posts, setPosts] = useState(null);
+  const [text, setText] = useState('');
+  const [photo, setPhoto] = useState('');
+  const [username, setUsername] = useState(''); // เก็บค่า name ของผู้ใช้ที่เข้าสู่ระบบ
+  const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
+  const [profileImg, setProfileImg] = useState(''); 
   const navigation = useNavigation();
   const route = useRoute();
   const postId = route.params.postId; 
+  const uidcom = route.params.uidcom; 
   // console.log(postId);
+
+  const fetchUsers = async () => {
+    try {
+      const userUid = auth.currentUser.uid;
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
+
+      // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
+      const unsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          const userData = doc.data();
+          setUserData(userData);
+        }
+      });
+
+      // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
+      return unsubscribe;
+    } catch (error) {
+      console.error('Error fetching user data: ', error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = fetchUsers();
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Function to fetch post data from Firestore
@@ -99,6 +137,87 @@ const Comment = () => {
       return 'ไม่มีข้อมูลวันที่';
     }
   }
+  useEffect(() => {
+    const userUid = auth.currentUser?.uid;
+    if (userUid) {
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
+  
+      getDoc(userDocRef)
+        .then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User Data:', userData);
+            setUsername(userData.username);
+            setFaculty(userData.faculty);
+            setProfileImg(userData.profileImg);
+            console.log('Name:', username);
+        console.log('Faculty:', faculty);
+          } else {
+            console.error('User document does not exist.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data: ', error);
+        });
+    }
+  }, [auth.currentUser]);
+
+  const savecomment = async () => {
+    try {
+      const userUid = uidcom;
+      if (userUid) {
+        // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
+        const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
+  
+        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome',postId,'comment');
+  
+        // สร้างอ็อบเจกต์ข้อมูลโพสต์
+        const post = {
+          username: username,
+          faculty: faculty,
+          text: text,
+          photo: photo,
+          timestamp: serverTimestamp(),
+          userUid: userUid,
+          postid: id,
+          profileImg: profileImg
+        };
+  
+        if (photo) {
+          // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
+          const fileName = `${id}.jpg`;
+        
+          // อัปโหลดรูปภาพไปยัง Firebase Storage
+          const storageRef = ref(storage, 'comment_post/' + fileName); // ต้องใช้ ref() แทน storage.ref()
+        
+          const response = await fetch(photo);
+          const blob = await response.blob();
+        
+          await uploadBytes(storageRef, blob);
+        
+          // อัปเดตค่า 'photo' ด้วย URI ที่อ้างอิงจาก Firebase Storage
+          const downloadURL = await getDownloadURL(storageRef);
+          post.photo = downloadURL;
+        }
+  
+        // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
+        const allpostHomeCollectionRef = collection(db, 'allpostHome',postId,'comment');
+  
+        // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
+        await setDoc(doc(allpostHomeCollectionRef, id), post);
+        await setDoc(doc(postHomeCollectionRef, id), post);
+        
+  
+        console.log("comment :", post);
+        console.log('Document written with ID: ', id);
+        setText('');
+        setPhoto(null);
+      }
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  };
 
   // เข้าถึงกล้อง
 const camera = async () => {
@@ -186,26 +305,39 @@ const openlib = async () => {
               />
             </View>
             <View style={{top: posts.photo ? 160 : -40 }}>
-            <View style={styles.icon}>
+            <View style={{ flexDirection: 'row',
+              top: photo ? -175 : -165,
+              left: 10}}>
+            <TouchableOpacity onPress={camera}>
             <Icon name="camera" size={30} color="#1C1441" style={{margin :5}} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={openlib}>
             <Icon name="image" size={30} color="#1C1441" style={{margin :5}} />
+            </TouchableOpacity >
             </View>
-          <View
+          <View name="1"
           style={{
             borderBottomColor: "black", 
             borderBottomWidth: 1, 
             alignSelf:'stretch',
             width: "100%",
-            top: -150
+            top: photo ? -230 : -150
             }}/>
+            {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -170, margin: 10 }} />}
         <View style={{top: -150, left: 150}}>
-        <View style={styles.commentContainer}>
+        <View style={{flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 20,
+          top: photo ? -200 : -70,
+          left: -10,}}>
               <TextInput
                 placeholder="เขียนคอมเมนต์ของคุณ..."
                 style={styles.commentInput}
+                value={text}
+                onChangeText={(text) => setText(text)}
               />
               <Image
-                source={{ uri: posts.profileImg }}
+                source={{ uri: userData.profileImg }}
                 style={{
                   borderRadius: 50,
                   position: 'absolute',
@@ -214,17 +346,17 @@ const openlib = async () => {
                   top: 20,
                   left: -30,
                 }}/>
-              <TouchableOpacity style={styles.commentButton}>
+              <TouchableOpacity style={styles.commentButton} onPress={savecomment}>
               <Text style={{ color: '#fff' }}>ส่ง</Text>
               </TouchableOpacity>
               </View>
-              <View
+              <View name="2"
           style={{
             borderBottomColor: "black", 
             borderBottomWidth: 1, 
             alignSelf:'stretch',
             width: "100%",
-            top: -120,
+            top: photo ? -70 : -120,
             left: -150
             }}/>
           </View>
@@ -242,13 +374,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FDF4E2',
     paddingTop: StatusBar.currentHeight,
   },
-  commentContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    top: -70, // ตำแหน่งคอมเมนต์ Input
-    left: -10
-  },
   commentInput: {
     width: 230,
     backgroundColor: '#f0f0f0',
@@ -257,7 +382,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     left: -60,
     top:10,
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFF',
+    borderWidth: 1
   },
   commentButton: {
     backgroundColor: '#1C1441',
@@ -268,11 +394,6 @@ const styles = StyleSheet.create({
     top:10,
     borderColor: 'black'
   },
-  icon: {
-    flexDirection: 'row',
-    top: -165,
-    left: 10
-  }
 });
 
 export default Comment;

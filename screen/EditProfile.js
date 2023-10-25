@@ -208,21 +208,31 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
   
-        // อัปเดตข้อมูลในคอลเลคชัน postHome ของผู้ใช้
-        const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
-        const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
+        // อัปเดตข้อมูลในคอลเลคชัน allpostHome ของผู้ใช้
+        const allPostHomeCollectionRef = collection(db, 'allpostHome');
+        const allPostShopCollectionRef = collection(db, 'allpostShop');
   
-        const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
-        const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
+        // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
+        const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
+        const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
+  
+        const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
+        const allPostShopSnapshot = await getDocs(allPostShopQuery);
+  
+        // ใช้ Write Batch สำหรับการอัปเดตคุณสมบัติในเอกสาร
         const batch = writeBatch(db);
   
-        userPostHomeSnapshot.forEach((doc) => {
-          batch.update(doc.ref, updatedUserData);
-        });
-        userPostShopSnapshot.forEach((doc) => {
+        // อัปเดตคุณสมบัติในเอกสารในคอลเลคชัน allpostHome
+        allPostHomeSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);
         });
   
+        // อัปเดตคุณสมบัติในเอกสารในคอลเลคชัน allpostShop
+        allPostShopSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
+        });
+  
+        // ทำการ commit สำหรับ Write Batch เพื่ออัปเดตคุณสมบัติในเอกสารทั้งหมด
         await batch.commit();
   
         alert('Data updated');
@@ -234,7 +244,6 @@ const EditProfile = ({ navigation }) => {
       console.error('Error updating user data:', error.message);
     }
   };
-
       return (
         <SafeAreaView style={styles.container}>
         <View>

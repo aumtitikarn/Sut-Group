@@ -9,11 +9,11 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // นำเข้า�
 
 
 export default function PostShop() {
+  const [userData, setUserData] = useState({});
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
   const [isLiked, setIsLiked] = useState([]);
   const [likeCount, setLikeCount] = useState([]);
-const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);  
   const db = FIRESTORE_DB;
   const auth = getAuth();
@@ -36,6 +36,30 @@ const [posts, setPosts] = useState([]);
     }
   };
   useEffect(() => {
+    const userUid = auth.currentUser?.uid;
+    const unsubscrib = fetchUsers();
+    
+      if (typeof unsubscrib === 'function') {
+        unsubscrib();
+      } if (userUid) {
+        const userCollectionRef = collection(db, 'users');
+        const userDocRef = doc(userCollectionRef, userUid);
+        getDoc(userDocRef)
+        .then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User Data:', userData);
+            setUserData(userData);
+            // Set the user's profile image in the state
+            
+          } else {
+            console.error('User document does not exist.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data: ', error);
+        });
+    }
     const q = query(collection(db, 'allpostShop'), orderBy('timestamp', 'desc'));
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -55,13 +79,13 @@ const [posts, setPosts] = useState([]);
       setIsLiked(updatedIsLiked);
       setLikeCount(updatedLikeCount);
     });
-  
     return () => {
       // ยกเลิก subscription เมื่อ component ถูก unmounted
+      
       unsubscribeAuth();
       unsubscribe();
     };
-  }, []);
+  }, [auth.currentUser,shops]);
   
   const handleEdit = (shopId) => {
     const shop = shops.find((shop) => shop.id === shopId);
@@ -161,12 +185,26 @@ const [posts, setPosts] = useState([]);
       await updateDoc(postShopRef, updateData);
     }
   };
+  const fetchUsers = async () => {
+    try {
+      const userUid = auth.currentUser.uid;
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
   
+      // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
+      const unsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          const userData = doc.data();
+          setUserData(userData);
+        }
+      });
   
-
-  
-  
-  
+      // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
+      return unsubscribe;
+    } catch (error) {
+      console.error('Error fetching user data: ', error);
+    }
+  };
   
   const formatPostTime = (timestamp) => {
     if (timestamp) {
@@ -235,15 +273,15 @@ const [posts, setPosts] = useState([]);
             </Card>
             <View style={{ top: -40 }}>
               <View style={{ left: 60 }}>
-              
               <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
-            <Image
-              source={{ uri: shop.profileImg }}
-              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
-            /> 
-           
-                <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
-                <Text style={{ top: -5 }}>#{shop.faculty}</Text>
+              
+        <Image
+          source={{ uri: userData.profileImg }}
+          style={{ borderRadius: 50, position: 'absolute', width: 50, height: 50, left: -60, top: 40 }}
+        />
+      
+                <Text style={{ top: -5, fontWeight: 'bold' }}>{userData.username}</Text>
+                <Text style={{ top: -5 }}>#{userData.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
               <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
-import { doc, updateDoc,getDownloadURL, ref, uploadString } from 'firebase/firestore';
+import { doc, updateDoc, getDownloadURL,  } from 'firebase/firestore';
+import { getStorage, ref , uploadString  } from 'firebase/storage';;
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
-import { launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
 
 
 const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
@@ -12,56 +13,81 @@ export default function EditPostShop({ route, navigation }) {
   const { shopId, initialData } = route.params;
   const [newShopData, setNewShopData] = useState(initialData);
   const [photo, setPhoto] = useState(null);
- 
+  const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
+  const [photoURL, setPhotoURL] = useState(null);
 
-
- 
+ useEffect(() => {
+    openlib();
+  }, []); 
   
   const handleUpdatePost = async () => {
     const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
-    console.log(newShopData);
-    
-    
+
     try {
       await updateDoc(shopRef, newShopData);
       console.log('โพสต์ถูกอัปเดตเรียบร้อยแล้ว');
-      navigation.goBack(); // หลังจากแก้ไขสำเร็จให้กลับไปที่หน้าก่อนหน้านี้
+      navigation.goBack();
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
+  
     if (newShopData.photo && newShopData.photo !== null && newShopData.photo !== undefined) {
       const photoUri = newShopData.photo;
-      const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
-      
-      // อัปโหลดรูปภาพไปยัง Firebase Storage
-      await uploadString(storageRef, photoUri, 'data_url');
-      
-      // รับ URL ของรูปภาพที่อัปโหลด
-      const downloadURL = await getDownloadURL(storageRef);
-      
-      // อัปเดตข้อมูลโพสต์รวมถึง URL ของรูปภาพ
-      await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+     
+  
+      try {
+        const response = await fetch(photoUri);
+        const blob = await response.blob();
+  
+        await uploadString(storageRef, blob, 'data_url');
+        const downloadURL = await getDownloadURL(storageRef);
+  
+        await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: ', error);
+      }
     } else {
-      // ถ้าไม่มีรูปภาพถูกเลือก, อัปเดตโพสต์โดยไม่รวม URL รูปภาพ
       await updateDoc(shopRef, newShopData);
     }
+  };
+  const uploadImage = async (uri) => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
+      await uploadString(storageRef, blob, 'data_url');
+      const downloadURL = await getDownloadURL(storageRef);
   
+      // อัปเดตข้อมูลของ shop ใน Firestore ด้วย URL รูปภาพใหม่
+      const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
+      await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+  
+      // อัปเดต state สำหรับแสดงรูปภาพใหม่
+      setPhotoURL(downloadURL);
+    } catch (error) {
+      console.error('Error uploading image: ', error);
+    }
   };
-  const openImagePicker = () => {
-    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
-      if (!response.didCancel) {
-        const photoUri = response.uri;
-        const data = await fetch(photoUri);
-        const blob = await data.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const photoDataUrl = reader.result;
-          setNewShopData({ ...newShopData, photo: photoDataUrl });
-        };
-        reader.readAsDataURL(blob);
-      }
+  
+  
+  const openlib = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
     });
+  
+    console.log(result);
+  
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+      uploadImage(result.assets[0].uri, 'photo'); // ส่ง 'profileImg' เพื่อระบุการอัปโหลดรูปภาพสำหรับ profile
+    }
   };
+  
+  
+
   
   
 
@@ -110,9 +136,9 @@ export default function EditPostShop({ route, navigation }) {
         value={newShopData.phon}
         onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
       />
-      {/* เพิ่มฟิลด์อื่น ๆ ที่คุณต้องการให้ผู้ใช้แก้ไข */}
-      {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
-      <Button title="เลือกรูปภาพ" onPress={openImagePicker} />
+      <Image source={{ uri: photoURL }} style={{ width: 100, height: 100 }} />
+
+      <Button title="เลือกรูปภาพ" onPress={openlib} />
 
       <Button title="บันทึกการแก้ไข" onPress={handleUpdatePost} />
       </View>

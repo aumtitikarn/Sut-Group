@@ -72,45 +72,44 @@ const handleMarket = async () => {
         prict: pri, // ราคาสินค้า
         phon:phon,
         timestamp: serverTimestamp(),
-        photo: photo,
         userUid: userUid,
         shopid: id,
         like: 0
       };
       if (photo) {
-        // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
         const fileName = `${id}.jpg`;
-      
-        // อัปโหลดรูปภาพไปยัง Firebase Storage
-        const storageRef = ref(storage, 'photo_post/' + fileName); // ต้องใช้ ref() แทน storage.ref()
-      
+        const storageRef = ref(storage, 'photo_shop/' + fileName);
+        
+        // Convert the local file URI to Blob
         const response = await fetch(photo);
         const blob = await response.blob();
-      
+
+        // Upload the image to Firebase Storage
         await uploadBytes(storageRef, blob);
-      
-        // อัปเดตค่า 'photo' ด้วย URI ที่อ้างอิงจาก Firebase Storage
+
+        // Get the download URL of the uploaded image
         const downloadURL = await getDownloadURL(storageRef);
+
+        // Add the download URL to the shop object
         shop.photo = downloadURL;
       }
-      // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
       const allpostShopCollectionRef = collection(db, 'allpostShop');
-  
-      // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
+      // Upload the shop object data to Firestore
       await setDoc(doc(allpostShopCollectionRef, id), shop);
       await setDoc(doc(postShopCollectionRef, id), shop);
+      
+      // Navigate to the desired screen after successful upload
       navigation.navigate('Marketplace');
-      console.log('Document written with ID: ', id);
+
+      // Clear the selected photo after uploading
       setPhoto(null);
-      // เซ็ต tname เป็นค่าเริ่มต้นหลังจากใช้ข้อมูล
-      setTname('');
     }
-   
+
+    // ... (your existing code)
   } catch (error) {
     console.error('Error adding document: ', error);
   }
 };
-
 
   
   // เข้าถึงกล้อง
@@ -157,10 +156,10 @@ const handleMarket = async () => {
     </View>
       <View
    style={{
-      top: 20,
+      top: 25,
       left: 20, 
     }}>
-    <Avatar.Icon icon="account-circle" size={50} />
+    <Avatar.Icon icon="account-circle" size={60} style={{  backgroundColor:'orange'}} color={'#FFF'} />
     </View>
      <View  style={{
             top: -30,

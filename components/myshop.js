@@ -200,10 +200,8 @@ export default function MyShop() {
   
 
   return (
-    <ScrollView>
-
     <View style={styles.container}>
-
+      <ScrollView>
       {shops.map((shop, index) => {
       if (shop.userUid === currentUser?.uid) {
         return (
@@ -269,8 +267,8 @@ export default function MyShop() {
       }
       return null;
            })}
+      </ScrollView>
     </View>
-    </ScrollView>
 
   );
 }
@@ -280,6 +278,7 @@ const styles = StyleSheet.create({
     flex: 1, // ให้ container ขยายตามพื้นที่ของ parent component
     flexDirection: 'column',
     justifyContent: 'center',
+    backgroundColor: '#8AD1DB'
   },
   product: {
     margin: 10,

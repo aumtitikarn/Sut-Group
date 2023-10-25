@@ -25,6 +25,7 @@ export default function Marketpost() {
   const [faculty,setFaculty] = useState('');
   const [username,setUsername]= useState('');
   const [photo, setPhoto] = useState(null);
+  const [profileImg, setProfileImg] = useState(''); 
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
@@ -45,6 +46,7 @@ useEffect(() => {
           console.log('User Data:', userData);
           setUsername(userData.username);
           setFaculty(userData.faculty);
+          setProfileImg(userData.profileImg);
           console.log('Name:', username);
       console.log('Faculty:', faculty);
         } else {
@@ -72,6 +74,7 @@ const handleMarket = async () => {
         prict: pri, // ราคาสินค้า
         phon:phon,
         timestamp: serverTimestamp(),
+        profileImg: profileImg,
         userUid: userUid,
         shopid: id,
         like: 0

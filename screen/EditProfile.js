@@ -97,13 +97,21 @@ const EditProfile = ({ navigation }) => {
 
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
+    const allPostShopCollectionRef = collection(db, 'allpostHShop');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
+    const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', auth.currentUser.uid));
 
     const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
+    const allPostShopSnapshot = await getDocs(allPostShopQuery);
     const allPostHomeBatch = writeBatch(db);
+    const allPostShopBatch = writeBatch(db);
 
     allPostHomeSnapshot.forEach((doc) => {
       allPostHomeBatch.update(doc.ref, updateData);
+    });
+
+    allPostShopSnapshot.forEach((doc) => {
+      allPostShopBatch.update(doc.ref, updateData);
     });
 
     await allPostHomeBatch.commit();

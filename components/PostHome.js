@@ -262,7 +262,7 @@ return (
             <Icon
             name={isLiked[post.id] ? 'heart' : 'heart'}
             size={25}
-            color={isLiked[post.id] ? 'orange' : 'black'} // Set the color based on the state
+            color={isLiked[post.id] ? 'black' : 'black'} // Set the color based on the state
             style={{ marginLeft: 30 }}
             />
             </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet,Text,Image } from 'react-native';
+import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
 import { doc, updateDoc,getDownloadURL, ref, uploadString } from 'firebase/firestore';
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,10 +12,15 @@ export default function EditPostShop({ route, navigation }) {
   const { shopId, initialData } = route.params;
   const [newShopData, setNewShopData] = useState(initialData);
   const [photo, setPhoto] = useState(null);
+ 
 
+
+ 
+  
   const handleUpdatePost = async () => {
     const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
     console.log(newShopData);
+    
     
     try {
       await updateDoc(shopRef, newShopData);
@@ -24,7 +29,7 @@ export default function EditPostShop({ route, navigation }) {
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
-    if (newShopData.photo) {
+    if (newShopData.photo && newShopData.photo !== null && newShopData.photo !== undefined) {
       const photoUri = newShopData.photo;
       const storageRef = ref(FIREBASE_STORAGE, `shopPhotos/${shopId}`);
       
@@ -43,27 +48,33 @@ export default function EditPostShop({ route, navigation }) {
   
   };
   const openImagePicker = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
       if (!response.didCancel) {
-        // รับ URL ของรูปภาพจาก response.uri
         const photoUri = response.uri;
-        setNewShopData({ ...newShopData, photo: photoUri });
+        const data = await fetch(photoUri);
+        const blob = await data.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const photoDataUrl = reader.result;
+          setNewShopData({ ...newShopData, photo: photoDataUrl });
+        };
+        reader.readAsDataURL(blob);
       }
     });
   };
   
+  
 
   return (
     <View style={styles.container}>
-      <View>
+     <TouchableOpacity>
     <MaterialCommunityIcons 
       name="arrow-left-thick"  
-      size={50} style={{margin:10, top: 20}} 
+      size={50} style={{margin:10, top: 30}} 
      onPress={() => navigation.goBack()}
       /> 
-     
-    </View>
-    <Text style={{textAlign:'center',top:-30,fontSize:20}}>แก้ไขโพสต์</Text>
+     </TouchableOpacity>
+    <Text style={{textAlign:'center',top:-20,fontSize:20}}>แก้ไขโพสต์</Text>
     <View  style={{top:100}}>
       <View  style={{ top: -10, margin: 10 }} >
     <SelectDropdown

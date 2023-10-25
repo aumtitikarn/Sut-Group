@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 import PostProfile from '../components/postProfile'; // Use the imported component
 import UserData from '../components/userData';
 import Share from '../components/Share.js';
+import MyShop from '../components/myshop';
 
 const market = () => (
   <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
@@ -19,7 +20,7 @@ export default function TabViewExample() {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'postProfile', title: 'โพสต์ของฉัน' },
-    { key: 'market', title: 'สินค้าของฉัน' },
+    { key: 'myshop', title: 'สินค้าของฉัน' },
     { key: 'share', title: 'แชร์ของฉัน' },
   ]);
 

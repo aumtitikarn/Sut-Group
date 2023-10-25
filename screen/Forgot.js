@@ -31,10 +31,10 @@ export default function Forgot() {
         onChangeText={setEmail}
       />
       <View style={styles.loginButton}>
-        <Button color="#000001" title="Reset password" onPress={handleResetPassword} />
+        <Button color="#8AD1DB" title="Reset password" onPress={handleResetPassword} />
       </View>
       <View style={styles.loginButton}>
-        <Button color="#000001" title="Back" onPress={() => navigation.navigate('Register')} />
+        <Button color="#8AD1DB" title="Back" onPress={() => navigation.navigate('Register')} />
       </View>
     </View>
   );
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#FFBD59',
+    backgroundColor: '#FDF4E2',
   },
   logostyle: {
     marginTop: 2,

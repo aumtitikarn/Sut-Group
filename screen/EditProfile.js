@@ -260,7 +260,7 @@ const EditProfile = ({ navigation }) => {
                     style={{ position: 'absolute', top: -80, left:150, color: 'black' }}
                 />
             </TouchableOpacity>
-        <Text style={{fontWeight: 'bold', fontSize: 20, left: 20, top:-20}}>
+        <Text style={{fontWeight: 'bold', fontSize: 20, left: 20, top:-20, color: "#1C1441"}}>
             แก้ไขข้อมูลส่วนตัว
         </Text>
         <TextInput
@@ -284,7 +284,7 @@ const EditProfile = ({ navigation }) => {
         onChangeText={(text) => setNewData({ ...newData, email: text })}
       />
       <TouchableOpacity style={styles.buttonYellow} onPress={handleSaveChanges}>
-        <Text style={styles.buttonText}>บันทึกข้อมูล</Text>
+        <Text style={{ color: "#1C1441"}}>บันทึกข้อมูล</Text>
       </TouchableOpacity>
         </View>
         </SafeAreaView>
@@ -292,7 +292,7 @@ const EditProfile = ({ navigation }) => {
     };
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FFF6DE',
+        backgroundColor: '#8AD1DB',
         flex: 1,
         paddingTop: StatusBar.currentHeight
       },
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        backgroundColor: '#ffdd59',
+        backgroundColor: '#FFF',
         borderRadius: 12,
         marginTop: 12,
         padding: 10,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
       buttonYellow: {
         borderRadius: 5,
         borderWidth: 1,
-        backgroundColor: '#FFBD59',
+        backgroundColor: '#FDF4E2',
         width: 90,
         padding: 8,
         margin: 10,

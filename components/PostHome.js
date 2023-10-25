@@ -302,12 +302,12 @@ return (
 const styles = StyleSheet.create({
 container: {
   flex: 1,
-  backgroundColor: '#fff5e8',
+  backgroundColor: '#8AD1DB',
 },
 postContainer: {
-  borderWidth: 1,
+  borderWidth: 2,
   borderColor: '#000',
-  backgroundColor: '#ffebce',
+  backgroundColor: '#FDF4E2',
   margin: 15,
   borderRadius: 50,
   overflow: 'hidden',

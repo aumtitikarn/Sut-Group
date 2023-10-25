@@ -18,10 +18,9 @@ export default function MyComponent() {
 
   return(
     <View style={styles.conter}>
-    <Appbar.Header style={{backgroundColor:'#FFBD59', height: 40, top:-15}} >
-      <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
-      <Appbar.Content title=" Marketplace" style={{
-      marginRight: 50, textAlign: 'center'}} />
+    <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
+      <Image style={styles.logo} source={require('../assets/2.png')}  />
+      <Appbar.Content title=" Marketplace" style={{ left: 30}} />
       <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
       
     </Appbar.Header> 
@@ -36,7 +35,7 @@ export default function MyComponent() {
               style={{
                 borderRadius: 5,
                 borderWidth: 1,
-                backgroundColor: '#FFBD59',
+                backgroundColor: '#FDF4E2',
                 width: 90,
                 padding: 10,
                 top: 40,
@@ -79,7 +78,7 @@ export default function MyComponent() {
 const styles = StyleSheet.create({
 conter:{
   flex: 1,
-    backgroundColor: '#fffae8',
+    backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight
     
 },
@@ -89,6 +88,7 @@ logo: {
     
   },
   search:{backgroundColor: '#FFF',
+    borderWidth: 2,
     borderRadius: 30,
     marginTop: 10,
     marginRight: 20,

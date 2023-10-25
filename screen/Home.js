@@ -17,8 +17,8 @@ const MyComponent = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-        <Appbar.Header style={{ backgroundColor: '#FFBD59'  , height: 30, top:-15}}>
-          <Image style={styles.logo} source={require('../assets/pro-sut.png')} />
+        <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
+          <Image style={styles.logo} source={require('../assets/2.png')} />
           <Appbar.Content title="Home" style={{ marginLeft : 75 }} />
           <Appbar.Action
             icon="bell"
@@ -32,8 +32,8 @@ const MyComponent = () => {
           <TouchableOpacity
             style={{
               borderRadius: 5,
-              borderWidth: 1,
-              backgroundColor: '#FFBD59',
+              borderWidth: 2,
+              backgroundColor: '#FDF4E2',
               width: 90,
               padding: 10,
               marginTop: 25,
@@ -41,7 +41,7 @@ const MyComponent = () => {
             }}
             onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
           >
-            <Text>สร้างโพสต์</Text>
+            <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
           </TouchableOpacity>
         </View>
         <View style={{ marginTop: 12 }}>
@@ -59,12 +59,13 @@ const MyComponent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff5e8',
+    backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight
   },
   logo: {
     height: 50,
     width: 100,
+    top:-5
   },
   search: {
     backgroundColor: '#FFF',

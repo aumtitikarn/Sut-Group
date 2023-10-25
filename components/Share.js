@@ -210,7 +210,7 @@ const Share = () => {
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Icon name="share" size={25} color="orange" style={{ marginLeft: 60, top: -2 }} onPress={() => handleDeletePost(post.id)}/>
+            <Icon name="share" size={25} color="#8AD1DB" style={{ marginLeft: 60, top: -2 }} onPress={() => handleDeletePost(post.id)}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -223,12 +223,12 @@ const Share = () => {
 const styles = StyleSheet.create({
 container: {
   flex: 1,
-  backgroundColor: '#fff5e8',
+  backgroundColor: '#8AD1DB',
 },
 postContainer: {
-  borderWidth: 1,
+  borderWidth: 2,
   borderColor: '#000',
-  backgroundColor: '#ffebce',
+  backgroundColor: '#FDF4E2',
   margin: 15,
   borderRadius: 50,
   overflow: 'hidden',

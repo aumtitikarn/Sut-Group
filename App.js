@@ -28,10 +28,10 @@ function MyTabs() {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        tabBarActiveTintColor: '#001e1d',
+        tabBarActiveTintColor: '#1C1441',
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#f9bc60',
+          backgroundColor: '#FDF4E2',
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           position: 'absolute',

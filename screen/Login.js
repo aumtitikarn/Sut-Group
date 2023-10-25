@@ -46,7 +46,7 @@ export default function Login({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
     <View>
-      <Image style={styles.logo} source={require('../assets/pro-sut.png')}  />
+      <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Text style={styles.logostyle}>เข้าสู่ระบบ</Text>
       <TextInput
         style={styles.input}
@@ -64,12 +64,12 @@ export default function Login({ navigation }) {
         placeholderTextColor="Gray"
       />
       <Text
-        style={{color: 'white', left:40}}
+        style={{color: '#1C1441', left:40}}
         onPress={() => navigation.navigate('Forgot')}>
         ลืมรหัสผ่าน?
       </Text>
       <View style={styles.loginButton}>
-        <Button color="#000001" title="Log in" onPress={() => UserLogin()} />
+        <Button color="#8AD1DB" title="Log in" onPress={() => UserLogin()} />
       </View>
       <Text
         style={styles.register}
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#FFBD59',
+    backgroundColor: '#FDF4E2',
     paddingTop: StatusBar.currentHeight //เว้นระยะส่วนบนขอ Andriod
   },
   logostyle: {
@@ -108,16 +108,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginRight: 30,
     marginLeft: 30,
-    
   },
   register: {
-    color: '#FFF',
+    color: '#1C1441',
     marginRight: 30,
     alignSelf: 'flex-end',
   },
   logo: {
     height: 150,
     width: 320,
-    marginLeft: 30
+    marginLeft: 50
   },
 });

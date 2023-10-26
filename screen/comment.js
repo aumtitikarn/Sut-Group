@@ -24,17 +24,21 @@ import { addDoc,
     doc,
     getDoc,
     setDoc,
-    onSnapshot
+    onSnapshot,
+    query,
+    orderBy
     } 
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import CommentData from '../components/commentData';
 
 const Comment = () => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
   const [userData, setUserData] = useState('');
+  const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [text, setText] = useState('');
   const [photo, setPhoto] = useState('');
@@ -67,6 +71,7 @@ const Comment = () => {
       console.error('Error fetching user data: ', error);
     }
   };
+ 
 
   useEffect(() => {
     const unsubscribe = fetchUsers();
@@ -252,7 +257,6 @@ const openlib = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
       {posts && (
             <View>
         <View>
@@ -318,7 +322,7 @@ const openlib = async () => {
           <View name="1"
           style={{
             borderBottomColor: "black", 
-            borderBottomWidth: 1, 
+            borderBottomWidth: 2, 
             alignSelf:'stretch',
             width: "100%",
             top: photo ? -230 : -150
@@ -353,7 +357,7 @@ const openlib = async () => {
               <View name="2"
           style={{
             borderBottomColor: "black", 
-            borderBottomWidth: 1, 
+            borderBottomWidth: 2, 
             alignSelf:'stretch',
             width: "100%",
             top: photo ? -70 : -120,
@@ -362,8 +366,10 @@ const openlib = async () => {
           </View>
           </View>
           </View>
-          )}
-      </ScrollView>
+          )} 
+          <View style={{ top: photo ? -260 : -241}}>
+          <CommentData />
+          </View>
     </SafeAreaView>
   );
 };

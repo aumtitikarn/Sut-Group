@@ -159,10 +159,14 @@ const handleMarket = async () => {
     </View>
       <View
    style={{
-      top: 25,
+      top: 25, 
       left: 20, 
     }}>
     <Avatar.Icon icon="account-circle" size={60} style={{  backgroundColor:'orange'}} color={'#FFF'} />
+            <Image
+              source={{ uri: profileImg }}
+              style={{  borderRadius: 50, position: 'absolute', width: 60, height:60}}
+            /> 
     </View>
      <View  style={{
             top: -30,

@@ -20,7 +20,7 @@ export default function MyComponent() {
     <View style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/2.png')}  />
-      <Appbar.Content title=" Marketplace" style={{ left: 30}} />
+      <Appbar.Content title=" Marketplace" style={{ right: 20}} />
       <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
       
     </Appbar.Header> 

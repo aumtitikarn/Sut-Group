@@ -145,8 +145,8 @@ export default function PostShop() {
   
 
   return (
-    <ScrollView>
     <View style={styles.container}>
+      <ScrollView>
     {shops.filter((shop) => isLiked[shop.id]).map((shop, index) => {
          return(
           <TouchableOpacity key={index} style={styles.product}>
@@ -197,9 +197,9 @@ export default function PostShop() {
           </Card>
         </TouchableOpacity>
         );
-           })}
+           })} 
+           </ScrollView>
     </View>
-    </ScrollView>
   );
 }
 
@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1, // ให้ container ขยายตามพื้นที่ของ parent component
     flexDirection: 'column',
     justifyContent: 'center',
+    backgroundColor: '#8AD1DB',
   },
   product: {
     margin: 10,

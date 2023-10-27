@@ -19,6 +19,7 @@ import Forgot from './screen/Forgot';
 import EditPostShop from './screen/EditPostshop';
 import Comment from './screen/comment';
 import PostHome from './components/PostHome';
+import Reply from './screen/Reply';
 
 const Tab =  createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -105,6 +106,7 @@ export default function Page() {
         <Stack.Screen name="EditPostHome" component={EditPostHome} />
         <Stack.Screen name="Comment" component={Comment} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
+        <Stack.Screen name="Reply" component={Reply} />
         <Stack.Screen name="PostHome" component={PostHome} />
       </Stack.Navigator>
     </NavigationContainer>

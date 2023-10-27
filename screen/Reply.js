@@ -31,9 +31,9 @@ import { addDoc,
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import CommentData from '../components/commentData';
 
-const Comment = () => {
+
+const Reply = () => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
@@ -47,64 +47,48 @@ const Comment = () => {
   const [profileImg, setProfileImg] = useState(''); 
   const navigation = useNavigation();
   const route = useRoute();
+  const commentItem = route.params.comment; 
   const postId = route.params.postId; 
-  const uidcom = route.params.uidcom; 
-  // console.log(postId);
+  console.log('commentId : ',commentItem);
 
-  const fetchUsers = async () => {
-    try {
-      const userUid = auth.currentUser.uid;
-      const userCollectionRef = collection(db, 'users');
-      const userDocRef = doc(userCollectionRef, userUid);
+  useEffect(() => {
+   const fetchCommentData = async () => {
+  try {
+    // Construct a reference to the specific comment document
+    const commentRef = doc(db, 'allpostHome', postId, 'comment', commentItem);
+    const commentDoc = await getDoc(commentRef);
 
-      // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
-      const unsubscribe = onSnapshot(userDocRef, (doc) => {
-        if (doc.exists()) {
-          const userData = doc.data();
-          setUserData(userData);
-        }
-      });
-
-      // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
-      return unsubscribe;
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
+    if (commentDoc.exists()) {
+      const commentData = commentDoc.data();
+      console.log('Comment Data:', commentData);
+      setComment(commentData);
+    } else {
+      console.log('Comment not found');
     }
-  };
- 
+  } catch (error) {
+    console.error('Error fetching comment data:', error);
+  }
+};
+    
+    fetchCommentData(); // Call the function to fetch comment data
+  }, [commentItem, postId]);
 
-  useEffect(() => {
-    const unsubscribe = fetchUsers();
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
-  }, []);
+  // เข้าถึงกล้อง
+const camera = async () => {
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
 
-  useEffect(() => {
-    // Function to fetch post data from Firestore
-    const fetchPostData = async () => {
-      try {
-        const postRef = doc(FIRESTORE_DB, 'allpostHome', postId);
-        const postDoc = await getDoc(postRef);
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
 
-        if (postDoc.exists()) {
-          // Document exists, store the data in state
-          setPosts(postDoc.data());
-        } else {
-          // Document doesn't exist
-          console.log('Post not found');
-        }
-      } catch (error) {
-        console.error('Error fetching post data:', error);
-      }
-    };
 
-    fetchPostData(); // Call the function to fetch post data
-  }, [postId]);
-
-  const formatPostTime = (timestamp) => {
+const formatPostTime = (timestamp) => {
     if (timestamp) {
       // ดึงค่าเวลาปัจจุบัน
       const now = new Date().getTime();
@@ -142,31 +126,6 @@ const Comment = () => {
       return 'ไม่มีข้อมูลวันที่';
     }
   }
-  useEffect(() => {
-    const userUid = auth.currentUser?.uid;
-    if (userUid) {
-      const userCollectionRef = collection(db, 'users');
-      const userDocRef = doc(userCollectionRef, userUid);
-  
-      getDoc(userDocRef)
-        .then((userDoc) => {
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log('User Data:', userData);
-            setUsername(userData.username);
-            setFaculty(userData.faculty);
-            setProfileImg(userData.profileImg);
-            console.log('Name:', username);
-        console.log('Faculty:', faculty);
-          } else {
-            console.error('User document does not exist.');
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching user data: ', error);
-        });
-    }
-  }, [auth.currentUser]);
 
   const savecomment = async () => {
     try {
@@ -224,20 +183,6 @@ const Comment = () => {
     }
   };
 
-  // เข้าถึงกล้อง
-const camera = async () => {
-  const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [10, 10],
-    quality: 1,
-  });
-
-  if (!result.canceled) {
-    setPhoto(result.assets[0].uri);
-  }
-};
-
 // เข้าถึงคลังรูปภาพ
 const openlib = async () => {
   let result = await ImagePicker.launchImageLibraryAsync({
@@ -253,11 +198,65 @@ const openlib = async () => {
     setPhoto(result.assets[0].uri);
   }
 };
+useEffect(() => {
+    const userUid = auth.currentUser?.uid;
+    if (userUid) {
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
+  
+      getDoc(userDocRef)
+        .then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User Data:', userData);
+            setUsername(userData.username);
+            setFaculty(userData.faculty);
+            setProfileImg(userData.profileImg);
+            console.log('Name:', username);
+        console.log('Faculty:', faculty);
+          } else {
+            console.error('User document does not exist.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data: ', error);
+        });
+    }
+  }, [auth.currentUser]);
+  const fetchUsers = async () => {
+    try {
+      const userUid = auth.currentUser.uid;
+      const userCollectionRef = collection(db, 'users');
+      const userDocRef = doc(userCollectionRef, userUid);
+
+      // ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงในเอกสารของผู้ใช้
+      const unsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          const userData = doc.data();
+          setUserData(userData);
+        }
+      });
+
+      // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
+      return unsubscribe;
+    } catch (error) {
+      console.error('Error fetching user data: ', error);
+    }
+  };
  
+
+  useEffect(() => {
+    const unsubscribe = fetchUsers();
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {posts && (
+      {comment && (
             <View>
         <View>
           <MaterialCommunityIcons
@@ -266,6 +265,7 @@ const openlib = async () => {
             style={{ margin: 10, top: 20, left: 10 }}
             onPress={() => navigation.goBack()}
           />
+          <Text style={{ left: 80, top: 38, fontWeight: 'bold', fontSize: 24, position: 'absolute'}}>ตอบกลับ {comment.username}</Text>
         </View>
         <View>
               <Avatar.Icon
@@ -275,7 +275,7 @@ const openlib = async () => {
                 color={'#FFF'}
               />
               <Image
-                source={{ uri: posts.profileImg }}
+                source={{ uri: comment.profileImg }}
                 style={{
                   borderRadius: 50,
                   position: 'absolute',
@@ -287,18 +287,18 @@ const openlib = async () => {
               />
               <View style={{ left: 95, top: -15 }}>
                 <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }}>
-                  {posts.username}
+                  {comment.username}
                 </Text>
-                <Text style={{ top: -5, color: '#1C1441' }}>#{posts.faculty}</Text>
+                <Text style={{ top: -5, color: '#1C1441' }}>#{comment.faculty}</Text>
                 <Text style={{ color: '#777267', top: -3 }}>
-                  {formatPostTime(posts.timestamp)}
+                  {formatPostTime(comment.timestamp)}
                 </Text>
               </View>
               <Text style={{ fontSize: 25, margin: 30, top: -30 , color: '#1C1441'}}>
-                {posts.text}
+                {comment.text}
               </Text>
               <Image
-                source={{ uri: posts.photo }}
+                source={{ uri: comment.photo }}
                 style={{
                   width: 200,
                   height: 200,
@@ -308,7 +308,7 @@ const openlib = async () => {
                 }}
               />
             </View>
-            <View style={{top: posts.photo ? 160 : -40 }}>
+            <View style={{top: comment.photo ? 160 : -40 }}>
             <View style={{ flexDirection: 'row',
               top: photo ? -175 : -165,
               left: 10}}>
@@ -335,7 +335,7 @@ const openlib = async () => {
           top: photo ? -200 : -70,
           left: -10,}}>
               <TextInput
-                placeholder="เขียนคอมเมนต์ของคุณ..."
+                placeholder="ตอบกลับข้อความ..."
                 style={styles.commentInput}
                 value={text}
                 onChangeText={(text) => setText(text)}
@@ -368,12 +368,10 @@ const openlib = async () => {
           </View>
           )} 
           <View style={{ top: photo ? -260 : -241}}>
-          <CommentData />
           </View>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -403,4 +401,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Comment;
+export default Reply;

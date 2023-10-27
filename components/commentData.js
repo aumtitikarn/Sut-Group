@@ -17,16 +17,19 @@ import { useNavigation } from '@react-navigation/native';
 import { Avatar } from 'react-native-paper';
 import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
 import { onSnapshot, query, orderBy, collection } from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
+
 
 const CommentData = () => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
   const [comment, setComment] = useState([]);
+  const [comments, setComments] = useState([]);
   const navigation = useNavigation();
   const route = useRoute();
   const postId = route.params.postId;
+
+  
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome', postId, 'comment'), orderBy('timestamp', 'desc'));
@@ -90,7 +93,7 @@ const CommentData = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
           {comment.map((commentItem) => (
-            <View key={commentItem.id} 
+            <View key={commentItem.id}  
             style={{backgroundColor: '#FDF4E2',
             padding: 8,
             borderWidth: 2,
@@ -98,6 +101,24 @@ const CommentData = () => {
             margin: 5,
             top: -5,
             height: commentItem.photo ? 230 : 110}}>
+              <TouchableOpacity 
+              style={{borderWidth:1, 
+                left: 320, 
+                top: commentItem.photo ? 180 : 60, 
+                borderRadius: 2,
+                backgroundColor: "#8AD1DB",
+                position: "absolute", 
+                padding : 5,
+                }} 
+                onPress={() =>
+                  navigation.navigate('Reply', {
+                    comment: commentItem.id,
+                    postId: postId, 
+                  })
+                }
+              >
+            <Text style={{color:"#1C1441"}}>ตอบกลับ</Text>
+          </TouchableOpacity>
               <Avatar.Icon
                 icon="account-circle"
                 size={50}
@@ -132,9 +153,6 @@ const CommentData = () => {
                   }}
                 />
               )}
-              <TouchableOpacity>
-            <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
-          </TouchableOpacity>
             </View>
           ))}
       </ScrollView>

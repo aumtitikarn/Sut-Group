@@ -107,16 +107,23 @@ const EditProfile = ({ navigation }) => {
     const allPostHomeBatch = writeBatch(db);
     const allPostShopBatch = writeBatch(db);
     const userUid = auth.currentUser.uid;
-    for (const allPostHomeDoc of allPostHomeSnapshot.docs) {
+    const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
+    const allPostHomecommentQuery = query(allPostHomecommentCollectionRef);
+
+    const allPostHomecommentSnapshot = await getDocs(allPostHomecommentQuery);
+
+    for (const allPostHomeDoc of allPostHomecommentSnapshot.docs) {
       const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
       const commentQuery = query(commentCollectionRef, where('userUid', '==', userUid));
       const commentSnapshot = await getDocs(commentQuery);
 
-      commentSnapshot.forEach((commentDoc) => {
-        allPostHomeBatch.update(commentDoc.ref, updateData);
+      commentSnapshot.forEach((doc) => {
+        // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
+        allPostHomeBatch.update(doc.ref,updateData);
       });
     }
 
+    
 
     allPostHomeSnapshot.forEach((doc) => {
       allPostHomeBatch.update(doc.ref, updateData);
@@ -230,26 +237,33 @@ const EditProfile = ({ navigation }) => {
         // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
         const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
+       
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
         
-  
-        // ใช้ Write Batch สำหรับการอัปเดตคุณสมบัติในเอกสาร
-        const batch = writeBatch(db);
+        // เลือกทุกเอกสารในคอลเลคชัน allpostHome
+      const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
+      const allPostHomecommentQuery = query(allPostHomecommentCollectionRef);
 
-        for (const allPostHomeDoc of allPostHomeSnapshot.docs) {
-          const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
-          const commentQuery = query(commentCollectionRef, where('userUid', '==', userUid));
-          const commentSnapshot = await getDocs(commentQuery);
-    
-          commentSnapshot.forEach((commentDoc) => {
-            batch.update(commentDoc.ref, updatedUserData);
-          });
-        }
-  
+      const allPostHomecommentSnapshot = await getDocs(allPostHomecommentQuery);
+
+      // เลือกทุก comment collection ในทุกเอกสาร allpostHome ที่มี userUid ตรงกับผู้ใช้ปัจจุบัน
+      const batch = writeBatch(db);
+
+      for (const allPostHomeDoc of allPostHomecommentSnapshot.docs) {
+        const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
+        const commentQuery = query(commentCollectionRef, where('userUid', '==', userUid));
+        const commentSnapshot = await getDocs(commentQuery);
+
+        commentSnapshot.forEach((doc) => {
+          // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
+          batch.update(doc.ref, updatedUserData);
+        });
+      }
+
         // อัปเดตคุณสมบัติในเอกสารในคอลเลคชัน allpostHome
         allPostHomeSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);

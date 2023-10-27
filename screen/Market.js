@@ -15,26 +15,33 @@ export default function MyComponent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("ทั้งหมด");
+  const [typ, setType] = useState([]);
+  const [search, setSearch] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const loadFirestoreData = async () => {
+  const loalData = async () => {
     const db = getFirestore();
-    const shopCollection = collection(db, 'allpostShop');
-    const q = query(shopCollection, where('name', '==', searchQuery));
+    const postShopCollection = collection(db, 'allpostShop');
+    const q = query(postShopCollection, where('name', '==', searchQuery));
+
     const querySnapshot = await getDocs(q);
-    const shopData = [];
-  
+    const postShopData = [];
+
     querySnapshot.forEach((doc) => {
-      shopData.push({ id: doc.id, ...doc.data() });
+      postShopData.push({ id: doc.id, ...doc.data() });
     });
-  
-    setSearchResults(shopData);
-    setIsSearching(true);
+
+    setFilteredData(postShopData);
   };
-  useEffect(() => {
-    if (searchQuery) {
-      loadFirestoreData();
-    }
-  }, [searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearch(query);
+    loalData();
+   
+  };
+  
+  
   const handleMarketPost = () => {
    
     navigation.navigate('Marketpost');
@@ -54,9 +61,10 @@ export default function MyComponent() {
    
     <ScrollView>
     <Searchbar
-  placeholder="Search"
-  onChangeText={(query) => setSearchQuery(query)} // เรียกฟังก์ชันเมื่อเปลี่ยนแปลงคำค้นหา
-/>
+        placeholder="Search"
+        onChangeText={handleSearch}
+        value={search}
+      />
     <View style={{ top: 20,
       marginRight: 10,
       marginLeft: 25,}} >
@@ -80,29 +88,35 @@ export default function MyComponent() {
           </View>
     <View style={styles.loginButton}>
     <SelectDropdown
-    data={type}
-    defaultButtonText="ประเภทสินค้า" // เปลี่ยนค่าเริ่มต้นที่นี่
-    onSelect={(selectedItem, index) => {
-      console.log(selectedItem, index);
-    }}
-    buttonTextAfterSelection={(selectedItem, index) => {
-      return selectedItem;
-    }}
-    rowTextForSelection={(product, index) => {
-      return product;
-    }}
-  />
+  data={type}
+  defaultButtonText="ประเภทสินค้า"
+  onSelect={(selectedItem, index) => {
+    setSelectedCategory(selectedItem);
+    setSearchQuery(""); // รีเซ็ตคำค้นหาเมื่อมีการเลือกประเภทใหม่
+    
+  }}
+  buttonTextAfterSelection={(selectedItem, index) => {
+    return selectedItem;
+  }}
+  rowTextForSelection={(product, index) => {
+    return product;
+  }}
+/>
+
     </View>
-    {isSearching ? (
+ <View>
+ {isSearching ? (
   searchResults.map((shop) => (
     <View key={shop.id} style={{ marginTop: 12 }}>
-      <PostShop shop={shop} />
+     <PostShop shop={shop} /> 
     </View>
   ))
 ) : (
-          // ถ้ายังไม่มีการค้นหา ให้แสดงโพสต์ทั้งหมด
-          <PostShop />
-        )}
+  <PostShop />
+)}
+
+
+ </View>
     </ScrollView>
     </View>
   );

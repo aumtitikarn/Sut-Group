@@ -117,9 +117,13 @@ const Createpost = ({ navigation }) => {
           userUid: userUid,
           postid: id,
           like: 0,
-          profileImg: profileImg
+          // profileImg: profileImg
         };
   
+        if (profileImg) {
+          post.profileImg = profileImg;
+        }
+        
         if (photo) {
           // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
           const fileName = `${id}.jpg`;

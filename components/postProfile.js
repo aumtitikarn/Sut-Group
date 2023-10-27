@@ -322,7 +322,7 @@ const PostProfile = () => {
   <Icon
     name={isShared[post.id] ? 'share' : 'share'} 
     size={25}
-    color={isShared[post.id] ? 'orange' : '#000'}   
+    color={isShared[post.id] ? '#8AD1DB' : '#000'}   
   />
 </TouchableOpacity>
           </TouchableOpacity>

@@ -1,20 +1,47 @@
-import  React from 'react';
-import { Appbar, Searchbar,Card } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { Appbar,Searchbar } from 'react-native-paper';
 import { Text, StyleSheet, TextInput,  View, Image,ScrollView,TouchableOpacity, StatusBar} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PostShop from '../components/PostShop';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useNavigation } from '@react-navigation/native';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+
 
     const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
 
 export default function MyComponent() {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const loadFirestoreData = async () => {
+    const db = getFirestore();
+    const shopCollection = collection(db, 'allpostShop');
+    const q = query(shopCollection, where('name', '==', searchQuery));
+    const querySnapshot = await getDocs(q);
+    const shopData = [];
+  
+    querySnapshot.forEach((doc) => {
+      shopData.push({ id: doc.id, ...doc.data() });
+    });
+  
+    setSearchResults(shopData);
+    setIsSearching(true);
+  };
+  useEffect(() => {
+    if (searchQuery) {
+      loadFirestoreData();
+    }
+  }, [searchQuery]);
   const handleMarketPost = () => {
    
     navigation.navigate('Marketpost');
 
   };
+  
+
 
   return(
     <View style={styles.conter}>
@@ -24,7 +51,12 @@ export default function MyComponent() {
       <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
       
     </Appbar.Header> 
-    <Searchbar style={styles.search} placeholder="Search" />
+   
+    <ScrollView>
+    <Searchbar
+  placeholder="Search"
+  onChangeText={(query) => setSearchQuery(query)} // เรียกฟังก์ชันเมื่อเปลี่ยนแปลงคำค้นหา
+/>
     <View style={{ top: 20,
       marginRight: 10,
       marginLeft: 25,}} >
@@ -61,14 +93,16 @@ export default function MyComponent() {
     }}
   />
     </View>
-    <ScrollView>
-    
-    <View style={{
-      marginTop: 12
-     }}>
-     <PostShop />
+    {isSearching ? (
+  searchResults.map((shop) => (
+    <View key={shop.id} style={{ marginTop: 12 }}>
+      <PostShop shop={shop} />
     </View>
-   
+  ))
+) : (
+          // ถ้ายังไม่มีการค้นหา ให้แสดงโพสต์ทั้งหมด
+          <PostShop />
+        )}
     </ScrollView>
     </View>
   );

@@ -1,29 +1,48 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text,Card,ScrollView } from 'react-native';
 import { Searchbar } from 'react-native-paper';
+import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
-const MyComponent = () => {
-  const [searchQuery, setSearchQuery] = React.useState('');
+const Search = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const onChangeSearch = query => setSearchQuery(query);
+  const loadFirestoreData = async () => {
+    const db = getFirestore();
+    const postShopCollection = collection(db, 'allpostHome');
+    const q = query(postShopCollection, where('faculty', '==', searchQuery));
+
+    const querySnapshot = await getDocs(q);
+    const postShopData = [];
+
+    querySnapshot.forEach((doc) => {
+      postShopData.push({ id: doc.id, ...doc.data() });
+    });
+
+    setFilteredData(postShopData);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    loadFirestoreData();
+  };
 
   return (
-    <Searchbar
-      placeholder="Search"
-      onChangeText={onChangeSearch}
-      value={searchQuery}
-      style = {{ 
-        backgroundColor: '#FDF4E2',
-        marginTop: 20,
-        margin: 10,
-        borderWidth: 2,
-        borderColoe: '#FFF',
-        shadowColor: 'rgba(0, 0, 0, 0.25)',
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 4,
-        elevation: 4,
-      }}
-    />
+    <View>
+      <Searchbar
+        placeholder="Search"
+        onChangeText={handleSearch}
+        value={searchQuery}
+      />
+     
+      {filteredData.map((item) => (
+        
+        <Text style={{left:20}} key={item.id}>{item.name}</Text>
+     
+      ))}
+     
+    </View>
   );
 };
 
-export default MyComponent;
+export default Search;

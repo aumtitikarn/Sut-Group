@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // นำเข้า�
 
 
 export default function PostShop() {
-  const [userData, setUserData] = useState({});
+
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
   const [isLiked, setIsLiked] = useState([]);
@@ -18,7 +18,8 @@ export default function PostShop() {
   const db = FIRESTORE_DB;
   const auth = getAuth();
   const navigation = useNavigation();
-  
+
+
   useEffect(() => {
     const q = query(collection(db, 'allpostShop'), orderBy('timestamp', 'desc'));
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -254,6 +255,7 @@ export default function PostShop() {
         </TouchableOpacity>
         );
            })}
+         
     </View>
   );
 }

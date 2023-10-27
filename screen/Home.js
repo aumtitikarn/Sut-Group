@@ -19,7 +19,7 @@ const MyComponent = () => {
     <SafeAreaView style={styles.container}>
         <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
           <Image style={styles.logo} source={require('../assets/2.png')} />
-          <Appbar.Content title="Home" style={{ Left : 2,right:20 }} />
+          <Appbar.Content title="Home" style={{ left: 65 }} />
           <Appbar.Action
             icon="bell"
             style={{ marginLeft: 10 }}
@@ -27,7 +27,6 @@ const MyComponent = () => {
           />
         </Appbar.Header>
         <ScrollView>
-        <Search style={styles.search} />
         <View>
           <TouchableOpacity
             style={{

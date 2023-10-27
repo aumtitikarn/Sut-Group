@@ -10,6 +10,7 @@ import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
+
 const PostHome = () => {
   const [posts, setPosts] = useState([]);
   const db = FIRESTORE_DB;

@@ -170,7 +170,7 @@ const Comment = () => {
 
   const savecomment = async () => {
     try {
-      const userUid = uidcom;
+      const userUid = auth.currentUser.uid;
       if (userUid) {
         // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
         const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
@@ -185,7 +185,7 @@ const Comment = () => {
           photo: photo,
           timestamp: serverTimestamp(),
           userUid: userUid,
-          postid: id,
+          commentId: id,
           profileImg: profileImg
         };
   

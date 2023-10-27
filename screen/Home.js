@@ -8,6 +8,14 @@ import PostHome from '../components/PostHome';
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchResults = (results) => {
+    setSearchResults(results);
+    setIsSearching(true);
+    console.log('Search results:', results);
+  };
 
   const handleCreatePostPress = () => {
    
@@ -27,6 +35,7 @@ const MyComponent = () => {
           />
         </Appbar.Header>
         <ScrollView>
+        <Search style={styles.search} onSearchResults={handleSearchResults} />
         <View>
           <TouchableOpacity
             style={{
@@ -43,9 +52,17 @@ const MyComponent = () => {
             <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
           </TouchableOpacity>
         </View>
-        <View style={{ marginTop: 12 }}>
+        {isSearching ? (
+        searchResults.map((post) => (
+          <View key={post.id} style={{ marginTop: 12 }}>
+            <PostHome post={post} />
+          </View>
+        ))
+      ) : (
+        // ถ้ายังไม่มีการค้นหา ให้แสดงโพสต์ทั้งหมด
         <PostHome />
-        </View>
+      )}
+        
         <Text></Text>
         <Text></Text>
         <Text></Text>

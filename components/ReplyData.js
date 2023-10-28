@@ -16,7 +16,7 @@ import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { Avatar } from 'react-native-paper';
 import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
-import { onSnapshot, query, orderBy, collection } from 'firebase/firestore';
+import { onSnapshot, query, orderBy, collection, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const ReplyData = () => {
@@ -105,20 +105,22 @@ const ReplyData = () => {
   };
   const handleDeleteComment = async (commentId) => {
     try {
-      // สร้างคัวแปร userUid เพื่อใช้ในการตรวจสอบการอนุญาตในการลบ
-      const userUid = auth.currentUser.uid;
+      // Construct the path to the comment document in the reply collection.
+      const replyCommentRef = doc(db, 'allpostHome', postId, 'comment', commentItem, 'reply', commentId);
   
-      // สร้างอ้างอิงไปยังความคิดเห็นที่ต้องการลบ
-      const commentRef = doc(db, 'allpostHome', postId, 'comment', commentId);
+      // Delete the comment document in the reply collection.
+      await deleteDoc(replyCommentRef);
   
-      // ดำเนินการลบความคิดเห็น
-      await deleteDoc(commentRef);
+      // You can also update the state to reflect the deleted comment.
+      // Here's a simple example to remove the deleted comment from the state.
+      setComment((prevComment) => prevComment.filter((comment) => comment.id !== commentId));
   
-      console.log('ลบความคิดเห็นสำเร็จ');
+      console.log('Comment deleted successfully.');
     } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการลบความคิดเห็น: ', error);
+      console.error('Error deleting comment:', error);
     }
-  }
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -188,6 +190,19 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#8AD1DB',
     height: 500,
+  },
+  dropdown: {
+    position: 'absolute',
+    backgroundColor: '#FFF', // สีพื้นหลังของ Dropdown
+    borderWidth: 1, // หรือคุณสามารถใช้ shadow แทน
+    borderColor: '#000', // สีขอบของ Dropdown
+    padding: 8,
+    zIndex: 1, // คุณอาจต้องกำหนด zIndex เพื่อให้ Dropdown อยู่เหนือกับเนื้อหาอื่น
+    borderRadius: 10,
+    marginRight:70,
+    backgroundColor: '#ffd803',
+    top: 10,
+    left: 270
   },
 });
 

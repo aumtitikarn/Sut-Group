@@ -8,7 +8,7 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ top: 10, left: 20 }}>
-        <Avatar.Icon icon="account-circle" size={70} />
+        <Avatar.Icon icon="account-circle" size={7} />
       </View>
       <View style={{ position: 'absolute', left: 110 }}>
         <Text style={{ fontWeight: 'bold', padding: 5 }}>PHORNTHI</Text>

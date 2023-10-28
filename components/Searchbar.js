@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text,Card,ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
-const Search = () => {
+const Searchba = ({ onSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   const loadFirestoreData = async () => {
     const db = getFirestore();
-    const postShopCollection = collection(db, 'allpostHome');
-    const q = query(postShopCollection, where('faculty', '==', searchQuery));
+    const postHomeCollection = collection(db, 'allpostHome');
+    const q = query(postHomeCollection, where('faculty', '==', searchQuery));
 
     const querySnapshot = await getDocs(q);
-    const postShopData = [];
+    const postHomeData = [];
 
     querySnapshot.forEach((doc) => {
-      postShopData.push({ id: doc.id, ...doc.data() });
+      postHomeData.push({ id: doc.id, ...doc.data() });
     });
 
-    setFilteredData(postShopData);
+    setFilteredData(postHomeData);
+    onSearchResults(postHomeData);
   };
 
   const handleSearch = (query) => {
@@ -27,6 +28,28 @@ const Search = () => {
     loadFirestoreData();
   };
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity key={item.id}>
+      <Text style={{ left: 20 }}>{item.faculty}</Text>
+    </TouchableOpacity>
+  );
+  const loalData = async () => {
+    const db = getFirestore();
+    const postHomeCollection = collection(db, 'allpostHome');
+    const q = query(postHomeCollection, where('faculty', '==', searchQuery));
+  
+    const querySnapshot = await getDocs(q);
+    const postHomeData = [];
+  
+    querySnapshot.forEach((doc) => {
+      const itemName = doc.data().name; // ประเภทสินค้า
+      if (itemName.includes(search)) { // ตรวจสอบว่าคำที่ค้นหาอยู่ในชื่อสินค้าหรือไม่
+        postHomeData.push({ id: doc.id, ...doc.data() });
+      }
+    });
+  
+    setFilteredData(postHomeData);
+  };
   return (
     <View>
       <Searchbar
@@ -34,15 +57,13 @@ const Search = () => {
         onChangeText={handleSearch}
         value={searchQuery}
       />
-     
-      {filteredData.map((item) => (
-        
-        <Text style={{left:20}} key={item.id}>{item.name}</Text>
-     
-      ))}
-     
+      <FlatList
+  data={filteredData}
+  renderItem={renderItem}
+  keyExtractor={(item) => item.id.toString()}
+/>
     </View>
   );
 };
 
-export default Search;
+export default Searchba;

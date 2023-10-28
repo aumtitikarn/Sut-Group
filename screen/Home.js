@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, Image, SafeAreaView, StatusBar, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import { onAuthStateChanged } from 'firebase/auth';
-import Search from '../components/Searchbar';
+import Searchba from '../components/Searchbar';
 import PostHome from '../components/PostHome';
 
 const MyComponent = () => {
@@ -18,56 +18,50 @@ const MyComponent = () => {
   };
 
   const handleCreatePostPress = () => {
-   
     navigation.navigate('Createpost');
-
   };
 
   return (
     <SafeAreaView style={styles.container}>
-        <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
-          <Image style={styles.logo} source={require('../assets/2.png')} />
-          <Appbar.Content title="Home" style={{ left: 65 }} />
-          <Appbar.Action
-            icon="bell"
-            style={{ marginLeft: 10 }}
-            onPress={() => navigation.navigate('NotiScreen')}
-          />
-        </Appbar.Header>
-        <ScrollView>
-        <Search style={styles.search} onSearchResults={handleSearchResults} />
-        <View>
-          <TouchableOpacity
-            style={{
-              borderRadius: 5,
-              borderWidth: 2,
-              backgroundColor: '#FDF4E2',
-              width: 90,
-              padding: 10,
-              marginTop: 25,
-              marginLeft: 290,
-            }}
-            onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
-          >
-            <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
-          </TouchableOpacity>
-        </View>
-        {isSearching ? (
-        searchResults.map((post) => (
-          <View key={post.id} style={{ marginTop: 12 }}>
-            <PostHome post={post} />
-          </View>
-        ))
+      <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
+        <Image style={styles.logo} source={require('../assets/2.png')} />
+        <Appbar.Content title="Home" style={{ left: 65 }} />
+        <Appbar.Action
+          icon="bell"
+          style={{ marginLeft: 10 }}
+          onPress={() => navigation.navigate('NotiScreen')}
+        />
+      </Appbar.Header>
+      <Searchba style={styles.search} onSearchResults={handleSearchResults} />
+      <View>
+        <TouchableOpacity
+          style={{
+            borderRadius: 5,
+            borderWidth: 2,
+            backgroundColor: '#FDF4E2',
+            width: 90,
+            padding: 10,
+            marginTop: 25,
+            marginLeft: 290,
+          }}
+          onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
+        >
+          <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
+        </TouchableOpacity>
+      </View>
+      {searchResults.length > 0 ? (
+        <FlatList
+          data={searchResults}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handlePostPress(item)}>
+              <PostHome item={item} />
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
       ) : (
-        // ถ้ายังไม่มีการค้นหา ให้แสดงโพสต์ทั้งหมด
-        <PostHome />
+        <PostHome/>
       )}
-        
-        <Text></Text>
-        <Text></Text>
-        <Text></Text>
-        <Text></Text>
-      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
@@ -6,31 +6,30 @@ import { getFirestore, collection, getDocs, query, where } from 'firebase/firest
 const Search = ({ onSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-  const [typingTimeout, setTypingTimeout] = useState(0);
 
   const db = getFirestore();
 
-  const handleSearch = (query) => {
+  const handleSearch = useCallback((query) => {
     setSearchQuery(query);
+  }, []);
 
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-    }
+  useEffect(() => {
+    const typingTimeout = setTimeout(() => {
+      if (searchQuery.trim() !== '') {
+        loadFirestoreData();
+      } else {
+        setFilteredData([]);
+      }
+    }, 1000); // รอ 1 วินาทีหลังจากที่ผู้ใช้หยุดพิมพ์เพื่อค้นหา
 
-    // เริ่มต้นการนับถอยหลังหลังจากที่ผู้ใช้พิมพ์เสร็จ
-    setTypingTimeout(setTimeout(() => {
-      loadFirestoreData();
-    }, 5000)); // รอ 1 วินาทีหลังจากที่ผู้ใช้หยุดพิมพ์เพื่อค้นหา
-  };
+    return () => {
+      clearTimeout(typingTimeout); // เมื่อ useEffect ถูกเรียกใหม่ (เมื่อ searchQuery เปลี่ยน), ให้ยกเลิกการนับถอยหลัง
+    };
+  }, [searchQuery]);
 
   const loadFirestoreData = async () => {
-    if (searchQuery.trim() === '') {
-      setFilteredData([]); // ถ้าไม่มีการพิมพ์หรือพิมพ์เป็นช่องว่างเท่านั้น กำหนดข้อมูลที่กรองเป็นรายการว่าง
-      return;
-    }
-
     try {
-      const searchQ = query(collection(db, 'allpostShop'), where('name', '==', searchQuery));
+      const searchQ = query(collection(db, 'allpostShop'), where('name', '>=', searchQuery));
       const querySnapshot = await getDocs(searchQ);
       const postShopData = [];
 

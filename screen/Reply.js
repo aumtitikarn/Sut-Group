@@ -265,6 +265,7 @@ useEffect(() => {
             style={{ margin: 10, top: 20, left: 10 }}
             onPress={() => navigation.goBack()}
           />
+          <Text style={{ left: 80, top: 38, fontWeight: 'bold', fontSize: 24, position: 'absolute'}}>ตอบกลับ {comment.username}</Text>
         </View>
         <View>
               <Avatar.Icon
@@ -363,7 +364,7 @@ useEffect(() => {
             left: -150
             }}/>
           </View>
-          <View style={{ top: photo ? 20 : -202}}>
+          <View style={{ top: photo ? -220 : -202}}>
           <ReplyData />
           </View>
           </View>
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FDF4E2',
     paddingTop: StatusBar.currentHeight,
-    height: 500
+    flex: 1
   },
   commentInput: {
     width: 230,

@@ -364,7 +364,7 @@ const openlib = async () => {
             left: -150
             }}/>
           </View>
-          <View style={{ top: photo ? 20 : -202}}>
+          <View style={{ top: photo ? -220 : -202}}>
           <CommentData />
           </View>
           </View>

@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Avatar } from 'react-native-paper';
 import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
 import { onSnapshot, query, orderBy, collection } from 'firebase/firestore';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const ReplyData = () => {
   const db = FIRESTORE_DB;
@@ -25,6 +25,7 @@ const ReplyData = () => {
   const storage = FIREBASE_STORAGE;
   const [comment, setComment] = useState([]);
   const navigation = useNavigation();
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const route = useRoute();
   const postId = route.params.postId;
   const commentItem = route.params.comment; 
@@ -90,6 +91,35 @@ const ReplyData = () => {
     }
   }
 
+  const handleIconBarsPress = (post) => {
+    return post.userUid === auth.currentUser?.uid;
+  };
+  const toggleDropdown = (postId) => {
+    if (selectedPostId === postId) {
+      // ถ้าโพสต์ถูกเลือกแล้วให้ปิด Dropdown
+      setSelectedPostId(null);
+    } else {
+      // ถ้าโพสต์ยังไม่ถูกเลือกให้เปิด Dropdown ของโพสต์นี้
+      setSelectedPostId(postId);
+    }
+  };
+  const handleDeleteComment = async (commentId) => {
+    try {
+      // สร้างคัวแปร userUid เพื่อใช้ในการตรวจสอบการอนุญาตในการลบ
+      const userUid = auth.currentUser.uid;
+  
+      // สร้างอ้างอิงไปยังความคิดเห็นที่ต้องการลบ
+      const commentRef = doc(db, 'allpostHome', postId, 'comment', commentId);
+  
+      // ดำเนินการลบความคิดเห็น
+      await deleteDoc(commentRef);
+  
+      console.log('ลบความคิดเห็นสำเร็จ');
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการลบความคิดเห็น: ', error);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -101,6 +131,18 @@ const ReplyData = () => {
             borderRadius: 10,
             margin: 5,
             height: commentItem.photo ? 230 : 110}}>
+            {handleIconBarsPress(commentItem) && (
+          <TouchableOpacity onPress={() => toggleDropdown(commentItem.id)} style={{ right: 10, top: 10, position: 'absolute', zIndex: 1 }}>
+            <Icon name="bars" size={23} color="#000" />
+          </TouchableOpacity>
+        )}
+        {selectedPostId === commentItem.id && handleIconBarsPress(commentItem) && (
+          <View style={styles.dropdown}>
+            <TouchableOpacity onPress={() => handleDeleteComment(commentItem.id)}>
+              <Text style={{ color: '#442f04', top: -2 }}>ลบคอมเมนต์</Text>
+            </TouchableOpacity>
+          </View>
+        )}
               <Avatar.Icon
                 icon="account-circle"
                 size={50}

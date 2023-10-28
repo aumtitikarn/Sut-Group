@@ -5,11 +5,12 @@ import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,upda
 import { FIRESTORE_DB } from '../firestore';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
+import Icon from 'react-native-vector-icons/FontAwesome';
+import SelectDropdown from 'react-native-select-dropdown'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
 
 
 export default function PostShop() {
-
+  const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
   const [isLiked, setIsLiked] = useState([]);
@@ -18,6 +19,8 @@ export default function PostShop() {
   const db = FIRESTORE_DB;
   const auth = getAuth();
   const navigation = useNavigation();
+  const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
+  const [searchQuery, setSearchQuery] = useState('');
 
 
   useEffect(() => {
@@ -193,12 +196,34 @@ export default function PostShop() {
     }
     
   }
-  
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // ... โค้ดอื่น ๆ ที่คุณต้องการทำ
+  };
+
   
 
   return (
     <View style={styles.container}>
-      {shops.map((shop, index) => {
+      <View style={{left:70}}>
+       <SelectDropdown
+          data={type}
+            defaultButtonText="ประเภทสินค้า"
+            onSelect={(selectedItem, index) => {
+              setSelectedCategory(selectedItem);
+              setSearchQuery(""); // รีเซ็ตคำค้นหาเมื่อมีการเลือกประเภทใหม่
+            }}
+               buttonTextAfterSelection={(selectedItem, index) => {
+               return selectedItem;
+              }}
+               rowTextForSelection={(product, index) => {
+            return product;
+           }}
+         />
+         </View>
+         {shops
+  .filter((shop) => selectedCategory === 'ทั้งหมด' || shop.cate === selectedCategory)
+  .map((shop, index) => {
          return(
           <TouchableOpacity key={index} style={styles.product}>
           <Card style={styles.card}>

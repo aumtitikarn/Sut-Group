@@ -2,61 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
-import { getDatabase, ref, onValue } from 'firebase/database';
 
 const Search = ({ onSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-  const db = getDatabase();
-  const postShopRef = ref(db, 'allpostShop');
+  const [typingTimeout, setTypingTimeout] = useState(0);
 
-  const loadFirestoreData = async () => {
-    console.log("Search query:", searchQuery); // ตรวจสอบค่า searchQuery
-    const db = getFirestore();
-    const postShopCollection = collection(db, 'allpostShop');
-    const q = query(postShopCollection, where('name', '==', searchQuery));
-  
-    const querySnapshot = await getDocs(q);
-    const postShopData = [];
-  
-    querySnapshot.forEach((doc) => {
-      postShopData.push({ id: doc.id, ...doc.data() });
-    });
-  
-    console.log("Firestore data:", postShopData); // ตรวจสอบข้อมูลที่ถูกดึงมาจาก Firestore
-    setFilteredData(postShopData);
-    onSearchResults(postShopData);
-  };
-  
+  const db = getFirestore();
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    loadFirestoreData();
+
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // เริ่มต้นการนับถอยหลังหลังจากที่ผู้ใช้พิมพ์เสร็จ
+    setTypingTimeout(setTimeout(() => {
+      loadFirestoreData();
+    }, 5000)); // รอ 1 วินาทีหลังจากที่ผู้ใช้หยุดพิมพ์เพื่อค้นหา
   };
 
-  const renderShop = ({ shop }) => (
-    <TouchableOpacity key={shop.id}>
-      <Text style={{ left: 20 }}>{shop.name}</Text>
-    </TouchableOpacity>
-  );
- onValue(postShopRef, (snapshot) => {
-  const data = snapshot.val();
-  // ทำบางอย่างกับข้อมูลที่ได้รับ เช่น แสดงผลหรืออัปเดต state
-  console.log('Realtime Search results:', data);
-  // ทำอะไรก็ตามที่คุณต้องการกับข้อมูลที่ได้รับ เช่น อัปเดต state ใน React
-});
-useEffect(() => {
+  const loadFirestoreData = async () => {
     if (searchQuery.trim() === '') {
-      // ถ้าไม่มีการพิมพ์อะไรหรือพิมพ์เป็นช่องว่างเท่านั้น ไม่ต้องทำการค้นหา
+      setFilteredData([]); // ถ้าไม่มีการพิมพ์หรือพิมพ์เป็นช่องว่างเท่านั้น กำหนดข้อมูลที่กรองเป็นรายการว่าง
       return;
     }
 
-    const loadFirestoreData = async () => {
-      const db = getFirestore();
-      const postShopCollection = collection(db, 'allpostShop');
-      const q = query(postShopCollection, where('name', '==', searchQuery));
-
-      const querySnapshot = await getDocs(q);
+    try {
+      const searchQ = query(collection(db, 'allpostShop'), where('name', '==', searchQuery));
+      const querySnapshot = await getDocs(searchQ);
       const postShopData = [];
 
       querySnapshot.forEach((doc) => {
@@ -65,11 +40,17 @@ useEffect(() => {
 
       setFilteredData(postShopData);
       onSearchResults(postShopData);
-    };
+    } catch (error) {
+      console.error('Error searching data:', error);
+    }
+  };
 
-    loadFirestoreData();
-  }, [searchQuery])
- 
+  const renderShop = ({ item }) => (
+    <TouchableOpacity key={item.id}>
+      <Text style={{ left: 20 }}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View>
       <Searchbar
@@ -78,10 +59,10 @@ useEffect(() => {
         value={searchQuery}
       />
       <FlatList
-  data={filteredData}
-  renderShop={renderShop}
-  keyExtractor={(item) => item.id.toString()}
-/>
+        data={filteredData}
+        renderItem={renderShop}
+        keyExtractor={(item) => item.id.toString()}
+      />
     </View>
   );
 };

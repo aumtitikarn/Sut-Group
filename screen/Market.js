@@ -9,7 +9,7 @@ import { getFirestore, collection, query, where, getDocs } from 'firebase/firest
 import Search from '../components/Search';
 
 
-    const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
+    
 
 export default function MyComponent() {
   const navigation = useNavigation();
@@ -45,13 +45,16 @@ export default function MyComponent() {
     </Appbar.Header> 
     <Search  onSearchResults={handleSearchResults} />
     <ScrollView>
-    <View style={{ top: 20,
+    <View style={{ top: 80,
       marginRight: 10,
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
     </View>
      <View>
-            <TouchableOpacity
+          
+          </View>
+    <View style={styles.loginButton}> 
+     <TouchableOpacity
               style={{
                 borderRadius: 5,
                 borderWidth: 1,
@@ -65,24 +68,6 @@ export default function MyComponent() {
             >
               <Text onPress={handleMarketPost} >สร้างสินค้า</Text>
             </TouchableOpacity>
-          </View>
-    <View style={styles.loginButton}>
-    <SelectDropdown
-  data={type}
-  defaultButtonText="ประเภทสินค้า"
-  onSelect={(selectedItem, index) => {
-    setSelectedCategory(selectedItem);
-    setSearchQuery(""); // รีเซ็ตคำค้นหาเมื่อมีการเลือกประเภทใหม่
-    
-  }}
-  buttonTextAfterSelection={(selectedItem, index) => {
-    return selectedItem;
-  }}
-  rowTextForSelection={(product, index) => {
-    return product;
-  }}
-/>
-
     </View>
  <View>
  <PostShop/>
@@ -114,7 +99,7 @@ logo: {
     
 loginButton:{
     top: -60,
-    marginLeft:70, 
+    marginLeft:270, 
    }
  
 });

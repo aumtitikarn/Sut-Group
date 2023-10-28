@@ -3,7 +3,7 @@ import {
   Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, Alert
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc, deleteDoc, where, getDocs } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
@@ -237,6 +237,9 @@ const handleSharePost = (post) => {
     }, 2000);
   }
 };
+const handleCreatePostPress = () => {
+  navigation.navigate('Createpost');
+};
 const handleIconBarsPress = (post) => {
   return post.userUid === auth.currentUser?.uid;
 };
@@ -270,31 +273,78 @@ const handleEditPost = (postId, navigation) => {
   console.log("กดแก้ไขโพสต์ที่ postId:", postId);
   navigation.navigate('EditPostHome', {postId});
 };
+
+
+const handleSearch = (query) => {
+  setSearchQuery(query);
+  console.log(query);
+  loadFirestoreData();
+};
+
+const loadFirestoreData = async () => {
+  let q;
+
+  if (searchQuery) {
+    q = query(collection(db, 'allpostHome'), where('faculty', '==', searchQuery));
+  } else {
+    q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
+  }
+
+  const querySnapshot = await getDocs(q);
+  const postHomeData = [];
+
+  querySnapshot.forEach((doc) => {
+    postHomeData.push({ id: doc.id, ...doc.data() });
+  });
+
+  setFilteredData(postHomeData);
+};
   
 return (
   <SafeAreaView style={styles.container}>
     <ScrollView>
-      {posts.map((post) => (
-        <View key={post.id} style={styles.postContainer}>
-          <View style={{ top: -50, left: 55 }}>
-            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
-            <Image
-              source={{ uri: post.profileImg }}
-              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
-            />
-            <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
-            <Text style={styles.userData}>#{post.faculty}</Text>
-            <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
-          </View>
-          {handleIconBarsPress(post) && (
+      <Searchbar
+        placeholder="Search"
+        onChangeText={handleSearch}
+        value={searchQuery}
+      />
+      <View>
+        <TouchableOpacity
+          style={{
+            borderRadius: 5,
+            borderWidth: 2,
+            backgroundColor: '#FDF4E2',
+            width: 90,
+            padding: 10,
+            marginTop: 25,
+            marginLeft: 290,
+          }}
+          onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
+        >
+          <Text style={{ color: "#1C1441" }}>สร้างโพสต์</Text>
+        </TouchableOpacity>
+      </View>
+      {filteredData.length > 0 ? (
+        filteredData.map((post) => (
+          <View key={post.id} style={styles.postContainer}>
+            <View style={{ top: -50, left: 55 }}>
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60, backgroundColor: 'orange' }} color={'#FFF'} />
+              <Image
+                source={{ uri: post.profileImg }}
+                style={{ borderRadius: 50, position: 'absolute', width: 50, height: 50, left: -60, top: 40 }}
+              />
+              <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+              <Text style={styles.userData}>#{post.faculty}</Text>
+              <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
+            </View>
+            {handleIconBarsPress(post) && (
               <TouchableOpacity onPress={() => toggleDropdown(post.id)} style={{ left: 295, top: -105 }}>
                 <Icon name="bars" size={23} color="#000" />
               </TouchableOpacity>
             )}
-
-          {selectedPostId === post.id && handleIconBarsPress(post) && (
+            {selectedPostId === post.id && handleIconBarsPress(post) && (
               <View style={styles.dropdown}>
-                <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
+                <TouchableOpacity onPress={() => handleEditPost(post.id, navigation)}>
                   <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
                 </TouchableOpacity>
                 <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
@@ -303,54 +353,131 @@ return (
                 </TouchableOpacity>
               </View>
             )}
-          <View style={{ top: -50, left: 30 }}>
-            <Text style={styles.postText}>{post.text}</Text>
-            {post.photo && (
-              <Image source={{ uri: post.photo }} style={styles.postImage} />
-            )}
-          </View>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => updateLike(post)}>
-            <Icon
-            name={isLiked[post.id] ? 'heart' : 'heart'}
-            size={25}
-            color={isLiked[post.id] ? 'black' : 'black'} // Set the color based on the state
-            style={{ marginLeft: 30 }}
-            />
-            </TouchableOpacity>
-            <View>
-              <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
+            <View style={{ top: -50, left: 30 }}>
+              <Text style={styles.postText}>{post.text}</Text>
+              {post.photo && (
+                <Image source={{ uri: post.photo }} style={styles.postImage} />
+              )}
             </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
-            >
-            <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
-            </TouchableOpacity>
-            <TouchableOpacity
-  onPress={() => handleSharePost(post)}
-  style={{ marginLeft: 50, top: -2 }}>
-  <Icon
-    name={isShared[post.id] ? 'share' : 'share'} 
-    size={25}
-    color={isShared[post.id] ? '#8AD1DB' : '#000'}   
-  />
-</TouchableOpacity>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => updateLike(post)}>
+                <Icon
+                  name={isLiked[post.id] ? 'heart' : 'heart'}
+                  size={25}
+                  color={isLiked[post.id] ? 'black' : 'black'} // Set the color based on the state
+                  style={{ marginLeft: 30 }}
+                />
+              </TouchableOpacity>
+              <View>
+                <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid, navigation })} // ส่ง postId ไปยังหน้า Comment
+              >
+                <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSharePost(post)}
+                style={{ marginLeft: 50, top: -2 }}>
+                <Icon
+                  name={isShared[post.id] ? 'share' : 'share'}
+                  size={25}
+                  color={isShared[post.id] ? '#8AD1DB' : '#000'}
+                />
+              </TouchableOpacity>
+            </View>
+            <View key={post.id}>
+              {isShared[post.id] && (
+                <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 130, height: 50 }}>
+                  <Icon name="check" size={15} color="#007012" style={{ top: 15, left: 10 }} />
+                  <Text style={{ left: 30, top: -3, color: '#007012' }}>แชร์โพสต์เรียบร้อย</Text>
+                </View>
+              )}
+            </View>
           </View>
-        <View key={post.id}>
-        {isShared[post.id] && (
-          <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 130, height:50}}>
-            <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
-            <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
+        ))
+      ) : (
+        posts.map((post) => (
+          <View key={post.id} style={styles.postContainer}>
+            <View style={{ top: -50, left: 55 }}>
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+              <Image
+                source={{ uri: post.profileImg }}
+                style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
+              />
+              <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+              <Text style={styles.userData}>#{post.faculty}</Text>
+              <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
+            </View>
+            {handleIconBarsPress(post) && (
+                <TouchableOpacity onPress={toggleDropdown} style={{ left: 295, top: -105 }}>
+                  <Icon name="bars" size={23} color="#000" />
+                </TouchableOpacity>
+              )}
+  
+            {showDropdown && handleIconBarsPress(post) && (
+                <View style={styles.dropdown}>
+                  <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
+                    <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
+                  </TouchableOpacity>
+                  <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
+                  <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
+                    <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            <View style={{ top: -50, left: 30 }}>
+              <Text style={styles.postText}>{post.text}</Text>
+              {post.photo && (
+                <Image source={{ uri: post.photo }} style={styles.postImage} />
+              )}
+            </View>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => updateLike(post)}>
+              <Icon
+              name={isLiked[post.id] ? 'heart' : 'heart'}
+              size={25}
+              color={isLiked[post.id] ? 'black' : 'black'} // Set the color based on the state
+              style={{ marginLeft: 30 }}
+              />
+              </TouchableOpacity>
+              <View>
+                <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
+              >
+              <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
+              </TouchableOpacity>
+              <TouchableOpacity
+    onPress={() => handleSharePost(post)}
+    style={{ marginLeft: 50, top: -2 }}>
+    <Icon
+      name={isShared[post.id] ? 'share' : 'share'} 
+      size={25}
+      color={isShared[post.id] ? '#8AD1DB' : '#000'}   
+    />
+  </TouchableOpacity>
+            </View>
+          <View key={post.id}>
+          {isShared[post.id] && (
+            <View style={{ backgroundColor: '#e7ffc9', padding: 5, borderRadius: 8, shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, elevation: 3, width: 160, left: 130, height:50}}>
+              <Icon name="check" size={15} color="#007012" style={{top:15, left: 10}} />
+              <Text style={{left:30, top: -3, color: '#007012'}}>แชร์โพสต์เรียบร้อย</Text>
+            </View>
+          )}
           </View>
-        )}
-        </View>
-        </View>
-      ))}
+          </View>
+        ))
+      )}
+      <Text></Text>
+      <Text></Text>
+      <Text></Text>
+      <Text></Text>
     </ScrollView>
   </SafeAreaView>
 );
 };
-
 const styles = StyleSheet.create({
 container: {
   flex: 1,

@@ -19,20 +19,22 @@ import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
 import { onSnapshot, query, orderBy, collection, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CommentData = () => {
+const ReplyData = () => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
   const [comment, setComment] = useState([]);
-  const [selectedPostId, setSelectedPostId] = useState(null);
   const navigation = useNavigation();
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const route = useRoute();
   const postId = route.params.postId;
-
+  const commentItem = route.params.comment; 
+// console.log('commentId : ',commentItem);
+// console.log('postId : ',postId);
   
 
   useEffect(() => {
-    const q = query(collection(db, 'allpostHome', postId, 'comment'), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, 'allpostHome', postId, 'comment', commentItem ,'reply'), orderBy('timestamp', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedcomment = [];
@@ -48,7 +50,7 @@ const CommentData = () => {
     return () => {
       unsubscribe();
     };
-  }, [postId]);
+  }, [postId, commentItem]);
 
   const formatPostTime = (timestamp) => {
     if (timestamp) {
@@ -103,20 +105,22 @@ const CommentData = () => {
   };
   const handleDeleteComment = async (commentId) => {
     try {
-      // สร้างคัวแปร userUid เพื่อใช้ในการตรวจสอบการอนุญาตในการลบ
-      const userUid = auth.currentUser.uid;
+      // Construct the path to the comment document in the reply collection.
+      const replyCommentRef = doc(db, 'allpostHome', postId, 'comment', commentItem, 'reply', commentId);
   
-      // สร้างอ้างอิงไปยังความคิดเห็นที่ต้องการลบ
-      const commentRef = doc(db, 'allpostHome', postId, 'comment', commentId);
+      // Delete the comment document in the reply collection.
+      await deleteDoc(replyCommentRef);
   
-      // ดำเนินการลบความคิดเห็น
-      await deleteDoc(commentRef);
+      // You can also update the state to reflect the deleted comment.
+      // Here's a simple example to remove the deleted comment from the state.
+      setComment((prevComment) => prevComment.filter((comment) => comment.id !== commentId));
   
-      console.log('ลบความคิดเห็นสำเร็จ');
+      console.log('Comment deleted successfully.');
     } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการลบความคิดเห็น: ', error);
+      console.error('Error deleting comment:', error);
     }
-  }
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,7 +133,7 @@ const CommentData = () => {
             borderRadius: 10,
             margin: 5,
             height: commentItem.photo ? 230 : 110}}>
-        {handleIconBarsPress(commentItem) && (
+            {handleIconBarsPress(commentItem) && (
           <TouchableOpacity onPress={() => toggleDropdown(commentItem.id)} style={{ right: 10, top: 10, position: 'absolute', zIndex: 1 }}>
             <Icon name="bars" size={23} color="#000" />
           </TouchableOpacity>
@@ -141,24 +145,6 @@ const CommentData = () => {
             </TouchableOpacity>
           </View>
         )}
-              <TouchableOpacity 
-              style={{borderWidth:1, 
-                left: 320, 
-                top: commentItem.photo ? 180 : 60, 
-                borderRadius: 2,
-                backgroundColor: "#8AD1DB",
-                position: "absolute", 
-                padding : 5,
-                }} 
-                onPress={() =>
-                  navigation.navigate('Reply', {
-                    comment: commentItem.id,
-                    postId: postId, 
-                  })
-                }
-              >
-            <Text style={{color:"#1C1441"}}>ตอบกลับ</Text>
-          </TouchableOpacity>
               <Avatar.Icon
                 icon="account-circle"
                 size={50}
@@ -220,4 +206,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CommentData; 
+
+export default ReplyData;

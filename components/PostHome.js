@@ -19,6 +19,8 @@ const PostHome = () => {
   const [likeCount, setLikeCount] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [isShared, setIsShared] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -40,7 +42,6 @@ const PostHome = () => {
         const isSharedByUser = post.sharedBy && post.sharedBy.includes(auth.currentUser.uid);
         updatedIsShared[post.id] = isSharedByUser;
       });
-      console.log(updatedIsShared); // เพิ่มบรรทัดนี้เพื่อตรวจสอบค่า
 
       setPosts(updatedPosts);
       setIsLiked(updatedIsLiked);
@@ -200,8 +201,6 @@ const cancelSharePost = async (userId, postId) => {
     // 1. ลบโพสต์จาก "postHome" collection ใน Firestore
     const postHomeRef = doc(db, 'users', userUid, 'share', postId);
     await deleteDoc(postHomeRef);
-
-    console.log('ลบโพสต์สำเร็จ');
   
     // อัปเดต isShared เมื่อยกเลิกการแชร์โพสต์สำเร็จ
     setIsShared((prevIsShared) => ({
@@ -236,6 +235,39 @@ const handleSharePost = (post) => {
     }, 2000);
   }
 };
+const handleIconBarsPress = (post) => {
+  return post.userUid === auth.currentUser?.uid;
+};
+const toggleDropdown = (postId) => {
+  if (selectedPostId === postId) {
+    // ถ้าโพสต์ถูกเลือกแล้วให้ปิด Dropdown
+    setSelectedPostId(null);
+  } else {
+    // ถ้าโพสต์ยังไม่ถูกเลือกให้เปิด Dropdown ของโพสต์นี้
+    setSelectedPostId(postId);
+  }
+};
+const handleDeletePost = async (postId) => {
+  try {
+    const userUid = auth.currentUser.uid;
+
+    // 1. Delete the post from the "postHome" collection in Firestore
+    const postHomeRef = doc(db, 'users', userUid, 'postHome', postId);
+    await deleteDoc(postHomeRef);
+
+    // 2. Delete the post from the "allpostHome" collection in Firestore
+    const allpostHomeRef = doc(db, 'allpostHome', postId);
+    await deleteDoc(allpostHomeRef);
+
+    console.log('ลบโพสต์สำเร็จ');
+  } catch (error) {
+    console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
+  }
+};
+const handleEditPost = (postId, navigation) => {
+  console.log("กดแก้ไขโพสต์ที่ postId:", postId);
+  navigation.navigate('EditPostHome', {postId});
+};
   
 return (
   <SafeAreaView style={styles.container}>
@@ -252,6 +284,23 @@ return (
             <Text style={styles.userData}>#{post.faculty}</Text>
             <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
           </View>
+          {handleIconBarsPress(post) && (
+              <TouchableOpacity onPress={() => toggleDropdown(post.id)} style={{ left: 295, top: -105 }}>
+                <Icon name="bars" size={23} color="#000" />
+              </TouchableOpacity>
+            )}
+
+          {selectedPostId === post.id && handleIconBarsPress(post) && (
+              <View style={styles.dropdown}>
+                <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
+                  <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
+                </TouchableOpacity>
+                <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
+                <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
+                  <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           <View style={{ top: -50, left: 30 }}>
             <Text style={styles.postText}>{post.text}</Text>
             {post.photo && (
@@ -277,11 +326,11 @@ return (
             </TouchableOpacity>
             <TouchableOpacity
   onPress={() => handleSharePost(post)}
-  style={{ marginLeft: 60, top: -2 }}>
+  style={{ marginLeft: 50, top: -2 }}>
   <Icon
     name={isShared[post.id] ? 'share' : 'share'} 
     size={25}
-    color={isShared[post.id] ? 'orange' : '#000'}   
+    color={isShared[post.id] ? '#8AD1DB' : '#000'}   
   />
 </TouchableOpacity>
           </View>
@@ -335,6 +384,20 @@ iconContainer: {
 },
 userData: {
   top: -5,
+},
+dropdown: {
+  position: 'absolute',
+  top: 30, // ปรับตำแหน่ง Dropdown ตามความเหมาะสม
+  right: 0, // ปรับตำแหน่ง Dropdown ตามความเหมาะสม
+  backgroundColor: '#FFF', // สีพื้นหลังของ Dropdown
+  borderWidth: 1, // หรือคุณสามารถใช้ shadow แทน
+  borderColor: '#000', // สีขอบของ Dropdown
+  padding: 5,
+  zIndex: 1, // คุณอาจต้องกำหนด zIndex เพื่อให้ Dropdown อยู่เหนือกับเนื้อหาอื่น
+  borderRadius: 10,
+  top: 20,
+  marginRight:70,
+  backgroundColor: '#fff5e2'
 },
 });
 

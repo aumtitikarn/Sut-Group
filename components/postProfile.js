@@ -318,11 +318,11 @@ const PostProfile = () => {
           <TouchableOpacity>
           <TouchableOpacity
   onPress={() => handleSharePost(post)}
-  style={{ marginLeft: 60, top: -2 }}>
+  style={{ marginLeft: 50, top: -2 }}>
   <Icon
     name={isShared[post.id] ? 'share' : 'share'} 
     size={25}
-    color={isShared[post.id] ? 'orange' : '#000'}   
+    color={isShared[post.id] ? '#8AD1DB' : '#000'}   
   />
 </TouchableOpacity>
           </TouchableOpacity>

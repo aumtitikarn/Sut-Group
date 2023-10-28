@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
@@ -10,7 +10,7 @@ const EditPostHome = ({ route, navigation }) => {
   const [feed, setFeed] = useState('');
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
-  console.log('ค่า param ที่ต้องการแก้ไข >> ',postId)
+  const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +28,9 @@ const EditPostHome = ({ route, navigation }) => {
 
             if (allpostHomeData) {
               setFeed(allpostHomeData.text);
+              setImageUrl(allpostHomeData.profileImg);
+             console.log(allpostHomeData.profileImg);
+  
             }
           }
         }
@@ -73,6 +76,12 @@ const EditPostHome = ({ route, navigation }) => {
       <Text style={{ left: 70, top: -50, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
       <View style={{ top: -20, left: 20 }}>
         <Avatar.Icon icon="account-circle" size={80} />
+        {imageUrl && (
+       <Image
+          source={{ uri: imageUrl }}
+          style={{ width: 80, height:80,  borderRadius: 50, position: 'absolute' }}
+      />
+      )}
       </View>
       <View style={{ top: -90, left: 110 }}>
         <TextInput
@@ -84,7 +93,7 @@ const EditPostHome = ({ route, navigation }) => {
           onChangeText={(text) => setFeed(text)}
         />
         <TouchableOpacity style={styles.buttonYellow} onPress={handleUpdatePost}>
-          <Text style={styles.buttonText}>โพสต์</Text>
+          <Text style={{ color: "#1C1441"}}>โพสต์</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -94,7 +103,7 @@ const EditPostHome = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF6DE',
+    backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight 
   },
   input: {
@@ -106,6 +115,7 @@ const styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
+    backgroundColor: '#FFF'
   },
   iconContainer: {
     flexDirection: 'row',
@@ -118,8 +128,8 @@ const styles = StyleSheet.create({
   },
   buttonYellow: {
     borderRadius: 5,
-    borderWidth: 1,
-    backgroundColor: '#FFBD59',
+    borderWidth: 2,
+    backgroundColor: '#FDF4E2',
     width: 275,
     padding: 5,
     justifyContent: 'center', 

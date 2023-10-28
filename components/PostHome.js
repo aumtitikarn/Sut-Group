@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 const PostHome = () => {
@@ -22,6 +22,7 @@ const PostHome = () => {
   const [isShared, setIsShared] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigation = useNavigation();
+  const [faculty, setFaculty] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
@@ -268,26 +269,29 @@ const handleCreatePostPress = () => {
   navigation.navigate('Createpost');
 
 };
+const filteredPosts = posts.filter(post => faculty === "ทั้งหมด" || post.faculty === faculty);
+
 return (
+  <NativeBaseProvider>
   <SafeAreaView style={styles.container}>
     <ScrollView>
-    <DropDownPicker
-    items={[
-        { label: 'สำนักวิชาวิทยาศาสตร์', value: 'วิทยาศาสตร์' },
-        { label: 'สำนักวิชาเทคโนโลยีสังคม', value: 'เทคโนโลยีสังคม' },
-        { label: 'สำนักวิชาเทคโนโลยีการเกษตร', value: 'เทคโนโลยีการเกษตร' },
-        { label: 'สำนักวิชาวิศวกรรมศาสตร์', value: 'วิศวกรรมศาสตร์' },
-        { label: 'สำนักวิชาแพทยศาสตร์', value: 'แพทยศาสตร์' },
-        { label: 'สำนักวิชาพยาบาลศาสตร์', value: 'พยาบาลศาสตร์' },
-        { label: 'สำนักวิชาทันตแพทยศาสตร์', value: 'ทันตแพทยศาสตร์' },
-        { label: 'สำนักวิชาสาธารณสุขศาสตร์', value: 'สาธารณสุขศาสตร์' },
-        { label: 'กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล', value: 'หลักสูตรศาสตร์และศิลป์ดิจิทัล' },
-    ]}
-    defaultIndex={0}
-    placeholder="สำนักวิชาทั้งหมด"
-    containerStyle={{ height: 40 }}
-    onChangeItem={item => console.log(item.label, item.value)}
-/>
+    <Box maxW="200" style={{left: 20,  top: 15, position:'absolute', backgroundColor: 'white', borderColor: 'black', borderWidth: 2}}>
+        <Select selectedValue={faculty} minWidth="200" accessibilityLabel="Choose Service" placeholder="สำนักวิชา" style={{backgroundColor: 'white'}} _selectedItem={{
+        bg: "#8AD1DB",
+        endIcon: <CheckIcon size="5" />
+      }} mt={1} onValueChange={itemValue => setFaculty(itemValue)}>
+        <Select.Item label="สำนักวิชาทั้งหมด" value="ทั้งหมด" />
+          <Select.Item label="สำนักวิชาวิทยาศาสตร์" value="สำนักวิชาวิทยาศาสตร์" />
+          <Select.Item label="สำนักวิชาเทคโนโลยีสังคม" value="สำนักวิชาเทคโนโลยีสังคม" />
+          <Select.Item label="สำนักวิชาเทคโนโลยีการเกษตร" value="สำนักวิชาเทคโนโลยีการเกษตร" />
+          <Select.Item label="สำนักวิชาวิศวกรรมศาสตร์" value="สำนักวิชาวิศวกรรมศาสตร์" />
+          <Select.Item label="สำนักวิชาแพทย์" value="สำนักวิชาแพทย์" />
+          <Select.Item label="สำนักวิชาพยาบาลศาสตร์" value="สำนักวิชาพยาบาลศาสตร์" />
+          <Select.Item label="สำนักวิชาทันตแพทย์" value="สำนักวิชาทันตแพทย์" />
+          <Select.Item label="สำนักวิชาสาธารณสุขศาสตร์" value="สำนักวิชาสาธารณสุขศาสตร์" />
+          <Select.Item label="กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" value="กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" />
+        </Select>
+      </Box>
     <TouchableOpacity
             style={{
               borderRadius: 5,
@@ -295,14 +299,14 @@ return (
               backgroundColor: '#FDF4E2',
               width: 90,
               padding: 10,
-              marginTop: 25,
+              marginTop: 20,
               marginLeft: 290,
             }}
             onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
           >
             <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
           </TouchableOpacity>
-      {posts.map((post) => (
+          {filteredPosts.map((post) => (
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
@@ -376,6 +380,7 @@ return (
       ))}
     </ScrollView>
   </SafeAreaView>
+  </NativeBaseProvider>
 );
 };
 
@@ -389,7 +394,8 @@ postContainer: {
   borderColor: '#000',
   backgroundColor: '#FDF4E2',
   margin: 15,
-  borderRadius: 50,
+  marginTop: 20,
+  borderRadius: 15,
   overflow: 'hidden',
   padding: 20,
 },

@@ -121,6 +121,20 @@ const EditProfile = ({ navigation }) => {
         // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
         allPostHomeBatch.update(doc.ref,updateData);
       });
+      const commenttCollectionRef = collection(allPostHomeDoc.ref, 'comment');
+        const commenttQuery = query(commenttCollectionRef);
+        const commenttSnapshot = await getDocs(commenttQuery);
+      
+        for (const commentDoc of commenttSnapshot.docs) {
+          const replyCollectionRef = collection(commentDoc.ref, 'reply');
+          const replyQuery = query(replyCollectionRef, where('userUid', '==', userUid));
+          const replySnapshot = await getDocs(replyQuery);
+          
+          replySnapshot.forEach((replyDoc) => {
+            // ทำการอัปเดตข้อมูลใน reply collection ตามที่คุณต้องการ
+            allPostHomeBatch.update(replyDoc.ref, updateData);
+          });
+        }
     }
 
     
@@ -139,11 +153,17 @@ const EditProfile = ({ navigation }) => {
     // อัปเดตข้อมูลในคอลเลคชัน postHome ด้วยข้อมูลใหม่
     const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
     const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
+    const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
     const postHomeSnapshot = await getDocs(userPostHomeCollectionRef);
     const postShopSnapshot = await getDocs(userPostShopCollectionRef);
+    const usershareSnapshot = await getDocs(usershareCollectionRef);
     const postHomeBatch = writeBatch(db);
     const postShopBatch = writeBatch(db);
 
+    usershareSnapshot.forEach((doc) => {
+      postHomeBatch.update(doc.ref, updateData);
+      
+    });
     postHomeSnapshot.forEach((doc) => {
       postHomeBatch.update(doc.ref, updateData);
     });
@@ -233,7 +253,8 @@ const EditProfile = ({ navigation }) => {
         const allPostShopCollectionRef = collection(db, 'allpostShop');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
-  
+        const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
+
         // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
         const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
@@ -243,6 +264,7 @@ const EditProfile = ({ navigation }) => {
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
+        const usershareSnapshot = await getDocs(usershareCollectionRef);
         
         // เลือกทุกเอกสารในคอลเลคชัน allpostHome
       const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
@@ -257,13 +279,32 @@ const EditProfile = ({ navigation }) => {
         const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
         const commentQuery = query(commentCollectionRef, where('userUid', '==', userUid));
         const commentSnapshot = await getDocs(commentQuery);
-
-        commentSnapshot.forEach((doc) => {
+      
+        commentSnapshot.forEach((commentDoc) => {
           // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
-          batch.update(doc.ref, updatedUserData);
+          batch.update(commentDoc.ref, updatedUserData);
         });
+
+        const commenttCollectionRef = collection(allPostHomeDoc.ref, 'comment');
+        const commenttQuery = query(commenttCollectionRef);
+        const commenttSnapshot = await getDocs(commenttQuery);
+      
+        for (const commentDoc of commenttSnapshot.docs) {
+          const replyCollectionRef = collection(commentDoc.ref, 'reply');
+          const replyQuery = query(replyCollectionRef, where('userUid', '==', userUid));
+          const replySnapshot = await getDocs(replyQuery);
+          
+          replySnapshot.forEach((replyDoc) => {
+            // ทำการอัปเดตข้อมูลใน reply collection ตามที่คุณต้องการ
+            batch.update(replyDoc.ref, updatedUserData);
+          });
+        }
       }
 
+      usershareSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData); 
+        
+      });
         // อัปเดตคุณสมบัติในเอกสารในคอลเลคชัน allpostHome
         allPostHomeSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);

@@ -21,6 +21,7 @@ import Comment from './screen/comment';
 import PostHome from './components/PostHome';
 import Reply from './screen/Reply';
 
+
 const Tab =  createBottomTabNavigator();
 const Stack = createStackNavigator();
 

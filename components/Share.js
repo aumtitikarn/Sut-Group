@@ -230,7 +230,7 @@ postContainer: {
   borderColor: '#000',
   backgroundColor: '#FDF4E2',
   margin: 15,
-  borderRadius: 50,
+  borderRadius: 20,
   overflow: 'hidden',
   padding: 30,
 },

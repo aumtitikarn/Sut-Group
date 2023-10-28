@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-
+import { Searchbar } from 'react-native-paper';
 
 const PostHome = () => {
   const [posts, setPosts] = useState([]);
@@ -22,6 +22,8 @@ const PostHome = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
@@ -359,7 +361,7 @@ postContainer: {
   borderColor: '#000',
   backgroundColor: '#FDF4E2',
   margin: 15,
-  borderRadius: 50,
+  borderRadius: 20,
   overflow: 'hidden',
   padding: 20,
 },

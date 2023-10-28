@@ -105,8 +105,7 @@ const ChatScreen = ({ route }) => {
                     {messages?.map((msg) => (
                       <View key={msg._id} style={{ margin: 1 }}>
                         <View
-                          style={{ alignSelf: "flex-end" }}
-                          style={{ paddingHorizontal: 4, paddingVertical: 2, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, backgroundColor: "#FFBD59", width: "auto", position: "relative" }}
+                          style={{ alignSelf: "flex-end",paddingHorizontal: 4, paddingVertical: 2, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, backgroundColor: "#FFBD59", width: "auto", position: "relative" }}
                         >
                           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#FBE5AD" }}>
                             {msg.message}

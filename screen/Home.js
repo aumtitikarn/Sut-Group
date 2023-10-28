@@ -1,38 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar, Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TouchableOpacity, View, Image, SafeAreaView, StatusBar, FlatList } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import { onAuthStateChanged } from 'firebase/auth';
-import Searchba from '../components/Searchbar';
+import Search from '../components/Searchbar';
 import PostHome from '../components/PostHome';
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearchResults = (results) => {
-    setSearchResults(results);
-    setIsSearching(true);
-    console.log('Search results:', results);
-  };
 
-  const handleCreatePostPress = () => {
-    navigation.navigate('Createpost');
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
-        <Image style={styles.logo} source={require('../assets/2.png')} />
-        <Appbar.Content title="Home" style={{ left: 65 }} />
-        <Appbar.Action
-          icon="bell"
-          style={{ marginLeft: 10 }}
-          onPress={() => navigation.navigate('NotiScreen')}
-        />
-      </Appbar.Header>
+        <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
+          <Image style={styles.logo} source={require('../assets/2.png')} />
+          <Appbar.Content title="Home" style={{ left: 65 }} />
+          <Appbar.Action
+            icon="bell"
+            style={{ marginLeft: 10 }}
+            onPress={() => navigation.navigate('NotiScreen')}
+          />
+        </Appbar.Header>
+        <ScrollView>
         <PostHome />
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -42,7 +38,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight,
-
   },
   logo: {
     height: 50,

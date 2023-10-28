@@ -367,7 +367,7 @@ const openlib = async () => {
           </View>
           </View>
           )} 
-          <View style={{ top: photo ? -260 : -241}}>
+          <View style={{ top: photo ? -260 : -42}}>
           <CommentData />
           </View>
     </SafeAreaView>

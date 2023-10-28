@@ -20,6 +20,7 @@ const PostHome = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [isShared, setIsShared] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -237,8 +238,14 @@ const handleSharePost = (post) => {
 const handleIconBarsPress = (post) => {
   return post.userUid === auth.currentUser?.uid;
 };
-const toggleDropdown = () => {
-  setShowDropdown((prevState) => !prevState);
+const toggleDropdown = (postId) => {
+  if (selectedPostId === postId) {
+    // ถ้าโพสต์ถูกเลือกแล้วให้ปิด Dropdown
+    setSelectedPostId(null);
+  } else {
+    // ถ้าโพสต์ยังไม่ถูกเลือกให้เปิด Dropdown ของโพสต์นี้
+    setSelectedPostId(postId);
+  }
 };
 const handleDeletePost = async (postId) => {
   try {
@@ -278,12 +285,12 @@ return (
             <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
           </View>
           {handleIconBarsPress(post) && (
-              <TouchableOpacity onPress={toggleDropdown} style={{ left: 295, top: -105 }}>
+              <TouchableOpacity onPress={() => toggleDropdown(post.id)} style={{ left: 295, top: -105 }}>
                 <Icon name="bars" size={23} color="#000" />
               </TouchableOpacity>
             )}
 
-          {showDropdown && handleIconBarsPress(post) && (
+          {selectedPostId === post.id && handleIconBarsPress(post) && (
               <View style={styles.dropdown}>
                 <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
                   <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>

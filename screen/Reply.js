@@ -31,7 +31,7 @@ import { addDoc,
 from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
+import ReplyData from '../components/ReplyData';
 
 const Reply = () => {
   const db = FIRESTORE_DB;
@@ -49,7 +49,7 @@ const Reply = () => {
   const route = useRoute();
   const commentItem = route.params.comment; 
   const postId = route.params.postId; 
-  console.log('commentId : ',commentItem);
+  // console.log('commentId : ',commentItem);
 
   useEffect(() => {
    const fetchCommentData = async () => {
@@ -134,7 +134,7 @@ const formatPostTime = (timestamp) => {
         // สร้างค่า id สำหรับเอกสาร (เช่นตามเวลาปัจจุบัน)
         const id = Date.now().toString(); // หรือวิธีอื่น ๆ ที่คุณต้องการ
   
-        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome',postId,'comment');
+        const postHomeCollectionRef = collection(db, 'users', userUid, 'postHome',postId,'comment',commentItem,'reply');
   
         // สร้างอ็อบเจกต์ข้อมูลโพสต์
         const post = {
@@ -166,7 +166,7 @@ const formatPostTime = (timestamp) => {
         }
   
         // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
-        const allpostHomeCollectionRef = collection(db, 'allpostHome',postId,'comment');
+        const allpostHomeCollectionRef = collection(db, 'allpostHome',postId,'comment',commentItem,'reply');
   
         // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
         await setDoc(doc(allpostHomeCollectionRef, id), post);
@@ -256,6 +256,7 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       {comment && (
             <View>
         <View>
@@ -365,10 +366,12 @@ useEffect(() => {
             }}/>
           </View>
           </View>
+          <View style={{ top: photo ? -220 : -42}}>
+            <ReplyData />
+          </View>
           </View>
           )} 
-          <View style={{ top: photo ? -260 : -241}}>
-          </View>
+          </ScrollView>
     </SafeAreaView>
   );
 };

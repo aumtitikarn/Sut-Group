@@ -100,7 +100,6 @@ const ReplyData = () => {
             borderWidth: 2,
             borderRadius: 10,
             margin: 5,
-            top: -5,
             height: commentItem.photo ? 230 : 110}}>
               <Avatar.Icon
                 icon="account-circle"
@@ -146,9 +145,9 @@ const ReplyData = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#8AD1DB',
-    paddingTop: StatusBar.currentHeight,
     height: 500,
   },
 });
+
 
 export default ReplyData;

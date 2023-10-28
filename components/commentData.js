@@ -99,7 +99,6 @@ const CommentData = () => {
             borderWidth: 2,
             borderRadius: 10,
             margin: 5,
-            top: -5,
             height: commentItem.photo ? 230 : 110}}>
               <TouchableOpacity 
               style={{borderWidth:1, 
@@ -163,7 +162,6 @@ const CommentData = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#8AD1DB',
-    paddingTop: StatusBar.currentHeight,
     height: 500,
   },
 });

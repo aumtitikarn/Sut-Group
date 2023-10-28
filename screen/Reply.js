@@ -256,7 +256,6 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
       {comment && (
             <View>
         <View>
@@ -266,7 +265,6 @@ useEffect(() => {
             style={{ margin: 10, top: 20, left: 10 }}
             onPress={() => navigation.goBack()}
           />
-          <Text style={{ left: 80, top: 38, fontWeight: 'bold', fontSize: 24, position: 'absolute'}}>ตอบกลับ {comment.username}</Text>
         </View>
         <View>
               <Avatar.Icon
@@ -336,7 +334,7 @@ useEffect(() => {
           top: photo ? -200 : -70,
           left: -10,}}>
               <TextInput
-                placeholder="ตอบกลับข้อความ..."
+                placeholder="เขียนคอมเมนต์ของคุณ..."
                 style={styles.commentInput}
                 value={text}
                 onChangeText={(text) => setText(text)}
@@ -365,21 +363,21 @@ useEffect(() => {
             left: -150
             }}/>
           </View>
+          <View style={{ top: photo ? 20 : -202}}>
+          <ReplyData />
           </View>
-          <View style={{ top: photo ? -220 : -42}}>
-            <ReplyData />
           </View>
           </View>
           )} 
-          </ScrollView>
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#FDF4E2',
     paddingTop: StatusBar.currentHeight,
+    height: 500
   },
   commentInput: {
     width: 230,
@@ -403,5 +401,6 @@ const styles = StyleSheet.create({
     borderWidth: 1
   },
 });
+
 
 export default Reply;

@@ -307,6 +307,7 @@ return (
         placeholder="Search"
         onChangeText={handleSearch}
         value={searchQuery}
+        style={{ margin: 10,backgroundColor: '#FFF',borderWidth:2 }}
       />
       <View>
         <TouchableOpacity

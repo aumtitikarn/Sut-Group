@@ -6,6 +6,7 @@ import PostShop from '../components/PostShop';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import Search from '../components/Search';
 
 
     const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
@@ -20,28 +21,12 @@ export default function MyComponent() {
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
-  const loalData = async () => {
-    const db = getFirestore();
-    const postShopCollection = collection(db, 'allpostShop');
-    const q = query(postShopCollection, where('name', '==', searchQuery));
-
-    const querySnapshot = await getDocs(q);
-    const postShopData = [];
-
-    querySnapshot.forEach((doc) => {
-      postShopData.push({ id: doc.id, ...doc.data() });
-    });
-
-    setFilteredData(postShopData);
+  const handleSearchResults = (results) => {
+    setSearchResults(results);
+    setIsSearching(true);
+    console.log('Search results:', results);
   };
 
-  const handleSearch = (query) => {
-    setSearch(query);
-    loalData();
-   
-  };
-  
-  
   const handleMarketPost = () => {
    
     navigation.navigate('Marketpost');
@@ -58,13 +43,8 @@ export default function MyComponent() {
       <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
       
     </Appbar.Header> 
-   
+    <Search  onSearchResults={handleSearchResults} />
     <ScrollView>
-    <Searchbar
-        placeholder="Search"
-        onChangeText={handleSearch}
-        value={search}
-      />
     <View style={{ top: 20,
       marginRight: 10,
       marginLeft: 25,}} >
@@ -105,17 +85,7 @@ export default function MyComponent() {
 
     </View>
  <View>
- {isSearching ? (
-  searchResults.map((shop) => (
-    <View key={shop.id} style={{ marginTop: 12 }}>
-     <PostShop shop={shop} /> 
-    </View>
-  ))
-) : (
-  <PostShop />
-)}
-
-
+ <PostShop/>
  </View>
     </ScrollView>
     </View>

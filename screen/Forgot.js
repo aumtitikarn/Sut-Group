@@ -13,7 +13,7 @@ export default function Forgot() {
   const handleResetPassword = async () => {
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert('Reset Password', 'Check your inbox for further instructions.');
+      Alert.alert('Reset Password', 'Check your email.');
     } catch (error) {
       console.error('Failed to reset password:', error);
       Alert.alert('Reset Password', 'Failed to reset password. Please try again.');

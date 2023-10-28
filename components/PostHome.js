@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, Alert
+  Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, Alert, FlatList
 } from 'react-native';
 import { FIRESTORE_DB } from '../firestore';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc,getDoc, arrayUnion, arrayRemove, setDoc, deleteDoc, where, getDocs } from 'firebase/firestore';
@@ -10,6 +10,8 @@ import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const PostHome = () => {
   const [posts, setPosts] = useState([]);
@@ -285,7 +287,7 @@ const loadFirestoreData = async () => {
   let q;
 
   if (searchQuery) {
-    q = query(collection(db, 'allpostHome'), where('faculty', '==', searchQuery));
+    q = query(collection(db, 'allpostHome'), where('faculty', '==', searchQuery), orderBy('timestamp', 'desc'));
   } else {
     q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
   }
@@ -299,6 +301,7 @@ const loadFirestoreData = async () => {
 
   setFilteredData(postHomeData);
 };
+
   
 return (
   <SafeAreaView style={styles.container}>

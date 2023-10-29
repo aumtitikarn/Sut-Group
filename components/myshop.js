@@ -12,8 +12,6 @@ export default function MyShop() {
   const [shops, setShops] = useState([]); 
   const [photo, setPhoto] = useState(null);
   const [isLiked, setIsLiked] = useState([]);
-  const [likeCount, setLikeCount] = useState([]);
-  const [userData, setUserData] = useState({});
   const [currentUser, setCurrentUser] = useState(null);  
   const db = FIRESTORE_DB;
   const auth = getAuth();
@@ -28,21 +26,18 @@ export default function MyShop() {
     });
   
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedIsLiked = {};
-      const updatedLikeCount = {};
+      
       const updatedShops = [];
       snapshot.forEach((doc) => {
         const shop = { id: doc.id, ...doc.data() };
         // กรองโพสต์ที่เป็นของผู้ใช้ที่ login อยู่
         if (shop.userUid === currentUser?.uid) {
           updatedShops.push(shop);
-          updatedIsLiked[shop.id] = false;
-          updatedLikeCount[shop.id] = shop.like;
+         
         }
       });
       setShops(updatedShops);
-      setIsLiked(updatedIsLiked);
-      setLikeCount(updatedLikeCount);
+      
     });
   
     return () => {
@@ -84,79 +79,7 @@ export default function MyShop() {
       console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
     }
   };
-  
-  const updateLike = async (shop) => {
-    try {
-      const userUid = auth.currentUser.uid;
-      const shopRef = doc(db, 'allpostShop', shop.id);
-      const shopDoc = await getDoc(shopRef);
-      if (shopDoc.exists()) {
-        const likedBy = shopDoc.data().likedBy || [];
-  
-        if (likedBy.includes(userUid)) {
-          const updatedLikedBy = likedBy.filter((uid) => uid !== userUid);
-          const newLikeCount = Math.max(shop.like - 1, 0);
-          const updateData = {
-            likedBy: updatedLikedBy,
-            like: newLikeCount,
-          };
-  
-          await updateDoc(shopRef, updateData);
-  
-          if (shop.id in isLiked) {
-            setIsLiked((currentIsLiked) => ({
-              ...currentIsLiked,
-              [shop.id]: !currentIsLiked[shop.id], // สลับค่ากลับและคาดหวังว่าไอคอนจะเปลี่ยนสี
-            }));
-          }
-        } else {
-          const updatedLikedBy = [...likedBy, userUid];
-          const newLikeCount = shop.like + 1;
-  
-          const updateData = {
-            likedBy: updatedLikedBy,
-            like: newLikeCount,
-          };
-  
-          await updateDoc(shopRef, updateData);
-  
-          if (shop.id in isLiked) {
-            setIsLiked((currentIsLiked) => ({
-              ...currentIsLiked,
-              [shop.id]: true,
-            }));
-          }
-          // อัปเดตข้อมูลการไลค์ไปยังคอลเลคชัน "postHome" ใน Firestore
-          await updateLikeInPostShop(userUid, shop.id, updatedLikedBy, newLikeCount);
-        }
-      } else {
-        console.error('ไม่พบข้อมูลโพสต์: ', shop.id);
-      }
-    } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการกดไลค์: ', error);
-    }
-   
-  };
-  const updateLikeInPostShop = async (userUid, shopId, likedBy, likeCount) => {
-    const postShopRef = doc(db, 'users', userUid, 'postShop', shopId);
-    
-    const postShopDoc = await getDoc(postShopRef);
-    if (postShopDoc.exists()) {
-      const updateData = {
-        likedBy: likedBy,
-        like: likeCount,
-      };
 
-      await updateDoc(postShopRef, updateData);
-    }
-  };
-  
-  
-
-  
-  
-  
-  
   const formatPostTime = (timestamp) => {
     if (timestamp) {
       // ดึงค่าเวลาปัจจุบัน
@@ -232,7 +155,7 @@ export default function MyShop() {
               source={{ uri: shop.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             /> 
-           
+            
                 <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
                 <Text style={{ top: -5 }}>#{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
@@ -247,20 +170,6 @@ export default function MyShop() {
             <View style={styles.cont}>
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
             </View>
-            <View >
-            <TouchableOpacity
-    style={{ left: 290 }}
-    onPress={() => updateLike(shop)}
->
-    <Icon
-        name={isLiked[shop.id] ? 'heart' : 'heart-o'}
-        size={30}
-        color={isLiked[shop.id] ? 'orange' : '#000'}
-    />
-</TouchableOpacity>
-            <View>
-            </View>
-          </View>
           </Card>
         </TouchableOpacity>
         );

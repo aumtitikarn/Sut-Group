@@ -269,7 +269,8 @@ const handleCreatePostPress = () => {
   navigation.navigate('Createpost');
 
 };
-const filteredPosts = posts.filter(post => faculty === "ทั้งหมด" || post.faculty === faculty);
+const filteredPosts = posts.filter(post => !faculty || post.faculty === faculty || faculty === "ทั้งหมด");
+
 
 return (
   <NativeBaseProvider>

@@ -9,7 +9,8 @@ import {
     StatusBar,
     TextInput,
     TouchableOpacity,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
 import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch, subcollection } from 'firebase/firestore'; 
@@ -96,6 +97,7 @@ const EditProfile = ({ navigation }) => {
 
     // อัปเดต state สำหรับแสดงรูปภาพใหม่
     if (imageType === 'profileImg') {
+      alert('อัพเดทรูปโปรไฟล์เรียบร้อยแล้ว');
       setProfileImg(downloadURL);
     }
 
@@ -213,7 +215,7 @@ const EditProfile = ({ navigation }) => {
       await setDoc(userRef, {
         bigImg: downloadURL, // เพิ่ม URI รูปภาพใหม่
       }, { merge: true });
-
+      alert('อัพเดทรูปปกเรียบร้อยแล้ว');
       // อัปเดต state สำหรับแสดงรูปภาพใหม่
       setBigImg(downloadURL);
     } catch (error) {

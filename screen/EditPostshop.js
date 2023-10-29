@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity, Alert } from 'react-native';
 import { doc, updateDoc,getDoc,onSnapshot  } from 'firebase/firestore';
 import { ref, uploadString ,getDownloadURL, uploadBytes, getStorage} from 'firebase/storage';
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
@@ -89,7 +89,7 @@ export default function EditPostShop({ route, navigation }) {
   
         // ดึง URL ของรูปภาพที่อัปโหลด
         const downloadURL = await getDownloadURL(storageRef);
-  
+
         // อัปเดต state และ Firebase Firestore ด้วย URL ของรูปภาพใหม่
         setNewShopData({ ...newShopData, photo: downloadURL });
       } catch (error) {

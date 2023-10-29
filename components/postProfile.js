@@ -291,7 +291,7 @@ const PostProfile = () => {
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             />
           <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
-          <Text style={styles.userData}>#{post.faculty}</Text>
+          <Text style={styles.userData}>{post.faculty}</Text>
           <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
         </View>
         <View style={{ top: -50, left: 30 }}>
@@ -312,7 +312,7 @@ const PostProfile = () => {
           <View>
             <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid, navigation })}>
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
           </TouchableOpacity>
           <TouchableOpacity>

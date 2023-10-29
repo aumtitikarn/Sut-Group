@@ -17,6 +17,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from 'react-native-paper';
 import {  ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 const EditProfile = ({ navigation }) => {
     const [userData, setUserData] = useState({});
@@ -25,6 +26,7 @@ const EditProfile = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [uid, setUid] = useState('');
     const [photo, setPhoto] = useState('');
+    const [faculty, setFaculty] = useState('');
     const [bigImg, setBigImg] = useState(null);
     const [profileImg, setProfileImg] = useState(null);
     const [Loading, setLoading] = useState(false);
@@ -329,7 +331,7 @@ const EditProfile = ({ navigation }) => {
         // ทำการ commit สำหรับ Write Batch เพื่ออัปเดตคุณสมบัติในเอกสารทั้งหมด
         await batch.commit();
         setLoading(false);
-        alert('ข้อมูลอัพเดท');
+        alert('อัพเดทข้อมูลเสร็จสิ้น');
         navigation.navigate('Profile');
       } else {
         console.error('No valid data to update');
@@ -339,6 +341,7 @@ const EditProfile = ({ navigation }) => {
     }
   };
       return (
+        <NativeBaseProvider>
         <SafeAreaView style={styles.container}>
         <View>
             <View style={{ position: 'relative' }}>
@@ -392,11 +395,22 @@ const EditProfile = ({ navigation }) => {
         placeholder={`${userData.username || ''}`}
         onChangeText={(text) => setNewData({ ...newData, username: text })}
       />
-       <TextInput
-       style={styles.input}
-        placeholder={`${userData.faculty || ''}`}
-        onChangeText={(text) => setNewData({ ...newData, faculty: text })}
-      />
+       <Box maxW="300">
+        <Select selectedValue={newData.faculty} minWidth="370" accessibilityLabel="Choose Service" placeholder={`${userData.faculty || ''}`} style={styles.input} _selectedItem={{
+        bg: "teal.600",
+        endIcon: <CheckIcon size="5" />
+      }} mt={1} onValueChange={(itemValue) => setNewData({ ...newData, faculty: itemValue })}>
+          <Select.Item label="⚗️สำนักวิชาวิทยาศาสตร์" value="⚗️สำนักวิชาวิทยาศาสตร์" />
+          <Select.Item label="🧭สำนักวิชาเทคโนโลยีสังคม" value="🧭สำนักวิชาเทคโนโลยีสังคม" />
+          <Select.Item label="🌲สำนักวิชาเทคโนโลยีการเกษตร" value="🌲สำนักวิชาเทคโนโลยีการเกษตร" />
+          <Select.Item label="⚙️สำนักวิชาวิศวกรรมศาสตร์" value="⚙️สำนักวิชาวิศวกรรมศาสตร์" />
+          <Select.Item label="🩺สำนักวิชาแพทย์" value="🩺สำนักวิชาแพทย์" />
+          <Select.Item label="💉สำนักวิชาพยาบาลศาสตร์" value="💉สำนักวิชาพยาบาลศาสตร์" />
+          <Select.Item label="🦷สำนักวิชาทันตแพทย์" value="🦷สำนักวิชาทันตแพทย์" />
+          <Select.Item label="🏥สำนักวิชาสาธารณสุขศาสตร์" value="🏥สำนักวิชาสาธารณสุขศาสตร์" />
+          <Select.Item label="💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" value="💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" />
+        </Select>
+      </Box>
        <TextInput
        style={styles.input}
         placeholder={`${userData.major || ''}`}
@@ -414,6 +428,7 @@ const EditProfile = ({ navigation }) => {
       <ActivityIndicator animating={Loading} size="large" color="#33FF99" style={{ left:70, top:-45}}/>
         </View>
         </SafeAreaView>
+        </NativeBaseProvider>
       )
     };
 const styles = StyleSheet.create({

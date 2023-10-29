@@ -185,7 +185,7 @@ const Share = () => {
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -70, top: 55 }}
             />
           <Text style={{ top: 10, fontWeight: 'bold', left: -5 }}>{post.username}</Text>
-          <Text style={styles.userData}>#{post.faculty}</Text>
+          <Text style={styles.userData}>{post.faculty}</Text>
           <Text style={{ color: '#777267', top: 15, left: -5 }}>{formatPostTime(post.timestamp)}</Text>
         </View>
         <View style={{ top: -50, left: 30 }}>
@@ -199,7 +199,7 @@ const Share = () => {
             <Icon
               name={isLiked[post.id] ? 'heart' : 'heart'}
               size={25}
-              color={isLiked[post.id] ? 'orange' : '#000'}
+              color={isLiked[post.id] ? '#8AD1DB' : '#000'}
               style={{ marginLeft: 30 }}
             />
           </TouchableOpacity>

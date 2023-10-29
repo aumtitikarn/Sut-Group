@@ -19,7 +19,7 @@ import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
 import { onSnapshot, query, orderBy, collection, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const ReplyData = () => {
+const ReplyData = ({comments}) => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
@@ -123,7 +123,9 @@ const ReplyData = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{
+    backgroundColor: '#8AD1DB',
+    height: comments.photo ? 305 : 505}}>
       <ScrollView>
           {comment.map((commentItem) => (
             <View key={commentItem.id}  
@@ -187,10 +189,6 @@ const ReplyData = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#8AD1DB',
-    height: 500,
-  },
   dropdown: {
     position: 'absolute',
     backgroundColor: '#FFF', // สีพื้นหลังของ Dropdown

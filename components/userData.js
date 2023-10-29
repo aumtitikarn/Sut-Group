@@ -68,7 +68,7 @@ const UserData = ({ navigation }) => {
         <View style={styles.userDataContainer}>
           <Text style={{fontSize:18, fontWeight:'bold', color: "#1C1441"}}> {userData.username}</Text>
           <View>
-            <Text style={styles.userDataText}> #{userData.faculty}</Text>
+            <Text style={styles.userDataText}> {userData.faculty}</Text>
           </View>
         </View>
       </View>

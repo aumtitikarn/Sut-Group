@@ -254,7 +254,7 @@ export default function PostShop() {
         />
       
                 <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
-                <Text style={{ top: -5 }}>#{shop.faculty}</Text>
+                <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
               <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>

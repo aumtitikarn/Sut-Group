@@ -234,7 +234,7 @@ export default function MyShop() {
             /> 
            
                 <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
-                <Text style={{ top: -5 }}>#{shop.faculty}</Text>
+                <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
               <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
@@ -255,7 +255,7 @@ export default function MyShop() {
     <Icon
         name={isLiked[shop.id] ? 'heart' : 'heart-o'}
         size={30}
-        color={isLiked[shop.id] ? 'orange' : '#000'}
+        color={isLiked[shop.id] ? '#8AD1DB' : '#000'}
     />
 </TouchableOpacity>
             <View>

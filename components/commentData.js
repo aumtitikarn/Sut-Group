@@ -19,7 +19,7 @@ import { FIRESTORE_DB, FIREBASE_STORAGE, FIREBASE_AUTH } from '../firestore';
 import { onSnapshot, query, orderBy, collection, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CommentData = () => {
+const CommentData = ({ post }) => {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const storage = FIREBASE_STORAGE;
@@ -28,8 +28,6 @@ const CommentData = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const postId = route.params.postId;
-
-  
 
   useEffect(() => {
     const q = query(collection(db, 'allpostHome', postId, 'comment'), orderBy('timestamp', 'desc'));
@@ -119,7 +117,10 @@ const CommentData = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{
+      backgroundColor: '#8AD1DB',
+      height: post.photo ? 305 : 505, // Adjust the height conditionally
+    }}>
       <ScrollView>
           {comment.map((commentItem) => (
             <View key={commentItem.id}  
@@ -201,10 +202,10 @@ const CommentData = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#8AD1DB',
-    height: 500,
-  },
+  // container: {
+  //   backgroundColor: '#8AD1DB',
+  //   height: 300,
+  // },
   dropdown: {
     position: 'absolute',
     backgroundColor: '#FFF', // สีพื้นหลังของ Dropdown

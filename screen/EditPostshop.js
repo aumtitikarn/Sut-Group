@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
-import { doc, updateDoc, } from 'firebase/firestore';
+import { doc, updateDoc,getDoc,onSnapshot  } from 'firebase/firestore';
 import { ref, uploadString ,getDownloadURL, uploadBytes, getStorage} from 'firebase/storage';
 import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,33 +14,26 @@ export default function EditPostShop({ route, navigation }) {
   const [newShopData, setNewShopData] = useState(initialData);
   const [photo, setPhoto] = useState(null);
   const storage = FIREBASE_STORAGE;
+  const db = FIRESTORE_DB;
 
-
- 
   const handleUpdatePost = async () => {
+    console.log("shopid:". shopId)
     try {
-      const  id = shopId;
-      // อัปโหลดรูปภาพใน Firebase Storage
-      const fileName = `${id}.jpg`;
-      const storageRef = ref(storage, 'photo_shop/' + fileName);
+      const id = shopId;
+      const storageRef = ref(storage, 'photo_shop/' + `${id}.jpg`);
       const response = await fetch(photo);
       const blob = await response.blob();
       await uploadBytes(storageRef, blob);
-  
-      // หลังจากอัปโหลดสำเร็จ รับ URL จาก Storage
       const downloadURL = await getDownloadURL(storageRef);
-       // อัปเดตรูปภาพใน newShopData และ Firebase Firestore
-      setNewShopData({ ...newShopData, photo: downloadURL });
-      await updateDoc(shopRef, { photo: downloadURL, ...newShopData });
-      // อัปเดตข้อมูลใน Firestore
-      await updateDoc(shopRef, {
+  
+      // อัปเดต state เพื่อแสดงข้อมูลใหม่ทันทีหลังจากที่บันทึกข้อมูล
+      setNewShopData({
+        ...newShopData,
         photo: downloadURL,
         name: newShopData.name,
         prict: newShopData.prict,
         phon: newShopData.phon,
         cate: newShopData.cate,
-        
-        // ... (เพิ่มฟิลด์อื่น ๆ ที่ต้องการอัปเดต)
       });
   
       console.log('โพสต์ถูกอัปเดตเรียบร้อยแล้ว');
@@ -49,8 +42,21 @@ export default function EditPostShop({ route, navigation }) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
   };
-  
-  
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'postShop', shopId), (snapshot) => {
+      if (snapshot.exists()) {
+        const postShopData = snapshot.data();
+        setNewShopData(postShopData);
+      } else {
+        console.log('ไม่พบข้อมูลโพสต์');
+      }
+    });
+
+    return () => {
+      // Unsubscribe when the component unmounts
+      unsubscribe();
+    };
+  }, [shopId]); 
   const Lib = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -65,24 +71,33 @@ export default function EditPostShop({ route, navigation }) {
       quality: 1,
     });
   
-    if (!result.cancelled) {
+    if (!result.canceled) {
       const newPhotoUri = result.uri;
+      const id = shopId;
   
-      // อัปเดตรูปภาพใหม่ใน Firebase Storage และ Firestore
-      const fileName = `${shopId}.jpg`; // เปลี่ยน id เป็น shopId ที่ได้จาก route.params
-      const storageRef = ref(storage, 'photo_shop/' + fileName);
-      const response = await fetch(newPhotoUri);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
+      try {
+        // สร้างอ้างอิงไปยังไฟล์ใหม่ที่จะอัปโหลด
+        const fileName = `${id}.jpg`;
+        const storageRef = ref(storage, 'photo_shop/' + fileName);
   
-      // อัปเดตรูปภาพใน newShopData และ Firebase Firestore
-      setNewShopData({ ...newShopData, photo: downloadURL });
-      setPhoto(newPhotoUri); // อัปเดตรูปภาพใน state เพื่อแสดงใน UI
+        // ดึงข้อมูลรูปภาพจาก URL
+        const response = await fetch(newPhotoUri);
+        const blob = await response.blob();
+  
+        // อัปโหลดรูปภาพไปยัง Firebase Storage
+        await uploadBytes(storageRef, blob);
+  
+        // ดึง URL ของรูปภาพที่อัปโหลด
+        const downloadURL = await getDownloadURL(storageRef);
+  
+        // อัปเดต state และ Firebase Firestore ด้วย URL ของรูปภาพใหม่
+        setNewShopData({ ...newShopData, photo: downloadURL });
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: ', error);
+      }
     }
   };
   
-
   return (
     <View style={styles.container}>
      <TouchableOpacity>
@@ -128,7 +143,8 @@ export default function EditPostShop({ route, navigation }) {
         value={newShopData.phon}
         onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
       />
-      {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
+     {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
+
       <TouchableOpacity onPress={Lib}>
                 <MaterialCommunityIcons 
                     name="pencil-outline"  

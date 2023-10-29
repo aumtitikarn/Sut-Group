@@ -8,7 +8,8 @@ import {
     SafeAreaView, 
     StatusBar,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
 } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore'; 
 import { getDoc, doc, setDoc, updateDoc, query, collection, where, getDocs, writeBatch, subcollection } from 'firebase/firestore'; 
@@ -26,6 +27,7 @@ const EditProfile = ({ navigation }) => {
     const [photo, setPhoto] = useState('');
     const [bigImg, setBigImg] = useState(null);
     const [profileImg, setProfileImg] = useState(null);
+    const [Loading, setLoading] = useState(false);
     const storage = FIREBASE_STORAGE;
     const db = FIRESTORE_DB;
     const auth = FIREBASE_AUTH;
@@ -222,6 +224,7 @@ const EditProfile = ({ navigation }) => {
     
   const handleSaveChanges = async () => {
     try {
+      setLoading(true);
       const userUid = auth.currentUser.uid;
       const userDocRef = doc(db, 'users', userUid);
     
@@ -325,8 +328,8 @@ const EditProfile = ({ navigation }) => {
   
         // ทำการ commit สำหรับ Write Batch เพื่ออัปเดตคุณสมบัติในเอกสารทั้งหมด
         await batch.commit();
-  
-        alert('Data updated');
+        setLoading(false);
+        alert('ข้อมูลอัพเดท');
         navigation.navigate('Profile');
       } else {
         console.error('No valid data to update');
@@ -404,9 +407,11 @@ const EditProfile = ({ navigation }) => {
         placeholder={`${userData.email || ''}`}
         onChangeText={(text) => setNewData({ ...newData, email: text })}
       />
+      
       <TouchableOpacity style={styles.buttonYellow} onPress={handleSaveChanges}>
         <Text style={{ color: "#1C1441"}}>บันทึกข้อมูล</Text>
       </TouchableOpacity>
+      <ActivityIndicator animating={Loading} size="large" color="#33FF99" style={{ left:70, top:-45}}/>
         </View>
         </SafeAreaView>
       )

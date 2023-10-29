@@ -365,7 +365,7 @@ useEffect(() => {
             }}/>
           </View>
           <View style={{ top: photo ? -220 : -202}}>
-          <ReplyData />
+          <ReplyData comments={comment}/>
           </View>
           </View>
           </View>
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FDF4E2',
     paddingTop: StatusBar.currentHeight,
-    flex: 1
+    flex: 1,
   },
   commentInput: {
     width: 230,

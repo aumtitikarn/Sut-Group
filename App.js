@@ -85,8 +85,8 @@ function MyTabs() {
           }}
         />
         <Tab.Screen
-          name="BasketGame"
-          component={BasketGame}
+          name="Rank"
+          component={Rank}
           options={{
             tabBarLabel: 'Game',
             tabBarIcon: ({ color, size }) => (
@@ -131,6 +131,7 @@ export default function Page() {
           <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Reply" component={Reply} />
           <Stack.Screen name="AddScore" component={AddScore} />
+          <Stack.Screen name="BasketGame" component={BasketGame} />
           <Stack.Screen name="Marketplace" component={Marketplace} />
           <Stack.Screen name="Rank" component={Rank} />
           <Stack.Screen name="PostHome" component={PostHome} />

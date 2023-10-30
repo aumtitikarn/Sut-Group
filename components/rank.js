@@ -46,7 +46,7 @@ function Rank() {
               source={{ uri: scoreData.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             />
-                  <Text style={{ fontSize: 14, fontWeight: 'bold' }}>อันดับที่ {index + 1} {scoreData.username}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: 'bold' }}>อันดับที่ {index + 1} : {scoreData.username}</Text>
                   <Text style={{ fontSize: 14 }}>คะแนน: {scoreData.score}</Text>
                   </View>
                 </View>

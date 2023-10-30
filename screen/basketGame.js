@@ -6,7 +6,8 @@ import {
   View,
   Dimensions,
   Button,
-  StatusBar
+  StatusBar,
+  SafeAreaView
 } from 'react-native';
 
 import Ball from '../components/Ball';
@@ -337,7 +338,7 @@ class Basketball extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Score y={FLOOR_HEIGHT * 3} score={this.state.score} scored={this.state.scored} />
         <Hoop y={HOOP_Y} />
         {this.renderNet(this.state.lifecycle === LC_STARTING)}
@@ -354,7 +355,7 @@ class Basketball extends Component {
         {this.renderFloor(this.state.vy > 0)}
         <Emoji y={NET_Y} scored={this.state.scored} />
         <Button title="บันทึกคะแนน" onPress={() => this.onScore()} />
-      </View>
+      </SafeAreaView>
     );
   }
 }

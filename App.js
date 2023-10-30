@@ -23,6 +23,7 @@ import PostHome from './components/PostHome';
 import Reply from './screen/Reply';
 import BasketGame from './screen/basketGame';
 import AddScore from './components/AddScore';
+import Rank from './components/rank';
 import { Provider } from 'react-redux';
 import Store from './context/store'; 
 
@@ -131,6 +132,7 @@ export default function Page() {
           <Stack.Screen name="Reply" component={Reply} />
           <Stack.Screen name="AddScore" component={AddScore} />
           <Stack.Screen name="Marketplace" component={Marketplace} />
+          <Stack.Screen name="Rank" component={Rank} />
           <Stack.Screen name="PostHome" component={PostHome} />
         </Stack.Navigator>
       </Provider>

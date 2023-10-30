@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ImageBackground, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
@@ -58,13 +58,13 @@ function AddScore(props) {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
        <ImageBackground
     source={require('../assets/bg.png')} // Update the path to your background image
     style={styles.background}
   >
       <View style={styles.myscore}>
-      <Image style={{width:300, height:300, top: 50, left:10}} source={require('../assets/bask.png')}  />
+      <Image style={{width:250, height:250, top: 50}} source={require('../assets/bask.png')}  />
         <Text style={{ fontSize: 24 }}>คะแนนของตอนนี้</Text>
         <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{score} 🎉</Text>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => {
@@ -72,7 +72,7 @@ function AddScore(props) {
         }}>
           <Text style={{ left: 60, color: 'white' }}>เล่นต่อ</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Rank')}>
+        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }}>
           <Text style={{ left: 50, color: 'white' }}>อันดับผู้เล่น</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Home')}>
@@ -80,7 +80,7 @@ function AddScore(props) {
         </TouchableOpacity>
       </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 }
 

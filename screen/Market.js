@@ -39,7 +39,7 @@ export default function MyComponent() {
     <SafeAreaView style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/2.png')}  />
-      <Appbar.Content title="Marketplace" style={{ left: 50 }} />
+      <Appbar.Content title="ร้านค้า" style={{ left: 70 }} />
     </Appbar.Header> 
     <Search  onSearchResults={handleSearchResults} />
     <ScrollView>

@@ -25,16 +25,16 @@ export default function Forgot() {
       <MaterialCommunityIcons style={styles.logo} name="email" size={80} />
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="อีเมล"
         placeholderTextColor="gray"
         value={email}
         onChangeText={setEmail}
       />
       <View style={styles.loginButton}>
-        <Button color="#8AD1DB" title="Reset password" onPress={handleResetPassword} />
+        <Button color="#8AD1DB" title="เปลี่ยนรหัสผ่าน" onPress={handleResetPassword} />
       </View>
       <View style={styles.loginButton}>
-        <Button color="#8AD1DB" title="Back" onPress={() => navigation.navigate('Register')} />
+        <Button color="#8AD1DB" title="ย้อนกลับ" onPress={() => navigation.navigate('Login')} />
       </View>
     </View>
   );

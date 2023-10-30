@@ -84,7 +84,7 @@ export default function TabViewExample() {
       <TouchableOpacity style={{borderRadius: 5,
       borderWidth: 1,
       backgroundColor: '#FDF4E2',
-      width: 90,
+      width: 85,
       padding: 8,
       }}
       onPress={handleCreatePostPress}
@@ -99,10 +99,10 @@ export default function TabViewExample() {
       <TouchableOpacity style={{borderRadius: 5,
       borderWidth: 1,
       backgroundColor: '#FDF4E2',
-      width: 70,
+      width: 100,
       padding: 8,
       top:4}} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Log out</Text>
+        <Text style={styles.buttonText}>ออกจากระบบ</Text>
       </TouchableOpacity>
       </View>
     <TabView

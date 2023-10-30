@@ -129,7 +129,7 @@ export default function Register({navigation}) {
       <View style={{margin: 10}}>
       <Button
           color="#8AD1DB"
-          title="Register"
+          title="ลงทะเบียน"
           onPress={() => UserRegister()}
         />
         </View>

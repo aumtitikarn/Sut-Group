@@ -27,6 +27,7 @@ import Rank from './components/rank';
 import { Provider } from 'react-redux';
 import Store from './context/store'; 
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -57,7 +58,7 @@ function MyTabs() {
           name="Home"
           component={Home}
           options={{
-            tabBarLabel: 'Home',
+            tabBarLabel: 'หน้าหลัก',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={30} />
             ),
@@ -68,7 +69,7 @@ function MyTabs() {
           name="ChatHomeScreen"
           component={ChatHomeScreen}
           options={{
-            tabBarLabel: 'Chat',
+            tabBarLabel: 'แชท',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="chat" color={color} size={30} />
             ),
@@ -78,7 +79,7 @@ function MyTabs() {
           name="Marketplace"
           component={Marketplace}
           options={{
-            tabBarLabel: 'Marketplace',
+            tabBarLabel: 'ร้านค้า',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="basket" color={color} size={30} />
             ),
@@ -88,7 +89,7 @@ function MyTabs() {
           name="Rank"
           component={Rank}
           options={{
-            tabBarLabel: 'Game',
+            tabBarLabel: 'เกม',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="basketball" color={color} size={30} />
             ),
@@ -98,7 +99,7 @@ function MyTabs() {
           name="Profile"
           component={Profile}
           options={{
-            tabBarLabel: 'Profile',
+            tabBarLabel: 'โปรไฟล์',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="account" color={color} size={30} />
             ),

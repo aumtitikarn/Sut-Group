@@ -385,8 +385,8 @@ const EditProfile = ({ navigation }) => {
                 />
                 </TouchableOpacity>
                 <MaterialCommunityIcons 
-                    name="arrow-left-thick"  
-                    size={50} style={{margin:10, position: 'absolute', color: 'black'}} 
+                    name="arrow-left"  
+                    size={35} style={{margin:15, position: 'absolute', color: 'black'}} 
                     onPress={() => navigation.navigate('Profile')} 
                 />
             </View>

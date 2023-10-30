@@ -65,15 +65,14 @@ const EditPostHome = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <MaterialCommunityIcons 
-          name="arrow-left-thick"  
-          size={50} 
-          style={{ margin: 10 }} 
-          onPress={() => navigation.navigate('Profile')} 
-        />
-      </View>
-      <Text style={{ left: 70, top: -50, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
+      <View style={{left:25, top: 5,}} >
+    <MaterialCommunityIcons 
+      name="arrow-left"  
+      size={35} style={{margin:10}} 
+      onPress={() => navigation.navigate('Home')}
+      />
+    </View>
+      <Text style={{ left: 90, top: -40, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
       <View style={{ top: -20, left: 20 }}>
         <Avatar.Icon icon="account-circle" size={80} />
         {imageUrl && (

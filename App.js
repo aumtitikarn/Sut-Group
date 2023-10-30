@@ -9,12 +9,10 @@ import Marketplace from './screen/Market';
 import ChatHomeScreen from './screen/ChatHomeScreen';
 import AddToChat from './screen/AddToChat';
 import ChatScreen from './screen/ChatScreen';
-
 import Profile from './screen/Profile';
 import Login from './screen/Login';
 import Register from './screen/Register';
 import Createpost from './screen/createpost';
-import NotiScreen from './screen/notiscreen';
 import Marketpost from './screen/marketpost';
 import EditProfile from './screen/EditProfile';
 import EditPostHome from './screen/EditPostHome';
@@ -23,11 +21,14 @@ import EditPostShop from './screen/EditPostshop';
 import Comment from './screen/comment';
 import PostHome from './components/PostHome';
 import Reply from './screen/Reply';
+import BasketGame from './screen/basketGame';
+import AddScore from './components/AddScore';
 import { Provider } from 'react-redux';
 import Store from './context/store'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 
 function MyTabs() {
   return (
@@ -66,9 +67,9 @@ function MyTabs() {
           name="ChatHomeScreen"
           component={ChatHomeScreen}
           options={{
-            tabBarLabel: 'ChatHomeScreen',
+            tabBarLabel: 'Chat',
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="ChatHomeScreen" color={color} size={30} />
+              <MaterialCommunityIcons name="chat" color={color} size={30} />
             ),
           }}
         />
@@ -79,6 +80,16 @@ function MyTabs() {
             tabBarLabel: 'Marketplace',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="basket" color={color} size={30} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="BasketGame"
+          component={BasketGame}
+          options={{
+            tabBarLabel: 'Game',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="basketball" color={color} size={30} />
             ),
           }}
         />
@@ -111,7 +122,6 @@ export default function Page() {
           <Stack.Screen name="AddToChat" component={AddToChat} />
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
           <Stack.Screen name="Createpost" component={Createpost} />
-          <Stack.Screen name="NotiScreen" component={NotiScreen} />
           <Stack.Screen name="Marketpost" component={Marketpost} />
           <Stack.Screen name="EditProfile" component={EditProfile} />
           <Stack.Screen name="EditPostShop" component={EditPostShop} />
@@ -119,6 +129,8 @@ export default function Page() {
           <Stack.Screen name="Comment" component={Comment} />
           <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Reply" component={Reply} />
+          <Stack.Screen name="AddScore" component={AddScore} />
+          <Stack.Screen name="Marketplace" component={Marketplace} />
           <Stack.Screen name="PostHome" component={PostHome} />
         </Stack.Navigator>
       </Provider>

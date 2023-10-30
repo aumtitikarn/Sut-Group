@@ -7,6 +7,7 @@ import React, {
     StyleSheet,
     Dimensions,
     Animated,
+    YellowBox
   } from 'react-native';
   import {
     PropTypes,
@@ -16,7 +17,7 @@ import React, {
   const sad = ['😢', '😓', '😒', '😳', '😭'];
   const INITIAL_Y = 5;
   
-  
+  YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified.']);
   class Emoji extends Component {
   
     constructor(props) {

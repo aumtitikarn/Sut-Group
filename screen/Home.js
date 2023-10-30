@@ -15,7 +15,7 @@ const MyComponent = () => {
     <SafeAreaView style={styles.container}>
         <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
           <Image style={styles.logo} source={require('../assets/2.png')} />
-          <Appbar.Content title="Home" style={{ left: 65 }} />
+          <Appbar.Content title="หน้าหลัก" style={{ left: 65 }} />
         </Appbar.Header>
         <ScrollView>
         <PostHome />

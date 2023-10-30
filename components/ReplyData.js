@@ -125,7 +125,7 @@ const ReplyData = ({comments}) => {
   return (
     <SafeAreaView style={{
     backgroundColor: '#8AD1DB',
-    height: comments.photo ? 305 : 505}}>
+    height: comments.photo ? 318 : 520}}>
       <ScrollView>
           {comment.map((commentItem) => (
             <View key={commentItem.id}  

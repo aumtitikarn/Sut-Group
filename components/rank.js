@@ -1,108 +1,103 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, query, orderBy, getDocs, onSnapshot } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-
-function AddScore(props) {
-  const { route } = props;
-  const { score } = route.params; // Destructure the resetScore function
-  const [scoreState, setScoreState] = useState(score);
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const saveScoreToFirestore = async () => {
-      const user = FIREBASE_AUTH.currentUser;
-      if (user) {
-        const userId = user.uid;
-
+import { Avatar } from 'react-native-paper';
+function Rank() {
+    const navigation = useNavigation();
+    const [scores, setScores] = useState([]);
+  
+    useEffect(() => {
+        // Define a reference to the "game" collection
         const gameCollection = collection(FIRESTORE_DB, 'game');
-        const userDoc = doc(gameCollection, userId);
+    
+        // Create a query to order the documents by "score" in descending order
+        const q = query(gameCollection, orderBy('score', 'desc'));
+  
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          // Extract and store the data in the scores state whenever there's a change
+          const scoresData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setScores(scoresData);
+          console.log(scoresData);
+        });
+        
+        // Unsubscribe when the component unmounts to avoid memory leaks
+        return () => unsubscribe();
+      }, []);
 
-        const data = {
-          score: score,
-        };
+    return (
+        <View style={styles.container}>
+          <ImageBackground
+            source={require('../assets/bg.png')}
+            style={styles.background}
+          >
+            <View style={styles.myscore}>
+              <Image style={{ width: 250, height: 250, top: 50, left:20 }} source={require('../assets/bask.png')} />
+              <Text style={{ fontSize: 24, marginBottom: 20 }}>อันดับผู้เล่น</Text>
+              {scores.slice(0, 3).map((scoreData, index) => (
+                <View key={scoreData.id} style={styles.scoreItem}>
+                    <View style={{top: -50}}>
+                     <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+            <Image
+              source={{ uri: scoreData.profileImg }}
+              style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
+            />
+                  <Text style={{ fontSize: 14, fontWeight: 'bold' }}>อันดับที่ {index + 1} : {scoreData.username}</Text>
+                  <Text style={{ fontSize: 14 }}>คะแนน: {scoreData.score}</Text>
+                  </View>
+                </View>
+              ))}
+              <TouchableOpacity
+                style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2,left:20 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={{ left: 60, color: 'white' }} onPress={() => navigation.navigate('BasketGame')}>เริ่มเกม</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2,left:20  }}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={{ left: 40, color: 'white' }}>กลับไปหน้าหลัก</Text>
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+        </View>
+      );
+    }
 
-        try {
-          await setDoc(userDoc, data);
-          console.log('บันทึกคะแนนสำเร็จ');
+    const styles = StyleSheet.create({
+        container: {
+          paddingTop: StatusBar.currentHeight,
+          height: 800
+        },
+        myscore: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          top: -120,
+          left: -5
+        },
+        background: {
+          flex: 1,
+          width: '100%',
+          height: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        scoreItem: {
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          width: 200,
+          padding: 10,
+          borderRadius: 10,
+          margin: 10,
+          height:50,
+          left: 20
+        },
+      });
+      
 
-          const userCollection = collection(FIRESTORE_DB, 'users');
-          const currentUserDoc = doc(userCollection, userId);
-
-          const userDocSnapshot = await getDoc(currentUserDoc);
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            if (userData) {
-              const { username, profileImg } = userData;
-
-              const gameData = {
-                score: score,
-                username: username,
-                profileImg: profileImg,
-              };
-
-              const userGameDoc = doc(gameCollection, userId);
-              await setDoc(userGameDoc, gameData);
-              console.log('บันทึกข้อมูลผู้ใช้ในคอลเลคชัน "game" สำเร็จ');
-            }
-          }
-        } catch (error) {
-          console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', error);
-        }
-      }
-    };
-
-    saveScoreToFirestore();
-  }, [score]);
-
-
-  return (
-    <View style={styles.container}>
-       <ImageBackground
-    source={require('../assets/bg.png')} // Update the path to your background image
-    style={styles.background}
-  >
-      <View style={styles.myscore}>
-      <Image style={{width:250, height:250, top: 50}} source={require('../assets/bask.png')}  />
-        <Text style={{ fontSize: 24 }}>คะแนนของตอนนี้</Text>
-        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{score} 🎉</Text>
-        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => {
-          navigation.goBack();
-        }}>
-          <Text style={{ left: 60, color: 'white' }}>เล่นต่อ</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }}>
-          <Text style={{ left: 50, color: 'white' }}>อันดับผู้เล่น</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Home')}>
-          <Text style={{ left: 40, color: 'white' }}>กลับไปหน้าหลัก</Text>
-        </TouchableOpacity>
-      </View>
-      </ImageBackground>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight
-  },
-  myscore: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    top: -100,
-    fontSize: 24
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
-export default AddScore;
+export default Rank;

@@ -1,3 +1,5 @@
+// Credit : https://github.com/FaridSafi/react-native-basketball
+
 import React, {
   Component,
 } from 'react';
@@ -354,7 +356,7 @@ class Basketball extends Component {
         {this.renderNet(this.state.lifecycle !== LC_STARTING)}
         {this.renderFloor(this.state.vy > 0)}
         <Emoji y={NET_Y} scored={this.state.scored} />
-        <Button title="บันทึกคะแนน" onPress={() => this.onScore()} />
+        <Button color="orange" title="บันทึกคะแนน" onPress={() => this.onScore()} />
       </SafeAreaView>
     );
   }

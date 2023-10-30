@@ -146,12 +146,12 @@ const storage = FIREBASE_STORAGE;
     <View style={styles.container}>
      <TouchableOpacity>
     <MaterialCommunityIcons 
-      name="arrow-left-thick"  
-      size={50} style={{margin:10, top: 30}} 
+      name="arrow-left"  
+      size={35} style={{ top: 30}} 
      onPress={() => navigation.goBack()}
       /> 
      </TouchableOpacity>
-    <Text style={{textAlign:'center',top:-20,fontSize:20}}>แก้ไขโพสต์</Text>
+    <Text style={{textAlign:'center',fontSize:20}}>แก้ไขโพสต์</Text>
     <View  style={{top:100}}>
       <View  style={{ top: -10, margin: 10 }} >
     <SelectDropdown

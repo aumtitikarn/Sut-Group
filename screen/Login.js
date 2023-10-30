@@ -16,8 +16,9 @@ export default function Login({ navigation }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       navigation.navigate('MyTabs');
     } catch (error) {
-      alert(error.message);
-      console.log(error.message);
+      if (error.code === 'auth/invalid-login-credentials') {
+        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      } 
     }
   }
 
@@ -48,11 +49,12 @@ export default function Login({ navigation }) {
     <View>
       <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Text style={styles.logostyle}>เข้าสู่ระบบ</Text>
+      <Text style={styles.errorText}>{error}</Text>
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={(text) => setEmail(text)}
-        placeholder="Email "
+        placeholder="อีเมล "
         placeholderTextColor="Gray"
       />
       <TextInput
@@ -69,7 +71,7 @@ export default function Login({ navigation }) {
         ลืมรหัสผ่าน?
       </Text>
       <View style={styles.loginButton}>
-        <Button color="#8AD1DB" title="Log in" onPress={() => UserLogin()} />
+        <Button color="#8AD1DB" title="เข้าสู่ระบบ" onPress={() => UserLogin()} />
       </View>
       <Text
         style={styles.register}
@@ -119,4 +121,9 @@ const styles = StyleSheet.create({
     width: 320,
     marginLeft: 50
   },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 10,
+  }
 });

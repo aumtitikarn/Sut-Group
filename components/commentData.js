@@ -119,7 +119,7 @@ const CommentData = ({ post }) => {
   return (
     <SafeAreaView style={{
       backgroundColor: '#8AD1DB',
-      height: post.photo ? 305 : 505, // Adjust the height conditionally
+      height: post.photo ? 318 : 520, // Adjust the height conditionally
     }}>
       <ScrollView>
           {comment.map((commentItem) => (

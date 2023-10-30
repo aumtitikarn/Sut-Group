@@ -1,5 +1,6 @@
 // Simple 2D vector class including vector functions
 // http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/
+// Credit : https://github.com/FaridSafi/react-native-basketball
 
 var Vector = (
 	function () {

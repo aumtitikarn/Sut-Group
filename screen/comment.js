@@ -259,14 +259,13 @@ const openlib = async () => {
     <SafeAreaView style={styles.container}>
       {posts && (
             <View>
-        <View>
-          <MaterialCommunityIcons
-            name="arrow-left-thick"
-            size={50}
-            style={{ margin: 10, top: 20, left: 10 }}
-            onPress={() => navigation.goBack()}
-          />
-        </View>
+       <View style={{left:20, top: 5}} >
+    <MaterialCommunityIcons 
+      name="arrow-left"  
+      size={35} style={{margin:10}} 
+      onPress={() => navigation.navigate('Home')}
+      />
+    </View>
         <View>
               <Avatar.Icon
                 icon="account-circle"

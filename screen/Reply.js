@@ -259,13 +259,14 @@ useEffect(() => {
       {comment && (
             <View>
         <View>
-          <MaterialCommunityIcons
-            name="arrow-left-thick"
-            size={50}
-            style={{ margin: 10, top: 20, left: 10 }}
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={{ left: 80, top: 38, fontWeight: 'bold', fontSize: 24, position: 'absolute'}}>ตอบกลับ {comment.username}</Text>
+        <View style={{left:25, top: 5}} >
+    <MaterialCommunityIcons 
+      name="arrow-left"  
+      size={35} style={{margin:10}} 
+      onPress={() => navigation.navigate('Home')}
+      />
+    </View>
+          <Text style={{ left: 80, top: 15, fontWeight: 'bold', fontSize: 24, position: 'absolute'}}>ตอบกลับ {comment.username}</Text>
         </View>
         <View>
               <Avatar.Icon

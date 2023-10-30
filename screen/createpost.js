@@ -190,11 +190,11 @@ const openlib = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View>
+    <View style={{left:25, top: 5}} >
     <MaterialCommunityIcons 
-      name="arrow-left-thick"  
-      size={50} style={{margin:10}} 
-      onPress={() => navigation.navigate('Home')} 
+      name="arrow-left"  
+      size={35} style={{margin:10}} 
+      onPress={() => navigation.navigate('Home')}
       />
     </View>
       <View

@@ -102,17 +102,23 @@ const EditProfile = ({ navigation }) => {
     }
 
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
+    const userUid = auth.currentUser.uid;
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
     const allPostShopCollectionRef = collection(db, 'allpostHShop');
+    const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', auth.currentUser.uid));
+    const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
+    
 
     const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
     const allPostShopSnapshot = await getDocs(allPostShopQuery);
+    const gameSnapshot = await getDocs(gameQuery);
 
     const allPostHomeBatch = writeBatch(db);
     const allPostShopBatch = writeBatch(db);
-    const userUid = auth.currentUser.uid;
+    const Batch = writeBatch(db);
+
     const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
     const allPostHomecommentQuery = query(allPostHomecommentCollectionRef);
 
@@ -143,7 +149,9 @@ const EditProfile = ({ navigation }) => {
         }
     }
 
-    
+    gameSnapshot.forEach((doc) => {
+      Batch.update(doc.ref, updateData);
+    });
 
     allPostHomeSnapshot.forEach((doc) => {
       allPostHomeBatch.update(doc.ref, updateData);
@@ -153,6 +161,7 @@ const EditProfile = ({ navigation }) => {
       allPostShopBatch.update(doc.ref, updateData);
     });
 
+    await Batch.commit();
     await allPostHomeBatch.commit();
     await allPostShopBatch.commit();
 
@@ -258,6 +267,7 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลในคอลเลคชัน allpostHome ของผู้ใช้
         const allPostHomeCollectionRef = collection(db, 'allpostHome');
         const allPostShopCollectionRef = collection(db, 'allpostShop');
+        const gameCollectionRef = collection(db, 'game');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
         const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
@@ -265,13 +275,14 @@ const EditProfile = ({ navigation }) => {
         // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
         const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
-       
+        const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
         const usershareSnapshot = await getDocs(usershareCollectionRef);
+        const gameSnapshot = await getDocs(gameQuery);
         
         // เลือกทุกเอกสารในคอลเลคชัน allpostHome
       const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
@@ -307,6 +318,11 @@ const EditProfile = ({ navigation }) => {
           });
         }
       }
+
+      gameSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData); 
+        
+      });
 
       usershareSnapshot.forEach((doc) => {
         batch.update(doc.ref, updatedUserData); 
@@ -369,8 +385,8 @@ const EditProfile = ({ navigation }) => {
                 />
                 </TouchableOpacity>
                 <MaterialCommunityIcons 
-                    name="arrow-left-thick"  
-                    size={50} style={{margin:10, position: 'absolute', color: 'black'}} 
+                    name="arrow-left"  
+                    size={35} style={{margin:15, position: 'absolute', color: 'black'}} 
                     onPress={() => navigation.navigate('Profile')} 
                 />
             </View>

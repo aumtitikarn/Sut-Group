@@ -34,13 +34,20 @@ function AddScore(props) {
           if (userDocSnapshot.exists()) {
             const userData = userDocSnapshot.data();
             if (userData) {
-              const { username, profileImg } = userData;
+              const { username, id, faculty } = userData;
 
-              const gameData = {
+              let gameData = {
                 score: score,
                 username: username,
-                profileImg: profileImg,
+                faculty: faculty,
+                id: id
               };
+
+              if (userData.profileImg) {
+                gameData.profileImg = userData.profileImg;
+              } else {
+                gameData.profileImg = null;
+              }
 
               const userGameDoc = doc(gameCollection, userId);
               await setDoc(userGameDoc, gameData);
@@ -65,15 +72,12 @@ function AddScore(props) {
   >
       <View style={styles.myscore}>
       <Image style={{width:300, height:300, top: 50, left:10}} source={require('../assets/bask.png')}  />
-        <Text style={{ fontSize: 24 }}>คะแนนของตอนนี้</Text>
+        <Text style={{ fontSize: 24 }}>คะแนนของคุณตอนนี้</Text>
         <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{score} 🎉</Text>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => {
           navigation.goBack();
         }}>
           <Text style={{ left: 60, color: 'white' }}>เล่นต่อ</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Rank')}>
-          <Text style={{ left: 50, color: 'white' }}>อันดับผู้เล่น</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Home')}>
           <Text style={{ left: 40, color: 'white' }}>กลับไปหน้าหลัก</Text>

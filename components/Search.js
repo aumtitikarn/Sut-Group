@@ -44,12 +44,7 @@ const Search = ({ onSearchResults }) => {
     }
   };
 
-  const renderShop = ({ item }) => (
-    <TouchableOpacity key={item.id}>
-      <Text style={{ left: 20 }}>{item.name}</Text>
-    </TouchableOpacity>
-  );
-
+  
   return (
     <View>
       <Searchbar
@@ -57,11 +52,7 @@ const Search = ({ onSearchResults }) => {
         onChangeText={handleSearch}
         value={searchQuery}
       />
-      <FlatList
-        data={filteredData}
-        renderItem={renderShop}
-        keyExtractor={(item) => item.id.toString()}
-      />
+
     </View>
   );
 };

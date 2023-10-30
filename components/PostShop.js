@@ -7,7 +7,7 @@ import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
-
+import Search from './Search';
 
 export default function PostShop() {
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
@@ -200,11 +200,18 @@ export default function PostShop() {
     setSearchQuery(query);
     // ... โค้ดอื่น ๆ ที่คุณต้องการทำ
   };
-
+  const handleSearchResults = (results) => {
+    setSearchResults(results);
+    setIsSearching(true);
+    console.log('Search results:', results);
+  };
   
 
   return (
     <View style={styles.container}>
+      <View style={{top:-70}}>
+      <Search  onSearchResults={handleSearchResults} />
+      </View>
       <View style={{left:70}}>
        <SelectDropdown
           data={type}
@@ -221,7 +228,7 @@ export default function PostShop() {
            }}
          />
          </View>
-         {shops
+       {shops
   .filter((shop) => selectedCategory === 'ทั้งหมด' || shop.cate === selectedCategory)
   .map((shop, index) => {
          return(

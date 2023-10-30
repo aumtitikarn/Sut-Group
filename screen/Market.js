@@ -33,7 +33,6 @@ export default function MyComponent() {
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
     </View>
-    <View style={styles.loginButton}> 
      <TouchableOpacity
               style={{
                 borderRadius: 5,
@@ -41,14 +40,13 @@ export default function MyComponent() {
                 backgroundColor: '#FDF4E2',
                 width: 90,
                 padding: 10,
-                top: 100,
-                marginLeft: 30,
+                top: 40,
+                marginLeft: 290,
               }}
-              
+              onPress={handleMarketPost}
             >
-              <Text onPress={handleMarketPost} >สร้างสินค้า</Text>
+              <Text  >สร้างสินค้า</Text>
             </TouchableOpacity>
-    </View>
  <View>
  <PostShop />
  <Text></Text>

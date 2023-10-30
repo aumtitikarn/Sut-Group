@@ -13,20 +13,6 @@ import Search from '../components/Search';
 
 export default function MyComponent() {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("ทั้งหมด");
-  const [typ, setType] = useState([]);
-  const [search, setSearch] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearchResults = (results) => {
-    setSearchResults(results);
-    setIsSearching(true);
-    console.log('Search results:', results);
-  };
-
   const handleMarketPost = () => {
    
     navigation.navigate('Marketpost');
@@ -41,16 +27,12 @@ export default function MyComponent() {
       <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Appbar.Content title="Marketplace" style={{ left: 50 }} />
     </Appbar.Header> 
-    <Search  onSearchResults={handleSearchResults} />
-    <ScrollView>
-    <View style={{ top: 80,
+    <ScrollView style={{flex:1}}>
+    <View style={{ top: 140,
       marginRight: 10,
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
     </View>
-     <View>
-          
-          </View>
     <View style={styles.loginButton}> 
      <TouchableOpacity
               style={{
@@ -59,7 +41,7 @@ export default function MyComponent() {
                 backgroundColor: '#FDF4E2',
                 width: 90,
                 padding: 10,
-                top: 40,
+                top: 100,
                 marginLeft: 30,
               }}
               
@@ -68,7 +50,10 @@ export default function MyComponent() {
             </TouchableOpacity>
     </View>
  <View>
- <PostShop/>
+ <PostShop />
+ <Text></Text>
+ <Text></Text>
+ 
  </View>
     </ScrollView>
     </SafeAreaView>

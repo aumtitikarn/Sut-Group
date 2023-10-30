@@ -64,10 +64,6 @@ class Basketball extends Component {
     };
   }
 
-  resetScore = () => {
-    this.setState({ score: 0 });
-  }
-
   componentDidMount() {
     this.interval = setInterval(this.update.bind(this), 1000 / 60);
   }
@@ -335,16 +331,7 @@ class Basketball extends Component {
   }
 
   onScore() {
-    this.props.navigation.navigate('AddScore', {
-      score: this.state.score,
-      onReceiveScore: this.onReceiveScore,
-      resetScore: this.resetScore,
-    });
-  }
-  
-  // Callback function to update the score
-  onReceiveScore(score) {
-    this.setState({ score }); // Update the score in the Basketball component
+    this.props.navigation.navigate('AddScore', { score: this.state.score, onReceiveScore: this.onReceiveScore });
   }
 
 

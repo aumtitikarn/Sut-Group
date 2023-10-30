@@ -68,7 +68,7 @@ function AddScore(props) {
           <Text style={{ left: 60, color: 'white' }}>เล่นต่อ</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }}>
-          <Text style={{ left: 60, color: 'white' }}>อันดับผู้เล่น</Text>
+          <Text style={{ left: 50, color: 'white' }}>อันดับผู้เล่น</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ top: 30, width: 190, padding: 10, backgroundColor: '#F47D38', borderRadius: 10, margin: 2 }} onPress={() => navigation.navigate('Home')}>
           <Text style={{ left: 40, color: 'white' }}>กลับไปหน้าหลัก</Text>

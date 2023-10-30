@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar,Searchbar } from 'react-native-paper';
-import { Text, StyleSheet, TextInput,  View, Image,ScrollView,TouchableOpacity, StatusBar} from 'react-native';
+import { Text, StyleSheet, TextInput,  View, Image,ScrollView,TouchableOpacity, StatusBar,SafeAreaView} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PostShop from '../components/PostShop';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -36,12 +36,10 @@ export default function MyComponent() {
 
 
   return(
-    <View style={styles.conter}>
+    <SafeAreaView style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Appbar.Content title="Marketplace" style={{ left: 50 }} />
-      <Appbar.Action icon="bell"  onPress={() => navigation.navigate('NotiScreen')} />
-      
     </Appbar.Header> 
     <Search  onSearchResults={handleSearchResults} />
     <ScrollView>
@@ -73,7 +71,7 @@ export default function MyComponent() {
  <PostShop/>
  </View>
     </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 
 } 

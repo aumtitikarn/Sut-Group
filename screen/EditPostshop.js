@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity, Alert } from 'react-native';
-import { doc, updateDoc,getDoc,onSnapshot  } from 'firebase/firestore';
-import { ref, uploadString ,getDownloadURL, uploadBytes, getStorage} from 'firebase/storage';
-import { FIRESTORE_DB,FIREBASE_STORAGE  } from '../firestore';
+import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
+import { doc, updateDoc,   } from 'firebase/firestore';
+import {  ref, uploadBytes,getDownloadURL} from 'firebase/storage';
+import { FIRESTORE_DB,FIREBASE_STORAGE ,FIREBASE_AUTH } from '../firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
@@ -12,51 +12,94 @@ const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื
 export default function EditPostShop({ route, navigation }) {
   const { shopId, initialData } = route.params;
   const [newShopData, setNewShopData] = useState(initialData);
-  const [photo, setPhoto] = useState(null);
-  const storage = FIREBASE_STORAGE;
+  const [photoURL, setPhotoURL] = useState('');
+  const storageRef = ref(FIREBASE_STORAGE, `photo_shop/${shopId}`);
+  const auth = FIREBASE_AUTH;
   const db = FIRESTORE_DB;
+const storage = FIREBASE_STORAGE;
 
-  const handleUpdatePost = async () => {
-    console.log("shopid:". shopId)
+
+  const handleSaveChanges = async () => {
     try {
-      const id = shopId;
-      const storageRef = ref(storage, 'photo_shop/' + `${id}.jpg`);
-      const response = await fetch(photo);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
+      const userUid = auth.currentUser.uid;
+      const userDocRef = doc(db, 'PostShop', userUid);
   
-      // อัปเดต state เพื่อแสดงข้อมูลใหม่ทันทีหลังจากที่บันทึกข้อมูล
-      setNewShopData({
-        ...newShopData,
-        photo: downloadURL,
-        name: newShopData.name,
-        prict: newShopData.prict,
-        phon: newShopData.phon,
-        cate: newShopData.cate,
-      });
+      // สร้างอ็อบเจกต์ที่ใช้เพื่อเก็บข้อมูลที่ควรอัปเดต
+      const updatedUserData = {};
   
+      // ตรวจสอบและเพิ่มข้อมูลเฉพาะเมื่อมีค่าใน newData
+      if (newShopData.name) {
+        updatedUserData.name = newShopData.name;
+      }
+      if (newShopData.prict) {
+        updatedUserData.prict = newShopData.prict;
+      }
+      if (newShopData.cate) {
+        updatedUserData.cate = newShopData.cate;
+      }if (newShopData.phon) {
+        updatedUserData.phon = newShopData.phon;
+      }
+
+      if (newShopData.photo) {
+        updatedUserData.photo = newShopData.photo;
+      }
+  
+      // ตรวจสอบว่ามีข้อมูลที่ควรอัปเดตหรือไม่
+      if (Object.keys(updatedUserData).length > 0) {
+        // อัปเดตข้อมูลผู้ใช้
+        await updateDoc(userDocRef, updatedUserData);
+  
+        // อัปเดตข้อมูลในคอลเลกชัน postHome ของผู้ใช้
+        const userPostShopCollectionRef = collection(db, 'allpostShop');
+        const userPostShopQuery = query(userPostShopCollectionRef, where('userUid', '==', userUid));
+  
+        const userPostShopSnapshot = await getDocs(userPostShopQuery);
+        const batch = writeBatch(db);
+  
+        userPostShopSnapshot.forEach((doc) => {
+          batch.update(doc.ref, updatedUserData);
+        });
+  
+        await batch.commit();
+  
+        alert('Data updated');
+        navigation.navigate('Market');
+      } else {
+        console.error('No valid data to update');
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error.message);
+    }
+  };
+  
+  const handleUpdatePost = async () => {
+    const shopRef = doc(FIRESTORE_DB, 'allpostShop', shopId);
+    
+  
+    try {
+      await updateDoc(shopRef, newShopData);
       console.log('โพสต์ถูกอัปเดตเรียบร้อยแล้ว');
       navigation.goBack();
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตโพสต์: ', error);
     }
+  
+    if (newShopData.photo !== initialData.photo) {
+      // Upload the image to Firebase Storage
+      await uploadImage(newShopData.photo);
+      // Get the download URL of the uploaded image
+      const downloadURL = await getDownloadURL(storageRef);
+  
+      // Update the shop data in Firestore with the new image URL
+      await updateDoc(shopRef, { ...newShopData, photo: downloadURL });
+      setPhotoURL(downloadURL);
+    } else {
+      // If no new image was selected, simply update the other shop data in Firestore
+      await updateDoc(shopRef, newShopData);
+    }
   };
-  useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, 'postShop', shopId), (snapshot) => {
-      if (snapshot.exists()) {
-        const postShopData = snapshot.data();
-        setNewShopData(postShopData);
-      } else {
-        console.log('ไม่พบข้อมูลโพสต์');
-      }
-    });
-
-    return () => {
-      // Unsubscribe when the component unmounts
-      unsubscribe();
-    };
-  }, [shopId]); 
+  
+  
   const Lib = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -87,16 +130,17 @@ export default function EditPostShop({ route, navigation }) {
         // อัปโหลดรูปภาพไปยัง Firebase Storage
         await uploadBytes(storageRef, blob);
   
-        // ดึง URL ของรูปภาพที่อัปโหลด
+        // ดึง URL ของรูปภาพที่อัปโหลดโดยใช้ getDownloadURL จาก storageRef
         const downloadURL = await getDownloadURL(storageRef);
-
+  
         // อัปเดต state และ Firebase Firestore ด้วย URL ของรูปภาพใหม่
         setNewShopData({ ...newShopData, photo: downloadURL });
+        alert('อัปโหลดรูปเรียบร้อย รอหน่อยเดี๋ยวก็ขึ้น')
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: ', error);
       }
     }
-  };
+  }
   
   return (
     <View style={styles.container}>
@@ -143,16 +187,16 @@ export default function EditPostShop({ route, navigation }) {
         value={newShopData.phon}
         onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
       />
-     {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
+      {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
 
-      <TouchableOpacity onPress={Lib}>
-                <MaterialCommunityIcons 
-                    name="pencil-outline"  
-                    size={30}
-                    style={{ position: 'absolute', top: -40, left: 80, color: 'black' }}
-                />
-                </TouchableOpacity>
-   
+<TouchableOpacity onPress={Lib}>
+          <MaterialCommunityIcons 
+              name="pencil-outline"  
+              size={30}
+              style={{ position: 'absolute', top: -40, left: 100, color: 'black' }}
+          />
+          </TouchableOpacity>
+
       <Button title="บันทึกการแก้ไข" onPress={handleUpdatePost} />
       </View>
     </View>

@@ -73,8 +73,8 @@ export default function TabViewExample() {
         top: -60, 
         left: 10
       }}>
-      <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('EditProfile')}>
-        <Text style={styles.buttonText}>แก้ไขโปรไฟล์</Text>
+      <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('Info')}>
+        <Text style={styles.buttonText}>ข้อมูลส่วนตัว</Text>
       </TouchableOpacity>
       </View>
       <View style={{
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     backgroundColor: '#FDF4E2',
-    width: 100,
+    width: 95,
     padding: 8,
     margin: 5
   },

@@ -26,6 +26,7 @@ import AddScore from './components/AddScore';
 import Rank from './components/rank';
 import { Provider } from 'react-redux';
 import Store from './context/store'; 
+import Info from './screen/Info'; 
 
 
 const Tab = createBottomTabNavigator();
@@ -132,6 +133,7 @@ export default function Page() {
           <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Reply" component={Reply} />
           <Stack.Screen name="AddScore" component={AddScore} />
+          <Stack.Screen name="Info" component={Info} />
           <Stack.Screen name="BasketGame" component={BasketGame} />
           <Stack.Screen name="Marketplace" component={Marketplace} />
           <Stack.Screen name="Rank" component={Rank} />

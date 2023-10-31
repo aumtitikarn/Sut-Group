@@ -69,7 +69,7 @@ const EditPostHome = ({ route, navigation }) => {
     <MaterialCommunityIcons 
       name="arrow-left"  
       size={35} style={{margin:10}} 
-      onPress={() => navigation.navigate('Home')}
+      onPress={() => goBack()}
       />
     </View>
       <Text style={{ left: 90, top: -40, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>

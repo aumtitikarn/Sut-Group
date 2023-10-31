@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { doc, setDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from '../firestore';
+import { useNavigation } from "@react-navigation/native";
 
 const AddToChat = () => {
   const user = useSelector((state) => state.user.user);
@@ -33,35 +33,58 @@ const AddToChat = () => {
   };
 
   return (
-    <View className="flex-1">
+    <View style={{ flex: 1 }}>
       {/* top */}
-      <View className="w-full bg-primary px-4 py-6 flex-[0.25]">
-        <View className="flex-row items-center justify-between w-full px-4 py-12">
+      <View style={{ backgroundColor: "primary", padding: 24 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           {/* go back */}
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialIcons name="chevron-left" size={32} color={"#fbfbfb"} />
+            <MaterialIcons name="chevron-left" size={32} color="#fbfbfb" />
           </TouchableOpacity>
 
-          {/* user profiule */}
-          <View className="flex-row items-center justify-center space-x-3">
-            
+          {/* user profile */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              space: 3,
+            }}
+          >
+            {/* Add user profile information here */}
           </View>
         </View>
       </View>
 
       {/* bottom section */}
-      <View className="w-full bg-white px-4 py-6 rounded-t-[50px] flex-1 -mt-10">
-        <View className="w-full px-4 py-4">
-          <View className="w-full px-4 flex-row items-center justify-between py-3 rounded-xl border border-gray-200 space-x-3">
+      <View style={{ backgroundColor: "white", flex: 1, marginTop: -10 }}>
+        <View style={{ padding: 24 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingVertical: 12,
+              borderRadius: 50,
+              borderWidth: 1,
+              borderColor: "gray",
+            }}
+          >
             {/* icons */}
-            <Ionicons name="chatbubbles" size={24} color={"#777"} />
+            <Ionicons name="chatbubbles" size={24} color="#777" />
             {/* textinput */}
             <TextInput
-              placeholder="Create aa chat"
-              placeholderTextColor={"#999"}
+              placeholder="Create a chat"
+              placeholderTextColor="#999"
               value={addToChat}
               onChangeText={(text) => setAddToChat(text)}
-              className="flex-1 text-lg text-primaryText -mt-2 h-12 w-full"
+              style={{ flex: 1, fontSize: 16 }}
             />
             {/* icon */}
             <TouchableOpacity onPress={createNewChat}>

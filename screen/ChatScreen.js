@@ -1,10 +1,29 @@
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, TextInput, Image, SafeAreaView } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
-import { Entypo, FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import {FIRESTORE_DB} from '../firestore';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+  TextInput,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import { FIRESTORE_DB } from "../firestore";
 import { StatusBar } from "expo-status-bar";
 
 const ChatScreen = ({ route }) => {
@@ -28,12 +47,15 @@ const ChatScreen = ({ route }) => {
     };
 
     setMessage("");
-    await addDoc(
-      collection(doc(FIRESTORE_DB, "chats", room._id), "messages"),
-      _doc
-    )
-      .then(() => {})
-      .catch((err) => alert(err));
+
+    try {
+      await addDoc(
+        collection(doc(FIRESTORE_DB, "chats", room._id), "messages"),
+        _doc
+      );
+    } catch (error) {
+      alert(error);
+    }
   };
 
   useLayoutEffect(() => {
@@ -52,121 +74,203 @@ const ChatScreen = ({ route }) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.AndroidSafeArea}>
-      <View style={{ flex: 1 }}>
-        {/* top */}
-        <View style={{ width: "100%", backgroundColor: "#FFBD59", padding: 6, flex: 0.25 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", padding: 12 }}>
-            {/* go back */}
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <MaterialIcons name="chevron-left" size={32} color={"#fbfbfb"} />
-            </TouchableOpacity>
-
-            {/*  profile */}
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginRight: 3 }}>
-              <View style={{ width: 48, height: 48, borderRadius: 24, borderWidth: 1, borderColor: "white", alignItems: "center", justifyContent: "center" }}>
-                <FontAwesome5 name="users" size={24} color="#fbfbfb" />
-              </View>
-
-              <View>
-                <Text style={{ color: "#fbfbfb", fontSize: 16, fontWeight: "bold", textTransform: "capitalize" }}>
-                  {room.chatName.length > 16 ? `${room.chatName.slice(0, 16)}..` : room.chatName}
-                </Text>
-                <Text style={{ color: "#fbfbfb", fontSize: 14, fontWeight: "bold", textTransform: "capitalize" }}>
-                  online
-                </Text>
-              </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="chevron-left" size={32} color={"#fbfbfb"} />
+          </TouchableOpacity>
+          <View style={styles.profileInfo}>
+            <View style={styles.profileIcon}>
+              <FontAwesome name="users" size={24} color="#fbfbfb" />
             </View>
-
-            {/* icons */}
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginLeft: 3 }}>
-              
+            <View>
+              <Text style={styles.profileName}>
+                {room.chatName.length > 16
+                  ? `${room.chatName.slice(0, 16)}..`
+                  : room.chatName}
+              </Text>
+              <Text style={styles.profileStatus}>online</Text>
             </View>
           </View>
-        </View>
-
-        {/* bottom section */}
-        <View style={{ width: "100%", backgroundColor: "white", padding: 6, borderBottomLeftRadius: 50, flex: 1, marginTop: -10 }}>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={180}
-          >
-            <>
-              <ScrollView>
-                {isLoading ? (
-                  <>
-                    <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }}>
-                      <ActivityIndicator size={"large"} color={"#43C651"} />
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    {messages?.map((msg) => (
-                      <View key={msg._id} style={{ margin: 1 }}>
-                        <View
-                          style={{ alignSelf: "flex-end",paddingHorizontal: 4, paddingVertical: 2, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, backgroundColor: "#FFBD59", width: "auto", position: "relative" }}
-                        >
-                          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#FBE5AD" }}>
-                            {msg.message}
-                          </Text>
-                        </View>
-
-                        <View style={{ alignSelf: "flex-end" }}>
-                          {msg?.timeStamp?.seconds && (
-                            <Text style={{ fontSize: 12, fontWeight: "bold", color: "black" }}>
-                              {new Date(
-                                parseInt(msg?.timeStamp?.seconds) * 1000
-                              ).toLocaleTimeString("en-US", {
-                                hour: "numeric",
-                                minute: "numeric",
-                                hour12: true,
-                              })}
-                            </Text>
-                          )}
-                        </View>
-                      </View>
-                    ))}
-                  </>
-                )}
-              </ScrollView>
-
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 8, marginVertical: 2 }}>
-                <View style={{ backgroundColor: "gray", borderRadius: 20, paddingHorizontal: 4, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                  <TouchableOpacity>
-                    <Entypo name="emoji-happy" size={24} color="#555" />
-                  </TouchableOpacity>
-
-                  <TextInput
-                    style={{ flex: 1, height: 32, fontSize: 16, color: "#FFBD59", fontWeight: "bold" }}
-                    placeholder="Type here.."
-                    placeholderTextColor={"#999"}
-                    value={message}
-                    onChangeText={(text) => setMessage(text)}
-                  />
-                  <TouchableOpacity>
-                    {/*<Entypo name="mic" size={24} color="#43C651" />*/}
-                  </TouchableOpacity>
-                </View>
-
-                {/* send icon */}
-                <TouchableOpacity style={{ paddingLeft: 4 }} onPress={sendAMessage}>
-                  <FontAwesome name="send" size={24} color="#555" />
-                </TouchableOpacity>
-              </View>
-            </>
-          </KeyboardAvoidingView>
+          <View style={styles.icons}></View>
         </View>
       </View>
+
+      <View style={styles.messageContainer}>
+        <ScrollView>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size={"large"} color={"#43C651"} />
+            </View>
+          ) : (
+            messages?.map((msg) => (
+              <View
+                key={msg._id}
+                style={
+                  msg.user?.providerData?.email === user?.providerData?.email
+                    ? styles.sentMessageContainer
+                    : styles.receivedMessageContainer
+                }
+              >
+                <View
+                  style={
+                    msg.user?.providerData?.email === user?.providerData?.email
+                      ? styles.sentMessageContent
+                      : styles.receivedMessageContent
+                  }
+                >
+                  <Text style={styles.messageText}>{msg.message}</Text>
+                  <Text style={styles.timestampText}>
+                    {msg?.timeStamp?.seconds &&
+                      new Date(parseInt(msg?.timeStamp?.seconds) * 1000).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                  </Text>
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+
+      <KeyboardAvoidingView
+        style={styles.inputContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={180}
+      >
+        <TextInput
+          style={styles.input}
+          placeholder="Type here.."
+          placeholderTextColor={"#FDF4E2"}
+          value={message}
+          onChangeText={(text) => setMessage(text)}
+        />
+        <TouchableOpacity onPress={sendAMessage}>
+          <FontAwesome name="send" size={24} color="#FDF4E2" />
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = {
-  AndroidSafeArea: {
+  container: {
     flex: 1,
-    backgroundColor: "#FBE5AD",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#8AD1DB',
+    paddingTop: StatusBar.currentHeight,
+  },
+  header: {
+    width: "100%",
+    backgroundColor: "#8AD1DB",
+    padding: 6,
+    flex: 0.25,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    padding: 12,
+  },
+  profileInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 3,
+  },
+  profileIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileName: {
+    color: "#fbfbfb",
+    fontSize: 16,
+    fontWeight: "bold",
+    textTransform: "capitalize",
+  },
+  profileStatus: {
+    color: "#fbfbfb",
+    fontSize: 14,
+    fontWeight: "bold",
+    textTransform: "capitalize",
+  },
+  icons: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 3,
+  },
+  messageContainer: {
+    flex: 1,
+    backgroundColor: "#FDF4E2",
+    padding: 6,
+    borderTopLeftRadius: 50,
+    marginTop: -10,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  receivedMessageContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    marginBottom: 16,
+  },
+  receivedMessageContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    marginLeft: 16,
+    padding: 8,
+  },
+  sentMessageContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    marginBottom: 16,
+  },
+  sentMessageContent: {
+    backgroundColor: "#8AD1DB",
+    borderRadius: 10,
+    marginRight: 16,
+    padding: 8,
+  },
+  messageText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1C1441",
+  },
+  timestampText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "black",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginVertical: 20,
+    backgroundColor: "#8AD1DB",
+    borderRadius: 20,
+  },
+  input: {
+    flex: 1,
+    height: 32,
+    fontSize: 16,
+    color: "#1C1441",
+    fontWeight: "bold",
   },
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, StatusBar, SafeAreaView,TouchableOpacity } from 'react-native';
-import { collection, query, where, getDocs, doc, onSnapshot } from 'firebase/firestore';
+import { View, Text, Image, StyleSheet, StatusBar, SafeAreaView,TouchableOpacity, Switch } from 'react-native';
+import { collection, query, where, getDocs, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 function UserProfile() {
   const [userData, setUserData] = useState('');
+  const [pinEnabled, setPinEnabled] = useState(false);
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const navigation = useNavigation();
@@ -80,6 +81,7 @@ function UserProfile() {
       <Text style={styles.text}>คณะ : {userData.faculty}</Text>
       <Text style={styles.text}>สาขา : {userData.major}</Text>
       <Text style={styles.text}>อีเมล : {userData.email}</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 18, top: 20}}>ล็อกรหัส</Text>
       </View>
       </View>
       <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('EditProfile')}>
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#FDF4E2',
       width: 130,
       padding: 8,
-      top: 40,
+      top: 20,
       left: 20
     },
     text: {

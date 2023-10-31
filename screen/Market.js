@@ -13,14 +13,7 @@ import Search from '../components/Search';
 
 export default function MyComponent() {
   const navigation = useNavigation();
-  const handleMarketPost = () => {
-   
-    navigation.navigate('Marketpost');
-
-  };
   
-
-
   return(
     <SafeAreaView style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
@@ -28,26 +21,10 @@ export default function MyComponent() {
       <Appbar.Content title="ร้านค้า" style={{ left: 70 }} />
     </Appbar.Header> 
     <ScrollView style={{flex:1}}>
-    <View style={{ top: 140,
+    <View style={{ top: 20,
       marginRight: 10,
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
-    </View>
-     <TouchableOpacity
-              style={{
-                borderRadius: 5,
-                borderWidth: 1,
-                backgroundColor: '#FDF4E2',
-                width: 90,
-                padding: 10,
-                top: 40,
-                marginLeft: 290,
-              }}
-              onPress={handleMarketPost}
-            >
-              <Text  >สร้างสินค้า</Text>
-            </TouchableOpacity>
- <View>
  <PostShop />
  <Text></Text>
  <Text></Text>

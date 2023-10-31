@@ -21,6 +21,8 @@ export default function PostShop() {
   const navigation = useNavigation();
   const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
 
   useEffect(() => {
@@ -200,19 +202,18 @@ export default function PostShop() {
     setSearchQuery(query);
     // ... โค้ดอื่น ๆ ที่คุณต้องการทำ
   };
-  const handleSearchResults = (results) => {
-    setSearchResults(results);
-    setIsSearching(true);
-    console.log('Search results:', results);
+ 
+  const handleMarketPost = () => {
+   
+    navigation.navigate('Marketpost');
+
   };
+  
   
 
   return (
     <View style={styles.container}>
-      <View style={{top:-70}}>
-      <Search  onSearchResults={handleSearchResults} />
-      </View>
-      <View style={{left:70}}>
+      <View style={{left:70,top:-40}}>
        <SelectDropdown
           data={type}
             defaultButtonText="ประเภทสินค้า"
@@ -228,6 +229,22 @@ export default function PostShop() {
            }}
          />
          </View>
+        
+     <TouchableOpacity
+              style={{
+                borderRadius: 5,
+                borderWidth: 1,
+                backgroundColor: '#FDF4E2',
+                width: 90,
+                padding: 10,
+                top: -10,
+                marginLeft: 290,
+              }}
+              onPress={handleMarketPost}
+            >
+              <Text  >สร้างสินค้า</Text>
+            </TouchableOpacity>
+
        {shops
   .filter((shop) => selectedCategory === 'ทั้งหมด' || shop.cate === selectedCategory)
   .map((shop, index) => {
@@ -238,7 +255,7 @@ export default function PostShop() {
               {shop.userUid === currentUser?.uid && (
                   <>
                 <TouchableOpacity onPress={() => handleEdit(shop.id)}>
-                  <Icon name="edit" size={24} color="#3498db" style={{left:285,top:2}} />
+                  <Icon name="edit" size={24} color="#3498db" style={{left:260,top:2}} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteShop(shop.id)}>
                   <Icon name="trash" size={24} color="#e74c3c" style={styles.icon} />
@@ -246,12 +263,12 @@ export default function PostShop() {
                 </>  
               )}    
               </View>
-            <Card style={{ width: 200, height: 100, left: 70 }}>
+            <Card style={{ width: 200, height: 150, left: 60 }}>
               {shop.photo && (
-                <Image source={{ uri: shop.photo }} style={{ width: 200, height: 100, marginRight: 20 }} />
+                <Image source={{ uri: shop.photo }} style={{ width: 200, height: 150, marginRight: 20 }} />
               )}
             </Card>
-            <View style={{ top: -40 }}>
+            <View style={{ top: -20 }}>
               <View style={{ left: 60 }}>
               <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
               
@@ -264,12 +281,12 @@ export default function PostShop() {
                 <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
                 {shop.cate}      {shop.name}
               </Text>
             </View>
             <View style={styles.conta}>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ราคา: {shop.prict} บาท</Text>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>ราคา:  {shop.prict} บาท !!</Text>
             </View>
             <View style={styles.cont}>
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
@@ -319,14 +336,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 1,
     left: 40,
-    top: -20,
+    top: 5,
   },
   cont: {
     fontSize: 10,
     fontWeight: 'bold',
     margin: 1,
-    left: 40,
-    top: -10,
+    left: 20,
+    top: 30,
   },
   iconContainer: {
     flexDirection: 'row',

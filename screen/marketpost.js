@@ -74,11 +74,15 @@ const handleMarket = async () => {
         prict: pri, // ราคาสินค้า
         phon:phon,
         timestamp: serverTimestamp(),
-        profileImg: profileImg,
         userUid: userUid,
         shopid: id,
         like: 0
       };
+
+      if (profileImg) {
+        post.profileImg = profileImg;
+      }
+      
       if (photo) {
         const fileName = `${id}.jpg`;
         const storageRef = ref(storage, 'photo_shop/' + fileName);

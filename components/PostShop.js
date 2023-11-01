@@ -293,7 +293,7 @@ export default function PostShop() {
             </View>
             <View >
             <TouchableOpacity
-    style={{ left: 270 }}
+    style={{ left: 240 }}
     onPress={() => updateLike(shop)}
 >
     <Icon
@@ -303,7 +303,7 @@ export default function PostShop() {
     />
 </TouchableOpacity>
             <View>
-            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
+            <Text style={{top:-25, left:280}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>

@@ -20,7 +20,7 @@ import { Appbar } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 800,
     backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight = 40,
   },

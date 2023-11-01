@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,updateDoc,addDoc} from 'firebase/firestore'; 
-import { FIRESTORE_DB } from '../firestore';
+import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
 import Search from './Search';
+import { ref, deleteObject } from 'firebase/storage';
+
 
 export default function PostShop() {
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
@@ -281,29 +283,30 @@ export default function PostShop() {
                 <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
-                {shop.cate}      {shop.name}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>ประเภท: {shop.cate}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 20 }}>
+               ชื่อสินค้า: {shop.name}
               </Text>
             </View>
             <View style={styles.conta}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>ราคา:  {shop.prict} บาท !!</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>ราคา:  {shop.prict} บาท !!</Text>
             </View>
-            <View style={styles.cont}>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
+            <View style={styles.cont}> 
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
             </View>
-            <View >
-            <TouchableOpacity
-    style={{ left: 240 }}
+            <View >   
+            <TouchableOpacity 
+    style={{ left: 268, top: -20 }}
     onPress={() => updateLike(shop)}
 >
     <Icon
         name={isLiked[shop.id] ? 'heart' : 'heart-o'}
         size={30}
-        color={isLiked[shop.id] ? 'orange' : '#000'}
+        color={isLiked[shop.id] ? '#8AD1DB' : '#000'}
     />
 </TouchableOpacity>
             <View>
-            <Text style={{top:-25, left:280}}>{likeCount[shop.id]}</Text>
+            <Text style={{top: -10, left:280}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>
@@ -342,8 +345,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     margin: 1,
-    left: 20,
-    top: 30,
+    left: 40,
+    top: 10,
   },
   iconContainer: {
     flexDirection: 'row',

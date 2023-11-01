@@ -11,6 +11,7 @@ import {
   TextInput,
   Image,
   SafeAreaView,
+  StatusBar
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +25,6 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firestore";
-import { StatusBar } from "expo-status-bar";
 
 const ChatScreen = ({ route }) => {
   const { room } = route.params;

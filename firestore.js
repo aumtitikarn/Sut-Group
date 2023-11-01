@@ -5,14 +5,13 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCmv-nA6FyGMuKq9jyucEIDNco_cm4WW1A",
-  authDomain: "sut-group123.firebaseapp.com",
-  databaseURL: "https://sut-group123-default-rtdb.firebaseio.com",
-  projectId: "sut-group123",
-  storageBucket: "sut-group123.appspot.com",
-  messagingSenderId: "879415393779",
-  appId: "1:879415393779:web:17c4bf6f0bc5ed312aa686",
-  measurementId: "G-8NVY4871KT"
+  apiKey: "AIzaSyCp62C2lJL_Cy5S2-1GNS4R06424QywZcA",
+  authDomain: "sutgroup54321.firebaseapp.com",
+  projectId: "sutgroup54321",
+  storageBucket: "sutgroup54321.appspot.com",
+  messagingSenderId: "293882586570",
+  appId: "1:293882586570:web:5d3171ba3b00cbebd8db33",
+  measurementId: "G-HME783DHEH"
 };
 
 export const FIREBASE_APP = initializeApp(firebaseConfig) ;

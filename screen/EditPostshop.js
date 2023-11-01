@@ -187,15 +187,6 @@ const storage = FIREBASE_STORAGE;
         value={newShopData.phon}
         onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
       />
-      {newShopData.photo && <Image source={{ uri: newShopData.photo }} style={{ width: 100, height: 100 }} />}
-
-<TouchableOpacity onPress={Lib}>
-          <MaterialCommunityIcons 
-              name="pencil-outline"  
-              size={30}
-              style={{ position: 'absolute', top: -40, left: 100, color: 'black' }}
-          />
-          </TouchableOpacity>
 
       <Button title="บันทึกการแก้ไข" onPress={handleUpdatePost} />
       </View>

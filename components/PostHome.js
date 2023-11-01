@@ -239,8 +239,12 @@ const handleSharePost = (post) => {
 const handleIconBarsPress = (post) => {
   return post.userUid === auth.currentUser?.uid;
 };
-const toggleDropdown = () => {
-  setShowDropdown((prevState) => !prevState);
+
+const toggleDropdown = (postId) => {
+  setShowDropdown((prevState) => ({
+    ...prevState,
+    [postId]: !prevState[postId],
+  }));
 };
 const handleDeletePost = async (postId) => {
   try {
@@ -321,22 +325,21 @@ return (
             <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
           </View>
           {handleIconBarsPress(post) && (
-              <TouchableOpacity onPress={toggleDropdown} style={{ left: 295, top: -105 }}>
-                <Icon name="bars" size={23} color="#000" />
-              </TouchableOpacity>
-            )}
-
-          {showDropdown && handleIconBarsPress(post) && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
-                  <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
-                </TouchableOpacity>
-                <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
-                <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
-                  <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+  <TouchableOpacity onPress={() => toggleDropdown(post.id)} style={{ left: 295, top: -105 }}>
+    <Icon name="bars" size={23} color="#000" />
+  </TouchableOpacity>
+)}
+{showDropdown[post.id] && handleIconBarsPress(post) && (
+  <View style={styles.dropdown}>
+    <TouchableOpacity  onPress={() => handleEditPost(post.id, navigation)}>
+      <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
+    </TouchableOpacity>
+    <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
+    <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
+      <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
+    </TouchableOpacity>
+  </View>
+)}
           <View style={{ top: -50, left: 30 }}>
             <Text style={styles.postText}>{post.text}</Text>
             {post.photo && (

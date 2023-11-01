@@ -104,7 +104,7 @@ const EditProfile = ({ navigation }) => {
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
     const userUid = auth.currentUser.uid;
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
-    const allPostShopCollectionRef = collection(db, 'allpostHShop');
+    const allPostShopCollectionRef = collection(db, 'allpostShop');
     const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', auth.currentUser.uid));

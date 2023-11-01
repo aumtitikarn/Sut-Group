@@ -174,7 +174,7 @@ const CommentData = ({ post }) => {
                 <Text style={{ fontWeight: 'bold', color: '#1C1441' }}>
                   {commentItem.username}
                 </Text>
-                <Text style={{ color: '#1C1441' }}>#{commentItem.faculty}</Text>
+                <Text style={{ color: '#1C1441' }}>{commentItem.faculty}</Text>
                 <Text style={{ color: '#777267' }}>
                   {formatPostTime(commentItem.timestamp)}
                 </Text>

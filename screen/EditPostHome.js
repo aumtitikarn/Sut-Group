@@ -69,12 +69,12 @@ const EditPostHome = ({ route, navigation }) => {
     <MaterialCommunityIcons 
       name="arrow-left"  
       size={35} style={{margin:10}} 
-      onPress={() => goBack()}
+      onPress={() => navigation.goBack()}
       />
     </View>
       <Text style={{ left: 90, top: -40, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
       <View style={{ top: -20, left: 20 }}>
-        <Avatar.Icon icon="account-circle" size={80} />
+        <Avatar.Icon icon="account-circle" size={80}  style={{ backgroundColor:'orange',}} color={'#FFF'}/>
         {imageUrl && (
        <Image
           source={{ uri: imageUrl }}

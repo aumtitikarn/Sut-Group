@@ -80,9 +80,8 @@ const handleMarket = async () => {
       };
 
       if (profileImg) {
-        post.profileImg = profileImg;
+        shop.profileImg = profileImg;
       }
-      
       if (photo) {
         const fileName = `${id}.jpg`;
         const storageRef = ref(storage, 'photo_shop/' + fileName);
@@ -106,10 +105,7 @@ const handleMarket = async () => {
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
-      navigation.navigate('Marketplace');
-
-      // Clear the selected photo after uploading
-      setPhoto(null);
+      navigation.replace('Marketplace');
     }
 
     // ... (your existing code)

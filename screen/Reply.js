@@ -145,8 +145,11 @@ const formatPostTime = (timestamp) => {
           timestamp: serverTimestamp(),
           userUid: userUid,
           commentId: id,
-          profileImg: profileImg
         };
+
+        if (profileImg) {
+          post.profileImg = profileImg;
+        }
   
         if (photo) {
           // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
@@ -290,7 +293,7 @@ useEffect(() => {
                 <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }}>
                   {comment.username}
                 </Text>
-                <Text style={{ top: -5, color: '#1C1441' }}>#{comment.faculty}</Text>
+                <Text style={{ top: -5, color: '#1C1441' }}>{comment.faculty}</Text>
                 <Text style={{ color: '#777267', top: -3 }}>
                   {formatPostTime(comment.timestamp)}
                 </Text>
@@ -340,6 +343,12 @@ useEffect(() => {
                 style={styles.commentInput}
                 value={text}
                 onChangeText={(text) => setText(text)}
+              />
+               <Avatar.Icon
+                icon="account-circle"
+                size={30}
+                style={{ top: 20, left: -30, backgroundColor: 'orange', position:'absolute' }}
+                color={'#FFF'}
               />
               <Image
                 source={{ uri: userData.profileImg }}

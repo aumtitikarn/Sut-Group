@@ -180,18 +180,18 @@ export default function PostShop() {
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
             </View>
             <View >
-            <TouchableOpacity
-    style={{ left: 270 }}
+            <TouchableOpacity 
+    style={{ left: 268, top: -20 }}
     onPress={() => updateLike(shop)}
 >
-    <Icon
+<Icon
         name={isLiked[shop.id] ? 'heart' : 'heart-o'}
         size={30}
         color={isLiked[shop.id] ? '#8AD1DB' : '#000'}
     />
 </TouchableOpacity>
             <View>
-            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
+            <Text style={{top: -10, left:280}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>

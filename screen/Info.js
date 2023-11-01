@@ -81,7 +81,6 @@ function UserProfile() {
       <Text style={styles.text}>คณะ : {userData.faculty}</Text>
       <Text style={styles.text}>สาขา : {userData.major}</Text>
       <Text style={styles.text}>อีเมล : {userData.email}</Text>
-      <Text style={{fontWeight: 'bold', fontSize: 18, top: 20}}>ล็อกรหัส</Text>
       </View>
       </View>
       <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('EditProfile')}>

@@ -281,18 +281,19 @@ export default function PostShop() {
                 <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
-                {shop.cate}    ชื่อสินค้า: {shop.name}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>ประเภท: {shop.cate}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 20 }}>
+               ชื่อสินค้า: {shop.name}
               </Text>
             </View>
             <View style={styles.conta}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>ราคา:  {shop.prict} บาท !!</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>ราคา:  {shop.prict} บาท !!</Text>
             </View>
-            <View style={styles.cont}>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
+            <View style={styles.cont}> 
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>ติดต่อ: {shop.phon} </Text>
             </View>
-            <View >
-            <TouchableOpacity
+            <View >   
+            <TouchableOpacity 
     style={{ left: 270 }}
     onPress={() => updateLike(shop)}
 >
@@ -342,8 +343,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     margin: 1,
-    left: 20,
-    top: 30,
+    left: 40,
+    top: 10,
   },
   iconContainer: {
     flexDirection: 'row',

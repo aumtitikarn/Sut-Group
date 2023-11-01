@@ -125,7 +125,7 @@ const handleMarket = async () => {
       quality: 1,
     });
   
-    if (!result.cancelled) {
+    if (!result.canceled) {
       setPhoto(result.assets[0].uri);
       setIsPhotoSelected(true);
     }
@@ -139,12 +139,12 @@ const handleMarket = async () => {
       quality: 1,
     });
   
-    if (!result.cancelled) {
+    if (!result.canceled) {
       setPhoto(result.assets[0].uri);
       setIsPhotoSelected(true);
     }
   };
-  
+///  
 
 
   return (
@@ -253,11 +253,16 @@ const handleMarket = async () => {
       left: 275
     }}>
     
-    <TouchableOpacity style={styles.buttonYellow} onPress={handleMarket} >
-
-      <Text style={styles.buttonText}  >โพสต์</Text>
-
-    </TouchableOpacity>
+    <TouchableOpacity
+  style={{
+    ...styles.buttonYellow,
+    backgroundColor: isPhotoSelected ? '#FDF4E2' : '#C0C0C0',
+  }}
+  onPress={handleMarket}
+  disabled={!isPhotoSelected} // Disable the button when no photo is selected
+>
+  <Text style={styles.buttonText}>โพสต์</Text>
+</TouchableOpacity>
     </View>
     </SafeAreaView>
     </NativeBaseProvider>

@@ -102,12 +102,15 @@ const handleMarket = async () => {
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
-      navigation.navigate('Marketplace');
+      navigation.navigate('Marketplace ');
 
       // Clear the selected photo after uploading
       setPhoto(null);
     }
-
+    if (!photo) {
+      Alert.alert('แจ้งเตือน', 'กรุณาเลือกรูปภาพสินค้า');
+      return;
+    }
     // ... (your existing code)
   } catch (error) {
     console.error('Error adding document: ', error);

@@ -106,7 +106,7 @@ const handleMarket = async () => {
       
       // Navigate to the desired screen after successful upload
       navigation.navigate('Marketplace');
-
+      console.log('Document written with ID: ', id);
       // Clear the selected photo after uploading
       setPhoto(null);
     }

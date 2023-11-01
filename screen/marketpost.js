@@ -95,22 +95,22 @@ const handleMarket = async () => {
 
         // Add the download URL to the shop object
         shop.photo = downloadURL;
-      }
+      }if (!photo) {
+      Alert.alert('แจ้งเตือน', 'กรุณาเลือกรูปภาพสินค้า');
+      return;
+    }
       const allpostShopCollectionRef = collection(db, 'allpostShop');
       // Upload the shop object data to Firestore
       await setDoc(doc(allpostShopCollectionRef, id), shop);
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
-      navigation.navigate('Marketplace ');
+      navigation.navigate('Marketplace');
 
       // Clear the selected photo after uploading
       setPhoto(null);
     }
-    if (!photo) {
-      Alert.alert('แจ้งเตือน', 'กรุณาเลือกรูปภาพสินค้า');
-      return;
-    }
+    
     // ... (your existing code)
   } catch (error) {
     console.error('Error adding document: ', error);

@@ -239,8 +239,8 @@ export default function PostShop() {
                 backgroundColor: '#FDF4E2',
                 width: 90,
                 padding: 10,
-                top: -10,
-                marginLeft: 290,
+                top: -20,
+                marginLeft: 270,
               }}
               onPress={handleMarketPost}
             >

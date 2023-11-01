@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB } from '../firestore';
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Appbar } from 'react-native-paper';
-import { formatDistanceToNow } from 'date-fns'
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -100,35 +100,36 @@ const ChatHomeScreen = () => {
     return unsubscribe;
   },);
 
- 
+
 
   return (
     <SafeAreaView style={styles.container}>
 
       <View style={styles.header}>
 
-      <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
+        <Appbar.Header style={{ backgroundColor: '#FDF4E2', height: 30, top: -15 }}>
           <Image style={styles.logo} source={require('../assets/2.png')} />
           <Appbar.Content title="ข้อความ" style={{ left: 65 }} />
+
           <TouchableOpacity
-             /*
+          /*
           onPress={() => navigation.navigate('AddToChat')}
           */
-            >
-              <Ionicons 
-              name="chatbox" 
+          >
+            <Ionicons
+              name="chatbox"
               size={30} color="#555"
-              style={{ marginLeft: -50 }} 
-                />
-            </TouchableOpacity>
+              style={{ marginLeft: -50 }}
+            />
+          </TouchableOpacity>
         </Appbar.Header>
-       
+
       </View>
 
       <ScrollView>
         <View>
           <View>
-            
+
           </View>
 
           {isLoading ? (
@@ -148,22 +149,14 @@ const ChatHomeScreen = () => {
           ) : null}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
 const ChatRoom = ({ room }) => {
   const navigation = useNavigation();
 
-  const latestMessage = Array.isArray(room.messages) && room.messages.length > 0
-    ? room.messages[room.messages.length - 1]
-    : null;
-
-  const timestamp = latestMessage
-    ? formatDistanceToNow(new Date(latestMessage.timeStamp.toDate()), {
-      addSuffix: true,
-    })
-    : '';
+  
 
   return (
     <TouchableOpacity
@@ -178,13 +171,13 @@ const ChatRoom = ({ room }) => {
           {room.chatName}
         </Text>
         <Text style={styles.chatMessage}>
-          {latestMessage ? latestMessage.message : 'No message'}
-          
+          {latestMessage ? latestMessage.message : ''}
+
         </Text>
-        
+
         <Text style={styles.chatTimestamp}>
           {timestamp}
-          
+
         </Text>
       </View>
     </TouchableOpacity>

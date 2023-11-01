@@ -303,7 +303,7 @@ export default function PostShop() {
     />
 </TouchableOpacity>
             <View>
-            <Text style={{top: -10, left:310}}>{likeCount[shop.id]}</Text>
+            <Text style={{top: -10, left:300}}>{likeCount[shop.id]}</Text>
             </View>
           </View>
           </Card>

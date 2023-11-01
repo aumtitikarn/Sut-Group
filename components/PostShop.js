@@ -282,7 +282,7 @@ export default function PostShop() {
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
               <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
-                {shop.cate}      {shop.name}
+                {shop.cate}    ชื่อสินค้า: {shop.name}
               </Text>
             </View>
             <View style={styles.conta}>

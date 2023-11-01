@@ -17,7 +17,7 @@ import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 export default function Marketpost() {
-
+  const [isPhotoSelected, setIsPhotoSelected] = useState(false);
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
@@ -124,13 +124,13 @@ const handleMarket = async () => {
       aspect: [10, 10],
       quality: 1,
     });
-
-    if (!result.canceled) {
+  
+    if (!result.cancelled) {
       setPhoto(result.assets[0].uri);
+      setIsPhotoSelected(true);
     }
   };
-
-  // เข้าถึงคลังรูปภาพ
+  
   const openlib = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -138,13 +138,13 @@ const handleMarket = async () => {
       aspect: [10, 10],
       quality: 1,
     });
-
-    console.log(result);
-
-    if (!result.canceled) {
+  
+    if (!result.cancelled) {
       setPhoto(result.assets[0].uri);
+      setIsPhotoSelected(true);
     }
   };
+  
 
 
   return (

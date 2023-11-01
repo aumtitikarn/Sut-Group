@@ -171,12 +171,12 @@ const ChatRoom = ({ room }) => {
           {room.chatName}
         </Text>
         <Text style={styles.chatMessage}>
-          {latestMessage ? latestMessage.message : ''}
+          
 
         </Text>
 
         <Text style={styles.chatTimestamp}>
-          {timestamp}
+          
 
         </Text>
       </View>

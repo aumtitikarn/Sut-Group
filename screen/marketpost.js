@@ -262,7 +262,7 @@ const handleMarket = async () => {
     <TouchableOpacity
   style={{
     ...styles.buttonYellow,
-    backgroundColor: isPhotoSelected ? '#FDF4E2' : '#C0C0C0',
+    backgroundColor: isPhotoSelected ? '#FDF4E2' : '#FDF4E2',
   }}
   onPress={handleMarket}
   disabled={!isPhotoSelected} // Disable the button when no photo is selected

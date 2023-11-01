@@ -153,11 +153,11 @@ const handleMarket = async () => {
   return (
     <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.goBack()}>
     <MaterialCommunityIcons 
       name="arrow-left-thick"  
       size={50} style={{margin:10, top: 20}} 
-     onPress={() => navigation.goBack()}
+     
       />
     </TouchableOpacity>
       <View

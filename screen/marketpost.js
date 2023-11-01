@@ -17,7 +17,7 @@ import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 export default function Marketpost() {
-
+  const [isPhotoSelected, setIsPhotoSelected] = useState(false);
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
@@ -98,16 +98,26 @@ const handleMarket = async () => {
 
         // Add the download URL to the shop object
         shop.photo = downloadURL;
-      }
+      }if (!photo) {
+      Alert.alert('แจ้งเตือน', 'กรุณาเลือกรูปภาพสินค้า');
+      return;
+    }
       const allpostShopCollectionRef = collection(db, 'allpostShop');
       // Upload the shop object data to Firestore
       await setDoc(doc(allpostShopCollectionRef, id), shop);
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
+<<<<<<< HEAD
       navigation.replace('Marketplace');
+=======
+      navigation.navigate('Marketplace');
+      console.log('Document written with ID: ', id);
+      // Clear the selected photo after uploading
+      setPhoto(null);
+>>>>>>> 06f9df2f40a796b352b235ee6f0dae567e1f1c2e
     }
-
+    
     // ... (your existing code)
   } catch (error) {
     console.error('Error adding document: ', error);
@@ -124,13 +134,13 @@ const handleMarket = async () => {
       aspect: [10, 10],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
+      setIsPhotoSelected(true);
     }
   };
-
-  // เข้าถึงคลังรูปภาพ
+  
   const openlib = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -138,23 +148,23 @@ const handleMarket = async () => {
       aspect: [10, 10],
       quality: 1,
     });
-
-    console.log(result);
-
+  
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
+      setIsPhotoSelected(true);
     }
   };
+///  
 
 
   return (
     <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.goBack()}>
     <MaterialCommunityIcons 
       name="arrow-left-thick"  
       size={50} style={{margin:10, top: 20}} 
-     onPress={() => navigation.goBack()}
+     
       />
     </TouchableOpacity>
       <View
@@ -253,11 +263,16 @@ const handleMarket = async () => {
       left: 275
     }}>
     
-    <TouchableOpacity style={styles.buttonYellow} onPress={handleMarket} >
-
-      <Text style={styles.buttonText}  >โพสต์</Text>
-
-    </TouchableOpacity>
+    <TouchableOpacity
+  style={{
+    ...styles.buttonYellow,
+    backgroundColor: isPhotoSelected ? '#FDF4E2' : '#C0C0C0',
+  }}
+  onPress={handleMarket}
+  disabled={!isPhotoSelected} // Disable the button when no photo is selected
+>
+  <Text style={styles.buttonText}>โพสต์</Text>
+</TouchableOpacity>
     </View>
     </SafeAreaView>
     </NativeBaseProvider>

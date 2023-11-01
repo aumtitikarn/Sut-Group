@@ -26,9 +26,6 @@ export default function MyComponent() {
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
  <PostShop />
- <Text></Text>
- <Text></Text>
- 
  </View>
     </ScrollView>
     </SafeAreaView>

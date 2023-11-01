@@ -108,14 +108,10 @@ const handleMarket = async () => {
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
-<<<<<<< HEAD
-      navigation.replace('Marketplace');
-=======
       navigation.navigate('Marketplace');
       console.log('Document written with ID: ', id);
       // Clear the selected photo after uploading
       setPhoto(null);
->>>>>>> 06f9df2f40a796b352b235ee6f0dae567e1f1c2e
     }
     
     // ... (your existing code)

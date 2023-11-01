@@ -111,8 +111,9 @@ const ChatHomeScreen = () => {
           <Image style={styles.logo} source={require('../assets/2.png')} />
           <Appbar.Content title="ข้อความ" style={{ left: 65 }} />
           <TouchableOpacity
-              onPress={() => navigation.navigate('AddToChat')}
-              style={{}}
+             /*
+          onPress={() => navigation.navigate('AddToChat')}
+          */
             >
               <Ionicons 
               name="chatbox" 

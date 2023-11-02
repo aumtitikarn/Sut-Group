@@ -25,8 +25,8 @@ export default function MyComponent() {
       marginRight: 10,
       marginLeft: 25,}} >
      <Ionicons name="filter" size={30}  />
+     <PostShop />
  </View>
- <PostShop />
     </ScrollView>
     </SafeAreaView>
   );
@@ -35,7 +35,7 @@ export default function MyComponent() {
 
 const styles = StyleSheet.create({
 conter:{
-  height:866,
+    height:800,
     backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight
     

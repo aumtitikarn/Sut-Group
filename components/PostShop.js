@@ -72,10 +72,7 @@ export default function PostShop() {
       await deleteDoc(allpostShopRef);
       const postShopRef = doc(db, 'postShop', shopId);
       await deleteDoc(postShopRef);
-  
-      // โค้ดลบรูปจาก Firebase Storage
-      const storageRef = ref(FIREBASE_STORAGE, 'your-storage-path', shop.photoFileName);
-      await deleteObject(storageRef);
+
   
       // ตรวจสอบว่าโพสต์ที่ต้องการลบถูกโพสต์โดย user ที่ login หรือไม่
       if (shop.userUid === currentUser.uid) {
@@ -83,7 +80,6 @@ export default function PostShop() {
         await deleteDoc(allpostShopRef);
         // ลบโพสต์จาก postShop collection
         await deleteDoc(postShopRef);
-        await deleteObject(storageRef);
         console.log('โพสต์ถูกลบเรียบร้อยแล้ว');
       } else {
         console.log('คุณไม่มีสิทธิ์ในการลบโพสต์นี้');

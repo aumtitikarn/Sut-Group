@@ -6,9 +6,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './screen/Home';
 import Marketplace from './screen/Market';
-import ChatHomeScreen from './screen/ChatHomeScreen';
-import AddToChat from './screen/AddToChat';
-import ChatScreen from './screen/ChatScreen';
 import Profile from './screen/Profile';
 import Login from './screen/Login';
 import Register from './screen/Register';
@@ -24,9 +21,8 @@ import Reply from './screen/Reply';
 import BasketGame from './screen/basketGame';
 import AddScore from './components/AddScore';
 import Rank from './components/rank';
-import { Provider } from 'react-redux';
-import Store from './context/store'; 
 import Info from './screen/Info'; 
+import Chat from './screen/Chat'; 
 
 
 const Tab = createBottomTabNavigator();
@@ -35,7 +31,6 @@ const Stack = createStackNavigator();
 
 function MyTabs() {
   return (
-    <Provider store={Store}>
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
@@ -67,8 +62,8 @@ function MyTabs() {
         />
 
         <Tab.Screen
-          name="ChatHomeScreen"
-          component={ChatHomeScreen}
+          name="Chat"
+          component={Chat}
           options={{
             tabBarLabel: 'แชท',
             tabBarIcon: ({ color, size }) => (
@@ -107,23 +102,19 @@ function MyTabs() {
           }}
         />
       </Tab.Navigator>
-    </Provider>
   );
 }
 
 export default function Page() {
   return (
     <NavigationContainer>
-      <Provider store={Store}>
         <Stack.Navigator screenOptions={{
           headerShown: false
         }}>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Forgot" component={Forgot} />
-          <Stack.Screen name="ChatHomeScreen" component={ChatHomeScreen} />
-          <Stack.Screen name="AddToChat" component={AddToChat} />
-          <Stack.Screen name="ChatScreen" component={ChatScreen} />
+          <Stack.Screen name="Chat" component={Chat} />
           <Stack.Screen name="Createpost" component={Createpost} />
           <Stack.Screen name="Marketpost" component={Marketpost} />
           <Stack.Screen name="EditProfile" component={EditProfile} />
@@ -139,7 +130,6 @@ export default function Page() {
           <Stack.Screen name="Rank" component={Rank} />
           <Stack.Screen name="PostHome" component={PostHome} />
         </Stack.Navigator>
-      </Provider>
     </NavigationContainer>
   );
 

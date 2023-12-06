@@ -23,7 +23,8 @@ import AddScore from './components/AddScore';
 import Rank from './components/rank';
 import Info from './screen/Info'; 
 import Chat from './screen/Chat'; 
-
+import OtherProfile from './screen/OtherProfile'; 
+import PostOther from './components/PostOther'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -129,6 +130,8 @@ export default function Page() {
           <Stack.Screen name="Marketplace" component={Marketplace} />
           <Stack.Screen name="Rank" component={Rank} />
           <Stack.Screen name="PostHome" component={PostHome} />
+          <Stack.Screen name="OtherProfile" component={OtherProfile} />
+          <Stack.Screen name="PostOther" component={PostOther} />
         </Stack.Navigator>
     </NavigationContainer>
   );

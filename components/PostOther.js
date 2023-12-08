@@ -21,8 +21,9 @@ const PostOther = ({ userUid }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [isShared, setIsShared] = useState([]);
 
+    // console.log('post other: ',userUid);
+
   useEffect(() => {
-    const userUid = auth.currentUser.uid;
     const q = query(collection(db, 'users', userUid, 'postHome'), orderBy('timestamp', 'desc'));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -56,7 +57,6 @@ const PostOther = ({ userUid }) => {
 
   const updateLike = async (post) => {
     try {
-      const userUid = auth.currentUser.uid;
       const postRef = doc(db, 'users', userUid, 'postHome', post.id);
       const postDoc = await getDoc(postRef);
 
@@ -163,34 +163,6 @@ const PostOther = ({ userUid }) => {
     }
   };
 
-  const handleIconBarsPress = (postId) => {
-    setShowDropdown((prevShowDropdown) => ({
-      ...prevShowDropdown,
-      [postId]: !prevShowDropdown[postId],
-    }));
-  };
-  
-  const handleEditPost = (postId, navigation) => {
-    console.log("กดแก้ไขโพสต์ที่ postId:", postId);
-    navigation.navigate('EditPostHome', {postId});
-  };
-  const handleDeletePost = async (postId) => {
-    try {
-      const userUid = auth.currentUser.uid;
-  
-      // 1. ลบโพสต์จาก "postHome" collection ใน Firestore
-      const postHomeRef = doc(db, 'users', userUid, 'postHome', postId);
-      await deleteDoc(postHomeRef);
-  
-      // 2. ลบโพสต์จาก "allpostHome" collection ใน Firestore
-      const allpostHomeRef = doc(db, 'allpostHome', postId);
-      await deleteDoc(allpostHomeRef);
-  
-      console.log('ลบโพสต์สำเร็จ');
-    } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการลบโพสต์: ', error);
-    }
-  };
 
   const sharePost = async (userId, postId, postData) => {
     const userDocRef = doc(db, 'users', userId);
@@ -270,20 +242,6 @@ const PostOther = ({ userUid }) => {
   <ScrollView>
     {posts.map((post) => (
       <View key={post.id} style={styles.postContainer}>
-        <TouchableOpacity onPress={() => handleIconBarsPress(post.id)} style={{ left: 290 }}>
-          <Icon name="bars" size={23} color="#000" />
-        </TouchableOpacity>
-        {showDropdown[post.id] && (
-  <View style={styles.dropdown}>
-     <TouchableOpacity onPress={() => handleEditPost(post.id, navigation)}>
-          <Text style={{ color: '#442f04' }}>แก้ไขโพสต์</Text>
-      </TouchableOpacity>
-    <View style={{ height: 1, backgroundColor: '#000', marginVertical: 10 }} />
-    <TouchableOpacity onPress={() => handleDeletePost(post.id)}>
-      <Text style={{ color: '#442f04', left: 6, top: -2 }}>ลบโพสต์</Text>
-    </TouchableOpacity>
-  </View>
-)}
         <View style={{ top: -70, left: 55, width:230}}>
         <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
           <Image
@@ -355,6 +313,7 @@ postContainer: {
   borderRadius: 20,
   overflow: 'hidden',
   padding: 20,
+  paddingTop: 50,
 },
 
 postImage: {

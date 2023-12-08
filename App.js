@@ -112,6 +112,7 @@ export default function Page() {
         <Stack.Navigator screenOptions={{
           headerShown: false
         }}>
+          <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Forgot" component={Forgot} />
@@ -122,7 +123,6 @@ export default function Page() {
           <Stack.Screen name="EditPostShop" component={EditPostShop} />
           <Stack.Screen name="EditPostHome" component={EditPostHome} />
           <Stack.Screen name="Comment" component={Comment} />
-          <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Reply" component={Reply} />
           <Stack.Screen name="AddScore" component={AddScore} />
           <Stack.Screen name="Info" component={Info} />

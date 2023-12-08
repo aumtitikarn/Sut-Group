@@ -86,7 +86,18 @@ const camera = async () => {
     setPhoto(result.assets[0].uri);
   }
 };
+const handleImagePress = (comment) => {
+  const isCurrentUser = comment.userUid === auth.currentUser?.uid;
 
+  if (isCurrentUser) {
+    // If the profile image belongs to the current user, navigate to 'Profile'
+    navigation.navigate('Profile');
+  } else {
+    // If the profile image does not belong to the current user, navigate to 'OtherProfile' and pass the userUid
+    console.log('Navigating to OtherProfile with userUid:', comment.userUid);
+    navigation.navigate('OtherProfile', { userUid: comment.userUid });
+  }
+};
 
 const formatPostTime = (timestamp) => {
     if (timestamp) {
@@ -290,7 +301,7 @@ useEffect(() => {
                 }}
               />
               <View style={{ left: 95, top: -15 }}>
-                <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }}>
+                <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }}  onPress={() => handleImagePress(comment)}>
                   {comment.username}
                 </Text>
                 <Text style={{ top: -5, color: '#1C1441' }}>{comment.faculty}</Text>

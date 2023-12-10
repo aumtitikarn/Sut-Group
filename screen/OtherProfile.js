@@ -65,7 +65,7 @@ const OtherProfile = ({ route }) => {
             <View>
               <Text style={styles.userDataText}> {userData.faculty}</Text>
             </View>
-            <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('Chat')}>
+            <TouchableOpacity style={styles.buttonYellow} onPress={() => navigation.navigate('PrivateChat', { userUid: userUid })}>
           <Text >ส่งข้อความ</Text>
         </TouchableOpacity>
           </View>

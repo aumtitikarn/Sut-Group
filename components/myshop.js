@@ -160,8 +160,9 @@ export default function MyShop() {
                 <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>
-                {shop.cate}      {shop.name}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 10 }}>ประเภท: {shop.cate}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 40, top: 20 }}>
+               ชื่อสินค้า: {shop.name}
               </Text>
             </View>
             <View style={styles.conta}>
@@ -204,14 +205,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 1,
     left: 40,
-    top: -20,
+    top: -10,
   },
   cont: {
     fontSize: 10,
     fontWeight: 'bold',
     margin: 1,
     left: 40,
-    top: -10,
+    top: 1,
   },
   iconContainer: {
     flexDirection: 'row',

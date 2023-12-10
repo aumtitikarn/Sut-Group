@@ -253,7 +253,7 @@ export default function PostShop() {
               {shop.userUid === currentUser?.uid && (
                   <>
                 <TouchableOpacity onPress={() => handleEdit(shop.id)}>
-                  <Icon name="edit" size={24} color="#3498db" style={{left:260,top:2}} />
+                  <Icon name="edit" size={24} color="#3498db" style={{left:250,top:2}} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteShop(shop.id)}>
                   <Icon name="trash" size={24} color="#e74c3c" style={styles.icon} />

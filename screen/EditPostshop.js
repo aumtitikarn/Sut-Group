@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet,Text,Image,TouchableOpacity ,SafeAreaView} from 'react-native';
 import { doc, updateDoc,   } from 'firebase/firestore';
 import {  ref, uploadBytes,getDownloadURL} from 'firebase/storage';
 import { FIRESTORE_DB,FIREBASE_STORAGE ,FIREBASE_AUTH } from '../firestore';
@@ -135,6 +135,7 @@ const storage = FIREBASE_STORAGE;
   
         // อัปเดต state และ Firebase Firestore ด้วย URL ของรูปภาพใหม่
         setNewShopData({ ...newShopData, photo: downloadURL });
+        setPhotoURL(downloadURL);
         alert('อัปโหลดรูปเรียบร้อย รอหน่อยเดี๋ยวก็ขึ้น')
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: ', error);
@@ -143,11 +144,11 @@ const storage = FIREBASE_STORAGE;
   }
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
      <TouchableOpacity>
     <MaterialCommunityIcons 
       name="arrow-left"  
-      size={35} style={{ top: 30}} 
+      size={40} style={{ top: 30}} 
      onPress={() => navigation.goBack()}
       /> 
      </TouchableOpacity>
@@ -187,10 +188,15 @@ const storage = FIREBASE_STORAGE;
         value={newShopData.phon}
         onChangeText={(text) => setNewShopData({ ...newShopData, phon: text })}
       />
+      <View >
+  {photoURL ? (
+    <Image source={{ uri: photoURL }} style={{ width: 100, height: 100, marginVertical: 20 }} />
+  ) : null}
+</View>
 
       <Button title="บันทึกการแก้ไข" onPress={handleUpdatePost} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

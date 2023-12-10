@@ -35,7 +35,7 @@ export default function MyComponent() {
 
 const styles = StyleSheet.create({
 conter:{
-    height:800,
+    height:900,
     backgroundColor: '#8AD1DB',
     paddingTop: StatusBar.currentHeight
     

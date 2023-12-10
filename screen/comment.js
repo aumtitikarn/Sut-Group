@@ -226,7 +226,18 @@ const Comment = () => {
       console.error('Error adding document: ', error);
     }
   };
-
+  const handleImagePress = (posts) => {
+    const isCurrentUser = posts.userUid === auth.currentUser?.uid;
+  
+    if (isCurrentUser) {
+      // If the profile image belongs to the current user, navigate to 'Profile'
+      navigation.navigate('Profile');
+    } else {
+      // If the profile image does not belong to the current user, navigate to 'OtherProfile' and pass the userUid
+      console.log('Navigating to OtherProfile with userUid:', posts.userUid);
+      navigation.navigate('OtherProfile', { userUid: posts.userUid });
+    }
+  };
   // เข้าถึงกล้อง
 const camera = async () => {
   const result = await ImagePicker.launchCameraAsync({
@@ -288,7 +299,7 @@ const openlib = async () => {
                 }}
               />
               <View style={{ left: 95, top: -15 }}>
-                <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }}>
+                <Text style={{ top: -5, fontWeight: 'bold', color: '#1C1441' }} onPress={() => handleImagePress(posts)}>
                   {posts.username}
                 </Text>
                 <Text style={{ top: -5, color: '#1C1441' }}>{posts.faculty}</Text>

@@ -275,6 +275,20 @@ const handleCreatePostPress = () => {
 };
 const filteredPosts = posts.filter(post => faculty === "ทั้งหมด" || post.faculty === faculty);
 
+const handleImagePress = (post) => {
+  const isCurrentUser = post.userUid === auth.currentUser?.uid;
+
+  if (isCurrentUser) {
+    // If the profile image belongs to the current user, navigate to 'Profile'
+    navigation.navigate('Profile');
+  } else {
+    // If the profile image does not belong to the current user, navigate to 'OtherProfile' and pass the userUid
+    console.log('Navigating to OtherProfile with userUid:', post.userUid);
+    navigation.navigate('OtherProfile', { userUid: post.userUid });
+  }
+};
+
+
 return (
   <NativeBaseProvider>
   <SafeAreaView style={styles.container}>
@@ -316,11 +330,12 @@ return (
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
             <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+           {/* รูปโปรไฟล์  */}
             <Image
               source={{ uri: post.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}
             />
-            <Text style={{ top: -5, fontWeight: 'bold' }}>{post.username}</Text>
+            <Text style={{ top: -5, fontWeight: 'bold' }}  onPress={() => handleImagePress(post)}>{post.username}</Text>
             <Text style={styles.userData}>{post.faculty}</Text>
             <Text style={{ color: '#777267' }}>{formatPostTime(post.timestamp)}</Text>
           </View>

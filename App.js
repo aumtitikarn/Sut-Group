@@ -23,7 +23,9 @@ import AddScore from './components/AddScore';
 import Rank from './components/rank';
 import Info from './screen/Info'; 
 import Chat from './screen/Chat'; 
-
+import OtherProfile from './screen/OtherProfile'; 
+import PostOther from './components/PostOther'; 
+import PrivateChat from './screen/PrivateChat'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -113,6 +115,7 @@ export default function Page() {
         }}>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Forgot" component={Forgot} />
           <Stack.Screen name="Chat" component={Chat} />
           <Stack.Screen name="Createpost" component={Createpost} />
@@ -121,7 +124,6 @@ export default function Page() {
           <Stack.Screen name="EditPostShop" component={EditPostShop} />
           <Stack.Screen name="EditPostHome" component={EditPostHome} />
           <Stack.Screen name="Comment" component={Comment} />
-          <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Reply" component={Reply} />
           <Stack.Screen name="AddScore" component={AddScore} />
           <Stack.Screen name="Info" component={Info} />
@@ -129,6 +131,9 @@ export default function Page() {
           <Stack.Screen name="Marketplace" component={Marketplace} />
           <Stack.Screen name="Rank" component={Rank} />
           <Stack.Screen name="PostHome" component={PostHome} />
+          <Stack.Screen name="OtherProfile" component={OtherProfile} />
+          <Stack.Screen name="PostOther" component={PostOther} />
+          <Stack.Screen name="PrivateChat" component={PrivateChat} />
         </Stack.Navigator>
     </NavigationContainer>
   );

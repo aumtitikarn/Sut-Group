@@ -210,6 +210,7 @@ export default function PostShop() {
   
 
   return (
+    <View>
     <View style={styles.container}>
       <View style={{left:70,top:-40}}>
        <SelectDropdown
@@ -309,7 +310,15 @@ export default function PostShop() {
         </TouchableOpacity>
         );
            })}
-         
+    </View>
+  {/* เพิ่มช่องว่างล่างสุด */}
+          <Text></Text>
+           <Text></Text>
+           <Text></Text>
+           <Text></Text>
+           <Text></Text>
+           <Text></Text>
+           <Text></Text>
     </View>
   );
 }
@@ -317,8 +326,6 @@ export default function PostShop() {
 const styles = StyleSheet.create({
   container: {
     flex: 1, // ให้ container ขยายตามพื้นที่ของ parent component
-    flexDirection: 'column',
-    justifyContent: 'center',
   },
   product: {
     margin: 10,

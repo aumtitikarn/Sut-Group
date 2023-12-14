@@ -5,20 +5,32 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PostShop from '../components/PostShop';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useNavigation } from '@react-navigation/native';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
-import Search from '../components/Search';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 
     
 
 export default function MyComponent() {
-  const navigation = useNavigation();
   
+  const navigation = useNavigation(); 
+
+  const navigateToWheel = () => {
+    navigation.navigate('Wheel');
+  };
   return(
     <SafeAreaView style={styles.conter}>
     <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
       <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Appbar.Content title="ร้านค้า" style={{ left: 70 }} />
+      <MaterialCommunityIcons
+          name="view-carousel"
+          color='black' // You should define 'color' here or replace it with a specific color value
+          size={40}
+          left={-25}
+          top={1}
+          onPress={() => navigateToWheel()} // Navigate to 'Wheel' screen when pressed
+        />
     </Appbar.Header> 
     <ScrollView style={{flex:1}}>
     <View style={{ top: 20,

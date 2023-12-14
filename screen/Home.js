@@ -3,20 +3,32 @@ import { Appbar, Searchbar } from 'react-native-paper';
 import { Text, StyleSheet, TouchableOpacity, View, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import { onAuthStateChanged } from 'firebase/auth';
-import Search from '../components/Searchbar';
 import PostHome from '../components/PostHome';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
 
-
+  const navigateToWheel = () => {
+    navigation.navigate('Wheel');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
         <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
           <Image style={styles.logo} source={require('../assets/2.png')} />
           <Appbar.Content title="หน้าหลัก" style={{ left: 65 }} />
+          <MaterialCommunityIcons
+          name="view-carousel"
+          color='black' // You should define 'color' here or replace it with a specific color value
+          size={40}
+          left={-15}
+          top={-8}
+          onPress={() => navigateToWheel()} // Navigate to 'Wheel' screen when pressed
+        />
         </Appbar.Header>
+
         <ScrollView>
         <PostHome />
         <Text></Text>

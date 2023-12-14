@@ -153,19 +153,22 @@ const handleMarket = async () => {
 ///  
 
 
+
   return (
     <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
-    <TouchableOpacity onPress={() => navigation.goBack()}>
+   
     <MaterialCommunityIcons 
-      name="arrow-left-thick"  
-      size={50} style={{margin:10, top: 20}} 
-     
+     name="arrow-left"  
+     size={35} style={{margin:10 ,top:80}} 
+     onPress={() => navigation.navigate('Marketplace')}
       />
-    </TouchableOpacity>
+ 
+    <View style={{
+     top: 80,}}>
       <View
    style={{
-      top: 25, 
+      top: 30, 
       left: 20, 
     }}>
     <Avatar.Icon icon="account-circle" size={60} style={{  backgroundColor:'orange'}} color={'#FFF'} />
@@ -178,7 +181,7 @@ const handleMarket = async () => {
             top: -30,
             left: 100,
             margin: 5,
-            width: 216,
+            width: 209,
             borderRadius: 5,
             borderWidth: 1,
           }}
@@ -250,9 +253,10 @@ const handleMarket = async () => {
       />
     </View>
     {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 150,top: -30, margin: 10 }} />}
+
     <View style={styles.iconContainer}>
-    <MaterialCommunityIcons name="camera" size={20}   color="#000" style={styles.icon} onPress={camera}/>
-    <MaterialCommunityIcons name="image" size={20}   color="#000" style={styles.icon} onPress={openlib}/>
+    <MaterialCommunityIcons name="camera" size={30}   color="#000" style={styles.icon} onPress={camera}/>
+    <MaterialCommunityIcons name="image" size={30}   color="#000" style={styles.icon} onPress={openlib}/>
     </View>
     <View style={{
       top: -40,
@@ -269,6 +273,7 @@ const handleMarket = async () => {
 >
   <Text style={styles.buttonText}>โพสต์</Text>
 </TouchableOpacity>
+    </View>
     </View>
     </SafeAreaView>
     </NativeBaseProvider>

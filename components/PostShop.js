@@ -7,8 +7,7 @@ import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
-import Search from './Search';
-import { ref, deleteObject } from 'firebase/storage';
+
 
 
 export default function PostShop() {

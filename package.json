@@ -15,6 +15,7 @@
     "@react-navigation/material-bottom-tabs": "^6.2.18",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/stack": "^6.3.18",
+    "@remobile/react-native-toast": "^1.0.7",
     "@rneui/themed": "^4.0.0-rc.8",
     "antd": "^5.10.2",
     "expo": "~49.0.13",

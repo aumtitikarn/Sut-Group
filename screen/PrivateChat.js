@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, StatusBar, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs, onSnapshot } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Appbar, Avatar } from 'react-native-paper';
@@ -83,22 +83,28 @@ const PrivateChat = ({ navigation }) => {
     };
 
     const fetchMessages = async () => {
-      try {
-        const currentUser = auth.currentUser;
+  try {
+    const currentUser = auth.currentUser;
 
-        if (currentUser) {
-          const currentUserUid = currentUser.uid;
-          const messagesCollectionRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
-          const messagesSnapshot = await getDocs(messagesCollectionRef);
-          const messagesData = messagesSnapshot.docs.map(doc => doc.data());
-          setMessages(messagesData);
-        } else {
-          console.error('User not authenticated.');
-        }
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    };
+    if (currentUser) {
+      const currentUserUid = currentUser.uid;
+      const messagesCollectionRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
+
+      // Use onSnapshot to listen for real-time updates to the messages collection
+      const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
+        const messagesData = querySnapshot.docs.map(doc => doc.data());
+        setMessages(messagesData);
+      });
+
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
+    } else {
+      console.error('User not authenticated.');
+    }
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
 
     createChatCollection();
     fetchMessages();
@@ -192,35 +198,42 @@ const PrivateChat = ({ navigation }) => {
           />
               <Text style={{ textAlign: 'center', marginTop: 10, fontWeight:"bold",fontSize: 20 }}>{userData.username}</Text>
               <Text style={{ textAlign: 'center', marginTop: 5, color: "#A4A0A0"}}>{userData.faculty}</Text>
-              {messages.map((message, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: 'row',
-                justifyContent:
-                  message.uid === currentUserUid ? 'flex-end' : 'flex-start',
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor:
-                    message.uid === currentUserUid
-                      ? '#1C1441'
-                      : '#8AD1DB',
-                  padding: 10,
-                  borderRadius: 8,
-                  margin: 5,
-                  marginLeft:
-                    message.uid === currentUserUid ? 50 : 0, // Adjust the margin for the user's own messages
-                }}
-              >
-                <Text style={{ color: 'white' }}>{message.text}</Text>
-                <Text style={{ color: 'white' }}>
-                  {message.timestamp.toDate().toLocaleString()}
-                </Text>
-              </View>
-            </View>
-          ))}
+              {messages
+  .slice()
+  .sort((a, b) => {
+    const timestampA = a.timestamp ? a.timestamp.toMillis() : 0;
+    const timestampB = b.timestamp ? b.timestamp.toMillis() : 0;
+    return timestampA - timestampB;
+  })
+  .map((message, index) => (
+    <View
+      key={index}
+      style={{
+        flexDirection: 'row',
+        justifyContent:
+          message.uid === currentUserUid ? 'flex-end' : 'flex-start',
+      }}
+    >
+      <View
+        style={{
+          backgroundColor:
+            message.uid === currentUserUid ? '#1C1441' : '#8AD1DB',
+          padding: 10,
+          borderRadius: 8,
+          margin: 5,
+          marginLeft: message.uid === currentUserUid ? 50 : 0,
+        }}
+      >
+        <Text style={{ color: 'white' }}>{message.text}</Text>
+        {message.timestamp && (
+          <Text style={{ color: 'white' }}>
+            {message.timestamp.toDate().toLocaleString()}
+          </Text>
+        )}
+      </View>
+    </View>
+  ))}
+
         </View>
                 </ScrollView>
                 <View style={styles.square}>

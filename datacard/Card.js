@@ -4,13 +4,14 @@ import { TouchableOpacity, View, Image, StyleSheet, Animated,Button } from 'reac
 
 const Card = ({ value, suit, imageSourceFront, imageSourceBack , onSelect}) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const translateY = useRef(new Animated.Value(0)).current;
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
   const flipCard = () => {
     setIsFlipped(!isFlipped);
-    Animated.timing(flipAnimation, {
-      toValue: isFlipped ? 0 : 1,
+    Animated.timing(translateY, {
+      toValue: isFlipped ? 0 : -50,  // ปรับตำแหน่งขึ้นหรือลงตามต้องการ
       duration: 500,
       useNativeDriver: false,
     }).start();
@@ -36,8 +37,11 @@ const Card = ({ value, suit, imageSourceFront, imageSourceBack , onSelect}) => {
 
   return (
     <TouchableOpacity style={styles.cardContainer} onPress={onSelect}>
-    <Animated.View style={[styles.cardImageContainer, frontAnimatedStyle]}>
-      <Image source={imageSourceBack} style={styles.cardImage} />
+  <Animated.View style={[
+  styles.cardImageContainer,
+  { transform: [{ translateY }] }  // เพิ่มเฉพาะตรงนี้
+]}>
+      <Image source={imageSourceBack} style={styles.Image} />
     </Animated.View>
     <Animated.View style={[styles.cardImageContainer, styles.backCard, backAnimatedStyle]}>
       <Image source={imageSourceFront} style={styles.cardImage} />
@@ -55,9 +59,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backfaceVisibility: 'hidden',
   },
-  cardImage: {
+  Image: {
     width: 70,
     height: 120,
+   
+   
+  },
+  cardImage: {
+    width: 70,
+    height: 140,
    
   },
   backCard: {

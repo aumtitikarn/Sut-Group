@@ -2,15 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, Button, Animated, Dimensions, Image, SafeAreaView, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Card from '../datacard/Card';
+import { ActivityIndicator} from 'react-native-paper';
+
 // ตัวแปร wheelImages จำเป็นต้องถูกนิยามไว้ก่อนการใช้งาน
 
 const Wheel = ({ navigation }) => {
   const [selectedCard, setSelectedCard] = useState(null);
+  const translateY = useRef(new Animated.Value(0)).current;
+  const [animating, setAnimating] = React.useState(false);
+  
+  
   const onSelectCard = (card) => {
     setSelectedCard(card);
   };
+
   
-  const cards = [
+  const  [cards, setCards] = useState([
     { value: '0', suit: 'Hearts', imageSourceFront: require('../assets/chariot.png'), imageSourceBack: require('../assets/yep.png') },
     { value: '1', suit: 'Diamonds', imageSourceFront: require('../assets/death.png'), imageSourceBack: require('../assets/yep.png') },
     { value: '2', suit: 'Hearts', imageSourceFront: require('../assets/devil.png'), imageSourceBack: require('../assets/yep.png') },
@@ -35,7 +42,7 @@ const Wheel = ({ navigation }) => {
     { value: '21', suit: 'Diamonds', imageSourceFront: require('../assets/sun.png'), imageSourceBack: require('../assets/yep.png') },
    
     // เพิ่มไพ่ต่อไปตามต้องการ
-  ];
+  ]);
   
   
   const [flippedCards, setFlippedCards] = useState([]);
@@ -53,16 +60,34 @@ const Wheel = ({ navigation }) => {
           const cardIndex = rowIndex * 6 + colIndex;
           if (cardIndex < cards.length) {
             const card = cards[cardIndex];
+            const isCardSelected = selectedCard && selectedCard.value === card.value;
+
+            // คำนวณขนาดและตำแหน่งของไพ่
+            const cardSize = isCardSelected ? 100 : 70;
+            const cardMargin = isCardSelected ? 0 : 10;
+
             return (
-              <Card
+              <Animated.View
                 key={cardIndex}
-                value={card.value}
-                suit={card.suit}
-                imageSourceFront={card.imageSourceFront}
-                imageSourceBack={card.imageSourceBack}
-                flipCard={() => flipCard(cardIndex)}
-                onSelect={() => onSelectCard(card)} // เพิ่มบรรทัดนี้
-              />
+                style={[
+                  styles.cardContainer,
+                  {
+                    width: cardSize,
+                    height: cardSize + 20, // เพิ่มความสูงเพื่อเข้ากับข้อความหน้าไพ่ที่ใหญ่ขึ้น
+                    margin: cardMargin,
+                  },
+                ]}
+              >
+                <Card
+                  value={card.value}
+                  suit={card.suit}
+                  imageSourceFront={card.imageSourceFront}
+                  imageSourceBack={card.imageSourceBack}
+                  flipCard={() => flipCard(cardIndex)}
+                  onSelect={() => onSelectCard(card)}
+                  
+                />
+              </Animated.View>
             );
           } else {
             return <View key={colIndex} style={styles.cardContainer} />;
@@ -71,13 +96,41 @@ const Wheel = ({ navigation }) => {
       </View>
     );
   };
+  const handleAutorenew = () => {
+    // Set animating to true to show ActivityIndicator
+    setAnimating(true);
   
+    // สลับตำแหน่งของไพ่ในอาร์เรย์ cards ใหม่
+    const shuffledCards = [...cards].sort(() => Math.random() - 0.5);
+    setFlippedCards([]);
+    setSelectedCard(null);
+  
+    // อัปเดตสถานะด้วยไพ่ที่สลับตำแหน่งแล้ว
+    setCards(shuffledCards);
+  
+    // Stop the ActivityIndicator after a delay (2 seconds in this case)
+    setTimeout(() => {
+      setAnimating(false);
+    
+    }, 2000); // Adjust the timeout duration as needed
+  };
 
   const handlePrediction = () => {
     if (selectedCard) {
-      navigation.navigate('Tarot', { selectedCard });
+      // ปรับ translateY เพื่อแสดงด้านล่าง
+      Animated.timing(translateY, {
+        toValue: 100, // ปรับตามความต้องการ
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      // ให้ navigation.navigate('Tarot') เมื่อ Animation เสร็จสิ้น
+      setTimeout(() => {
+        navigation.navigate('Tarot', { selectedCard });
+      }, 300);
     }
   };
+
   return (
      <SafeAreaView style={styles.container}>
       
@@ -90,35 +143,40 @@ const Wheel = ({ navigation }) => {
       
     </View>
        <Text style={{fontSize:18,top:20}}>ดูดวงประจำวัน</Text>
-       <View style={{flex:2 , top:80}}>
-      <ScrollView>
+       <View style={{flex:2 , top:30}}>
+      <View>
        {Array.from({ length: Math.ceil(cards.length / 3) }).map((_, rowIndex) => renderRow(rowIndex))}
        
-      </ScrollView> 
+      </View> 
       </View>
       <TouchableOpacity
   style={{
     backgroundColor: selectedCard ? 'green' : 'red',
     borderRadius: 15,
-    padding: 10,
+    padding: 15,
     left:50,
-    width:120
+    width:120,
+    top:80
   }}
   onPress={handlePrediction}
 >
-  <Text style={{ color: 'white',left:30 }} >{selectedCard ? 'ทำนาย' : 'เลือกไพ่'}</Text>
+  <Text style={{ color: 'white',left:25 }} >{selectedCard ? 'ทำนาย' : 'เลือกไพ่'}</Text>
 </TouchableOpacity>
-       <View style={{right:100, top: -50}} >
+       <View style={{right:80, top: 30}} >
        <MaterialCommunityIcons
           name="autorenew"
-          size={35}
+          size={40}
           style={{ margin: 10 }}
-          onPress={() => {
-            // ตอนกดทำนายให้ทำการ reset รูปที่ถูกเลือก
-            setSelectedCard(null);
-            // ทำสิ่งอื่น ๆ ตามต้องการ
-          }}
+          onPress= {handleAutorenew}
+          
         />
+       <ActivityIndicator
+    animating={animating}
+    size={90}
+    hidesWhenStopped={true}
+    style={{top:-425,left:90}}
+    
+  />
     </View>
     
      </SafeAreaView>
@@ -148,13 +206,16 @@ const Wheel = ({ navigation }) => {
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    margin:10
   },
   wheel: {
      width: Dimensions.get('window').width - 150,
      height: Dimensions.get('window').width - 150,
   },
   cardContainer: {
-    margin: 10,
+    margin: 50,
+    top:10
+    
   },
  });
 

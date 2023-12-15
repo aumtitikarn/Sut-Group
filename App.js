@@ -26,6 +26,8 @@ import Chat from './screen/Chat';
 import OtherProfile from './screen/OtherProfile'; 
 import PostOther from './components/PostOther'; 
 import PrivateChat from './screen/PrivateChat'; 
+import Wheel from './screen/Wheel';
+import Tarot from './datacard/Tarot';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -134,6 +136,8 @@ export default function Page() {
           <Stack.Screen name="OtherProfile" component={OtherProfile} />
           <Stack.Screen name="PostOther" component={PostOther} />
           <Stack.Screen name="PrivateChat" component={PrivateChat} />
+          <Stack.Screen name="Wheel" component={Wheel} />
+          <Stack.Screen name="Tarot" component={Tarot} />
         </Stack.Navigator>
     </NavigationContainer>
   );

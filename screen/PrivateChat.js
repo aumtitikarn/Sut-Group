@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, StatusBar, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs, onSnapshot } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Appbar, Avatar } from 'react-native-paper';
@@ -18,8 +18,9 @@ const PrivateChat = ({ navigation }) => {
 
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState([]);
   const [currentUserUid, setCurrentUserUid] = useState(null);
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     const createChatCollection = async () => {
@@ -83,22 +84,28 @@ const PrivateChat = ({ navigation }) => {
     };
 
     const fetchMessages = async () => {
-      try {
-        const currentUser = auth.currentUser;
+  try {
+    const currentUser = auth.currentUser;
 
-        if (currentUser) {
-          const currentUserUid = currentUser.uid;
-          const messagesCollectionRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
-          const messagesSnapshot = await getDocs(messagesCollectionRef);
-          const messagesData = messagesSnapshot.docs.map(doc => doc.data());
-          setMessages(messagesData);
-        } else {
-          console.error('User not authenticated.');
-        }
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    };
+    if (currentUser) {
+      const currentUserUid = currentUser.uid;
+      const messagesCollectionRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
+
+      // Use onSnapshot to listen for real-time updates to the messages collection
+      const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
+        const messagesData = querySnapshot.docs.map(doc => doc.data());
+        setMessages(messagesData);
+      });
+
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
+    } else {
+      console.error('User not authenticated.');
+    }
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
 
     createChatCollection();
     fetchMessages();
@@ -109,7 +116,7 @@ const PrivateChat = ({ navigation }) => {
     try {
       const currentUser = auth.currentUser;
   
-      if (currentUser) {
+      if (currentUser&& (message || photo)) {
         const currentUserUid = currentUser.uid;
   
         // Get the current user's document reference to fetch the username
@@ -118,6 +125,7 @@ const PrivateChat = ({ navigation }) => {
   
         if (currentUserDocSnapshot.exists()) {
           const username = currentUserDocSnapshot.data().username;
+
   
           // Create a new message document in the 'allchat' collection under the current user's 'users' collection
           const messageDocRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
@@ -127,12 +135,14 @@ const PrivateChat = ({ navigation }) => {
             text: message,
             sender: username,
             uid: currentUserUid,
+            photo : photo,
             timestamp: serverTimestamp(),
           });
   
           // Clear the input field
           setMessage('');
-  
+          setPhoto(null);
+
           // Add data to the collection of userUid
           const userUidDocRef = doc(db, 'users', userUid);
   
@@ -147,11 +157,14 @@ const PrivateChat = ({ navigation }) => {
               text: message,
               sender: username,
               uid: currentUserUid,
+              photo : photo,
               timestamp: serverTimestamp(),
             });
   
             // Clear the input field
             setMessage('');
+            setPhoto(null);
+
           } else {
             console.error('UserUid document not found.');
           }
@@ -166,7 +179,35 @@ const PrivateChat = ({ navigation }) => {
     }
   };
   
-  
+   // เข้าถึงกล้อง
+const camera = async () => {
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
+
+// เข้าถึงคลังรูปภาพ
+const openlib = async () => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
+
+  console.log(result);
+
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
 
   return (
     <SafeAreaView style={styles.Container}>
@@ -183,7 +224,7 @@ const PrivateChat = ({ navigation }) => {
                   />
                   <Text style={{ fontSize: 20, marginLeft: 15, top: -5, fontWeight: "bold" }}>{userData.username}</Text>
                 </Appbar.Header>
-                <ScrollView>
+                <ScrollView style={{ flexGrow: 1, marginBottom: 80 }}>
                 <View>
                 <Avatar.Icon icon="account-circle" size={50} style={{ backgroundColor: '#1C1441', marginLeft: 10, top: -5, position: 'absolute', alignSelf: 'center', top: 20 }} color={'#FFF'} />
             <Image
@@ -192,41 +233,65 @@ const PrivateChat = ({ navigation }) => {
           />
               <Text style={{ textAlign: 'center', marginTop: 10, fontWeight:"bold",fontSize: 20 }}>{userData.username}</Text>
               <Text style={{ textAlign: 'center', marginTop: 5, color: "#A4A0A0"}}>{userData.faculty}</Text>
-              {messages.map((message, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: 'row',
-                justifyContent:
-                  message.uid === currentUserUid ? 'flex-end' : 'flex-start',
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor:
-                    message.uid === currentUserUid
-                      ? '#1C1441'
-                      : '#8AD1DB',
-                  padding: 10,
-                  borderRadius: 8,
-                  margin: 5,
-                  marginLeft:
-                    message.uid === currentUserUid ? 50 : 0, // Adjust the margin for the user's own messages
-                }}
-              >
-                <Text style={{ color: 'white' }}>{message.text}</Text>
-                <Text style={{ color: 'white' }}>
-                  {message.timestamp.toDate().toLocaleString()}
-                </Text>
-              </View>
-            </View>
-          ))}
+              {messages
+  .slice()
+  .sort((a, b) => {
+    const timestampA = a.timestamp ? a.timestamp.toMillis() : 0;
+    const timestampB = b.timestamp ? b.timestamp.toMillis() : 0;
+    return timestampA - timestampB;
+  })
+  .map((message, index) => (
+    <View>
+      <Text
+      style={{
+        left:
+          message.uid === currentUserUid ? 320 : 0,
+      }}>
+        {message.sender}:</Text>
+    <View
+      key={index}
+      style={{
+        flexDirection: 'row',
+        justifyContent:
+          message.uid === currentUserUid ? 'flex-end' : 'flex-start',
+      }}
+    >
+      <View
+  style={{
+    backgroundColor: message.uid === currentUserUid ? '#1C1441' : '#8AD1DB',
+    padding: 10,
+    borderRadius: 8,
+    margin: 5,
+    marginLeft: message.uid === currentUserUid ? 50 : 0,
+    height: message.photo ? 245 : (message.text ? 'auto' : 0),
+  }}
+>
+  {message.text && (
+    <Text style={{ color: 'white' }}>{message.text}</Text>
+  )}
+  {message.timestamp && (
+    <Text style={{ color: 'white', top: message.photo ? 205 : 0 }}>
+      {message.timestamp.toDate().toLocaleString()}
+    </Text>
+  )}
+  {message.photo && (
+    <Image source={{ uri: message.photo }} style={styles.postImage} />
+  )}
+</View>
+    </View>
+    </View>
+  ))}
         </View>
                 </ScrollView>
-                <View style={styles.square}>
+                <View style={{width: 420,
+    height: photo ? 180 : 70,
+    backgroundColor: '#8AD1DB',
+    bottom: 0,
+    position: 'absolute',}}>
+                {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: 55, margin: 10 }} />}
                 <View style={styles.iconContainer}>
-                  <Icon name="camera" size={20} color="#000" style={styles.icon}/>
-                  <Icon name="image" size={20} color="#000" style={styles.icon} />
+                <Icon name="camera" size={20} color="#000" style={styles.icon} onPress={camera}/>
+                <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openlib}/>
                 </View>
                   <View style={styles.inputContainer}>
                     <TextInput
@@ -234,8 +299,9 @@ const PrivateChat = ({ navigation }) => {
                       placeholder="Aa"
                       value={message}
                       onChangeText={setMessage}
+                      multiline={true}
                     />
-                    <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+                    <TouchableOpacity style={styles.sendButton} onPress={sendMessage}  disabled={!message && !photo}>
                       <Text style={styles.sendButtonText}>Sent</Text>
                     </TouchableOpacity>
                   </View>
@@ -261,6 +327,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     position: "absolute"
+  },
+  postImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
+    left: 0,
+    top:-20
   },
   input: {
     flex: 1,
@@ -299,7 +372,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', 
     top:20,
-    marginLeft: 20
+    marginLeft: 20,
+    position: "absolute"
   },
   icon: {
     marginRight: 15,

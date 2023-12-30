@@ -169,11 +169,19 @@ const EditProfile = ({ navigation }) => {
     const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
     const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
     const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
+    const allchatCollectionRef = collection(db, 'users', auth.currentUser.uid, 'allchat');
+    const allchatQuery = query(allchatCollectionRef, where('id', '==', userUid));
     const postHomeSnapshot = await getDocs(userPostHomeCollectionRef);
     const postShopSnapshot = await getDocs(userPostShopCollectionRef);
     const usershareSnapshot = await getDocs(usershareCollectionRef);
+    const allchatSnapshot = await getDocs(allchatQuery);
     const postHomeBatch = writeBatch(db);
     const postShopBatch = writeBatch(db);
+
+    allchatSnapshot.forEach((doc) => {
+      postHomeBatch.update(doc.ref, updateData);
+      
+    });
 
     usershareSnapshot.forEach((doc) => {
       postHomeBatch.update(doc.ref, updateData);
@@ -271,10 +279,12 @@ const EditProfile = ({ navigation }) => {
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
         const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
+        const allchatCollectionRef = collection(db, 'users', auth.currentUser.uid, 'allchat');
 
         // สร้างคิวรีเพื่อเลือกเอกสารที่ตรงกับ userUid
         const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', userUid));
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
+        const allchatShopQuery = query(allchatCollectionRef, where('id', '==', userUid));
         const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
@@ -282,6 +292,7 @@ const EditProfile = ({ navigation }) => {
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
         const usershareSnapshot = await getDocs(usershareCollectionRef);
+        const allchatSnapshot = await getDocs(allchatShopQuery);
         const gameSnapshot = await getDocs(gameQuery);
         
         // เลือกทุกเอกสารในคอลเลคชัน allpostHome
@@ -319,6 +330,10 @@ const EditProfile = ({ navigation }) => {
         }
       }
 
+      allchatSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData); 
+        
+      });
       gameSnapshot.forEach((doc) => {
         batch.update(doc.ref, updatedUserData); 
         

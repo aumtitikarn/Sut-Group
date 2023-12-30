@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
-import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,updateDoc,addDoc} from 'firebase/firestore'; 
+import { collection, getDocs, onSnapshot,doc,getDoc,query,orderBy,deleteDoc,updateDoc,deleteObject} from 'firebase/firestore'; 
 import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown'; // นำเข้าไอคอนจาก FontAwesome หรือไลบรารีอื่น ๆ ตามที่คุณต้องการmport react-native link react-native-vector-icons
-
+import { ref } from 'firebase/storage';
 
 
 export default function PostShop() {
@@ -22,8 +22,7 @@ export default function PostShop() {
   const navigation = useNavigation();
   const type = ["ทั้งหมด", "คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const storage = FIREBASE_STORAGE;
 
 
   useEffect(() => {
@@ -71,7 +70,8 @@ export default function PostShop() {
       await deleteDoc(allpostShopRef);
       const postShopRef = doc(db, 'postShop', shopId);
       await deleteDoc(postShopRef);
-
+      const storageRef = ref(storage, 'photo_shop/' + shopId + '.jpg'); // Assuming the file name is based on the shopId
+      await deleteObject(storageRef);
   
       // ตรวจสอบว่าโพสต์ที่ต้องการลบถูกโพสต์โดย user ที่ login หรือไม่
       if (shop.userUid === currentUser.uid) {

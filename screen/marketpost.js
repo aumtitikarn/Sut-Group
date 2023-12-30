@@ -17,7 +17,7 @@ import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
 export default function Marketpost() {
-  const [isPhotoSelected, setIsPhotoSelected] = useState(false);
+
   const [dname, setDname] = useState('');
   const [tname, setTname] = useState('');
   const [pri, setPri] = useState('');
@@ -29,10 +29,9 @@ export default function Marketpost() {
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
-
   const type = ["คอม", "อุปกรณ์ไฟฟ้า", "เครื่องเขียน", "อาหาร", "ของใช้", "เครื่องครัว", "หนังสือ", "อุปกรณ์ไอที"]
+  const navigation = useNavigation();
 
-const navigation = useNavigation();
 useEffect(() => {
   const userUid = auth.currentUser?.uid;
   if (userUid) {
@@ -82,35 +81,33 @@ const handleMarket = async () => {
       if (profileImg) {
         shop.profileImg = profileImg;
       }
+      
       if (photo) {
+        // แก้ไขชื่อรูปภาพให้เป็น id ของโพสต์
         const fileName = `${id}.jpg`;
-        const storageRef = ref(storage, 'photo_shop/' + fileName);
-        
-        // Convert the local file URI to Blob
+      
+        // อัปโหลดรูปภาพไปยัง Firebase Storage
+        const storageRef = ref(storage, 'photo_shop/' + fileName); // ต้องใช้ ref() แทน storage.ref()
+      
         const response = await fetch(photo);
         const blob = await response.blob();
-
-        // Upload the image to Firebase Storage
+      
         await uploadBytes(storageRef, blob);
-
-        // Get the download URL of the uploaded image
+      
+        // อัปเดตค่า 'photo' ด้วย URI ที่อ้างอิงจาก Firebase Storage
         const downloadURL = await getDownloadURL(storageRef);
-
-        // Add the download URL to the shop object
         shop.photo = downloadURL;
-      }if (!photo) {
-      Alert.alert('แจ้งเตือน', 'กรุณาเลือกรูปภาพสินค้า');
-      return;
-    }
+      }
+      
       const allpostShopCollectionRef = collection(db, 'allpostShop');
       // Upload the shop object data to Firestore
       await setDoc(doc(allpostShopCollectionRef, id), shop);
       await setDoc(doc(postShopCollectionRef, id), shop);
       
       // Navigate to the desired screen after successful upload
-      navigation.navigate('Marketplace');
+      navigation.goBack();
       console.log('Document written with ID: ', id);
-      // Clear the selected photo after uploading
+     
       setPhoto(null);
     }
     
@@ -120,37 +117,36 @@ const handleMarket = async () => {
   }
 };
 
-  
   // เข้าถึงกล้อง
+const camera = async () => {
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
 
-  const camera = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [10, 10],
-      quality: 1,
-    });
-  
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-      setIsPhotoSelected(true);
-    }
-  };
-  
-  const openlib = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [10, 10],
-      quality: 1,
-    });
-  
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-      setIsPhotoSelected(true);
-    }
-  };
-///  
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
+
+// เข้าถึงคลังรูปภาพ
+const openlib = async () => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [10, 10],
+    quality: 1,
+  });
+
+  console.log(result);
+
+  if (!result.canceled) {
+    setPhoto(result.assets[0].uri);
+  }
+};
+ 
 
 
 
@@ -160,8 +156,8 @@ const handleMarket = async () => {
    
     <MaterialCommunityIcons 
      name="arrow-left"  
-     size={35} style={{margin:10 ,top:80}} 
-     onPress={() => navigation.navigate('Marketplace')}
+     size={45} style={{margin:10 ,top:80}} 
+     onPress={() => navigation.goBack()}
       />
  
     <View style={{
@@ -184,8 +180,7 @@ const handleMarket = async () => {
             width: 209,
             borderRadius: 5,
             borderWidth: 1,
-          }}
->
+          }}>
      <SelectDropdown
             selectedValue={tname}
             accessibilityLabel="Choose Service"
@@ -252,8 +247,8 @@ const handleMarket = async () => {
         onChangeText={setPhon}
       />
     </View>
+    
     {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 150,top: -30, margin: 10 }} />}
-
     <View style={styles.iconContainer}>
     <MaterialCommunityIcons name="camera" size={30}   color="#000" style={styles.icon} onPress={camera}/>
     <MaterialCommunityIcons name="image" size={30}   color="#000" style={styles.icon} onPress={openlib}/>
@@ -264,12 +259,9 @@ const handleMarket = async () => {
     }}>
     
     <TouchableOpacity
-  style={{
-    ...styles.buttonYellow,
-    backgroundColor: isPhotoSelected ? '#FDF4E2' : '#FDF4E2',
-  }}
+  style={styles.buttonYellow }
   onPress={handleMarket}
-  disabled={!isPhotoSelected} // Disable the button when no photo is selected
+ // Disable the button when no photo is selected
 >
   <Text style={styles.buttonText}>โพสต์</Text>
 </TouchableOpacity>
@@ -284,35 +276,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#8AD1DB',
   },
-   input: {
+  input: {
     height: 50,
     width: 275,
     borderWidth: 1,
-    borderRadius:10,
+    borderRadius: 10,
     padding: 10,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2, // ลองปรับ shadowOpacity
     backgroundColor: '#FFF'
   },
   iconContainer: {
-    flexDirection: 'row', // จัดเรียงแนวนอน
-    alignItems: 'center', // จัดวางไอคอนให้ตรงกลาง
-    top:-20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    top: -15, // ลองปรับ top
     marginLeft: 105
   },
   icon: {
-    marginRight: 10, // ระยะห่างระหว่างไอคอน
+    marginRight: 10,
   },
-   buttonYellow: {
+  buttonYellow: {
     borderRadius: 5,
     borderWidth: 1,
     backgroundColor: '#FDF4E2',
     width: 70,
-    padding:5,
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center', // Center horizontally
-    margin: 5
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2, // ลองปรับ shadowOpacity
   },
 });
 

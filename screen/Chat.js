@@ -50,7 +50,7 @@ export default function Chat() {
         {allChatData.map((chat, index) => (
           <TouchableOpacity
             key={index}
-            style={{ left: 60 }}
+            style={{ left: 60, marginTop: -40, top: 40 }}
             onPress={() => navigation.navigate('PrivateChat', { userUid: chat.id })} // Pass the chat.uid to PrivateChat
           >
             <View style={{ height: 100 }}>

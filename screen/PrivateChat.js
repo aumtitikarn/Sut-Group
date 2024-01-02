@@ -284,7 +284,7 @@ const openlib = async () => {
     borderRadius: 8,
     margin: 5,
     marginLeft: message.uid === currentUserUid ? 50 : 0,
-    height: message.photo ? 245 : (message.text ? 'auto' : 0),
+    height: message.photo ? 260 : (message.text ? 'auto' : 0),
   }}
 >
   {message.text && (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, TextInput, Button, View,  Modal, Image, StatusBar, SafeAreaView } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 
@@ -26,7 +26,7 @@ export default function Register({navigation}) {
       setError('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
       return;
     }
-
+  
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log('User registration response:', response);
@@ -40,12 +40,45 @@ export default function Register({navigation}) {
         faculty: faculty,
         major: major,
       };
+  
       // Assuming you have imported and initialized Firestore previously.
       const usersRef = collection(db, 'users');
       await setDoc(doc(usersRef, uid), data);
+  
+      // Create GroupChat collection and documents based on faculty
+      const groupChatRef = collection(db, 'groupchat');
+      const facultyDocName = getFacultyDocName(faculty);
+      const facultyDocRef = doc(groupChatRef, facultyDocName);
+      await setDoc(facultyDocRef, { users: [uid] });
     } catch (error) {
       console.error('Error during user registration:', error);
       setError(error.message);
+    }
+  }
+  
+  // Helper function to get the document name based on faculty
+  function getFacultyDocName(faculty) {
+    switch (faculty) {
+      case '⚗️สำนักวิชาวิทยาศาสตร์':
+        return 'Science';
+      case '🧭สำนักวิชาเทคโนโลยีสังคม':
+        return 'Social';
+      case '🌲สำนักวิชาเทคโนโลยีการเกษตร':
+        return 'Agriculture';
+      case '⚙️สำนักวิชาวิศวกรรมศาสตร์':
+        return 'Engineer';
+      case '🩺สำนักวิชาแพทย์':
+        return 'Doctor';
+      case '💉สำนักวิชาพยาบาลศาสตร์':
+        return 'Nurse';
+      case '🦷สำนักวิชาทันตแพทย์':
+        return 'Dentis';
+      case '🏥สำนักวิชาสาธารณสุขศาสตร์':
+        return 'Publichealth';
+      case '💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล':
+        return 'ArtandScience';
+      default:
+        return '';
     }
   }
 
@@ -188,4 +221,4 @@ const styles = StyleSheet.create ({
   picker: {
     flex: 1,
   },
-}); 
+});

@@ -28,43 +28,65 @@ const PrivateChat = ({ navigation }) => {
         const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
           if (user) {
             setCurrentUserUid(user.uid);
-
+    
             // Get the current user's document reference
             const currentUserDocRef = doc(db, 'users', user.uid);
-
+    
             // Check if the current user's document exists
             const currentUserDocSnapshot = await getDoc(currentUserDocRef);
-
+    
             if (currentUserDocSnapshot.exists()) {
               // Fetch the user data for the specified userUid
               const targetUserDocRef = doc(db, 'users', userUid);
               const targetUserDocSnapshot = await getDoc(targetUserDocRef);
-
+    
               if (targetUserDocSnapshot.exists()) {
                 // Set the user data to state
                 setUserData(targetUserDocSnapshot.data());
-
+    
                 // Add 'allchat' collection to the target user's document
                 const targetUserAllChatCollectionRef = doc(db, 'users', userUid, 'allchat', user.uid);
-
+    
                 // Check if 'allchat' collection already exists
                 const targetUserAllChatCollectionSnapshot = await getDoc(targetUserAllChatCollectionRef);
-
+    
                 if (!targetUserAllChatCollectionSnapshot.exists()) {
-                  // If 'allchat' collection doesn't exist, create it
-                  await setDoc(targetUserAllChatCollectionRef, {});
-                }
+                  // If 'allchat' collection doesn't exist, create it with a placeholder field
+                  const { username, profileImg, faculty, id } = currentUserDocSnapshot.data();
 
+                  const dataToUpdate = {
+                    username,
+                    faculty,
+                    id
+                  };
+                  
+                  if (profileImg !== undefined && profileImg !== null) {
+                    dataToUpdate.profileImg = profileImg;
+                  }
+                  
+                  // Proceed with creating/updating the document
+                  await setDoc(targetUserAllChatCollectionRef, dataToUpdate);
+                  
+                }
+    
                 // Create a new chat document in the 'allchat' collection under the current user's 'users' collection
                 const chatDocRef = doc(db, 'users', user.uid, 'allchat', userUid);
-
+    
                 // Set the initial data for the chat document
-                await setDoc(chatDocRef, {
-                  createdAt: serverTimestamp(),
-                  // Add other chat-related data as needed
-                });
-
-                console.log(`Chat document for user ${userUid} created successfully.`);
+                const { username, profileImg, faculty, id } = targetUserDocSnapshot.data(); // Fetch required data
+                const dataToUpdate = {
+                  username,
+                  faculty,
+                  id
+                };
+                
+                if (profileImg !== undefined && profileImg !== null) {
+                  dataToUpdate.profileImg = profileImg;
+                }
+                
+                // Proceed with creating/updating the document
+                await setDoc(chatDocRef, dataToUpdate);
+  
               } else {
                 console.error('Target user document not found.');
               }
@@ -75,14 +97,13 @@ const PrivateChat = ({ navigation }) => {
             console.error('User not authenticated.');
           }
         });
-
+    
         // Clean up the auth state listener when the component unmounts
         return () => unsubscribeAuth();
       } catch (error) {
         console.error('Error creating chat document:', error);
       }
     };
-
     const fetchMessages = async () => {
   try {
     const currentUser = auth.currentUser;
@@ -107,9 +128,9 @@ const PrivateChat = ({ navigation }) => {
   }
 };
 
-    createChatCollection();
-    fetchMessages();
-  }, [userUid, db, auth]);
+createChatCollection();
+fetchMessages();
+}, [userUid, db, auth]);
 
 
   const sendMessage = async () => {
@@ -263,7 +284,7 @@ const openlib = async () => {
     borderRadius: 8,
     margin: 5,
     marginLeft: message.uid === currentUserUid ? 50 : 0,
-    height: message.photo ? 245 : (message.text ? 'auto' : 0),
+    height: message.photo ? 260 : (message.text ? 'auto' : 0),
   }}
 >
   {message.text && (

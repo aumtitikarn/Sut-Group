@@ -28,6 +28,9 @@ import PostOther from './components/PostOther';
 import PrivateChat from './screen/PrivateChat'; 
 import Wheel from './screen/Wheel';
 import Tarot from './datacard/Tarot';
+import Createstore from './screen/createstore';
+import Store from './components/store';
+import Status from './components/Status';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -138,6 +141,9 @@ export default function Page() {
           <Stack.Screen name="PrivateChat" component={PrivateChat} />
           <Stack.Screen name="Wheel" component={Wheel} />
           <Stack.Screen name="Tarot" component={Tarot} />
+          <Stack.Screen name="Store" component={Store} />
+          <Stack.Screen name="Createstore" component={Createstore} />
+          <Stack.Screen name="Status" component={Status} />
         </Stack.Navigator>
     </NavigationContainer>
   );

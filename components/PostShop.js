@@ -65,13 +65,13 @@ export default function PostShop() {
   const deleteShop = async (shopId) => {
     const shop = shops.find((shop) => shop.id === shopId);
     try {
-      
+      const userUid = auth.currentUser.uid;
+      const postShopRef = doc(db, 'users', userUid, 'postShop', shopId);
+      await deleteDoc(postShopRef);
+  
+      // 2. Delete the post from the "allpostHome" collection in Firestore
       const allpostShopRef = doc(db, 'allpostShop', shopId);
       await deleteDoc(allpostShopRef);
-      const postShopRef = doc(db, 'postShop', shopId);
-      await deleteDoc(postShopRef);
-      const storageRef = ref(storage, 'photo_shop/' + shopId + '.jpg'); // Assuming the file name is based on the shopId
-      await deleteObject(storageRef);
   
       // ตรวจสอบว่าโพสต์ที่ต้องการลบถูกโพสต์โดย user ที่ login หรือไม่
       if (shop.userUid === currentUser.uid) {

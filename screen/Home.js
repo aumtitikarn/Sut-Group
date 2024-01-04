@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import PostHome from '../components/PostHome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import Store from '../components/store';
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
@@ -28,7 +28,7 @@ const MyComponent = () => {
           onPress={() => navigateToWheel()} // Navigate to 'Wheel' screen when pressed
         />
         </Appbar.Header>
-
+        <Store />
         <ScrollView>
         <PostHome />
         <Text></Text>

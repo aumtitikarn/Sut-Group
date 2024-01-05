@@ -52,7 +52,7 @@ export default function Chat() {
         {allChatData.map((chat, index) => (
           <TouchableOpacity
             key={index}
-            style={{ left: 60, margin:30, left: 30 }}
+            style={{ left: 60, marginTop:20, top: 10 }}
             onPress={() => navigation.navigate('PrivateChat', { userUid: chat.id })}
           >
               <Avatar.Icon icon="account-circle" size={50} style={{  left: -60, backgroundColor: '#1C1441', position: 'absolute' }} color={'#FFF'} />

@@ -329,7 +329,7 @@ return (
           {filteredPosts.map((post) => (
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
-            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+            <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor: '#1C1441'}} color={'#FFF'} />
            {/* รูปโปรไฟล์  */}
             <Image
               source={{ uri: post.profileImg }}

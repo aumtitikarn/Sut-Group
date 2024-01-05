@@ -49,7 +49,7 @@ export default function Register({navigation}) {
       const groupChatRef = collection(db, 'groupchat');
       const facultyDocName = getFacultyDocName(faculty);
       const facultyDocRef = doc(groupChatRef, facultyDocName);
-      await setDoc(facultyDocRef, { users: [uid] });
+      await setDoc(facultyDocRef, { users: [uid], faculty: faculty });
     } catch (error) {
       console.error('Error during user registration:', error);
       setError(error.message);

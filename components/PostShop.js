@@ -205,7 +205,18 @@ export default function PostShop() {
     navigation.navigate('Marketpost');
 
   };
+  const handleImagePress = (post) => {
+    const isCurrentUser = post.userUid === auth.currentUser?.uid;
   
+    if (isCurrentUser) {
+      // If the profile image belongs to the current user, navigate to 'Profile'
+      navigation.navigate('Profile');
+    } else {
+      // If the profile image does not belong to the current user, navigate to 'OtherProfile' and pass the userUid
+      console.log('Navigating to OtherProfile with userUid:', post.userUid);
+      navigation.navigate('OtherProfile', { userUid: post.userUid });
+    }
+  };
   
 
   return (
@@ -275,7 +286,7 @@ export default function PostShop() {
           style={{ borderRadius: 50, position: 'absolute', width: 50, height: 50, left: -60, top: 40 }}
         />
       
-                <Text style={{ top: -5, fontWeight: 'bold' }}>{shop.username}</Text>
+                <Text style={{ top: -5, fontWeight: 'bold' }} onPress={() => handleImagePress(shop)}>{shop.username}</Text>
                 <Text style={{ top: -5 }}>{shop.faculty}</Text>
                 <Text style={{color: '#777267'}}>{formatPostTime(shop.timestamp)}</Text>
               </View>

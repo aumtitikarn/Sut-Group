@@ -5,7 +5,7 @@ import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import GChat from './GChat';
+import  GChat  from './GChat';
 
 export default function Chat() {
   const [allChatData, setAllChatData] = useState([]);

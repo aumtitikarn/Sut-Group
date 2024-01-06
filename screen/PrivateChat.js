@@ -53,7 +53,7 @@ const PrivateChat = ({ navigation }) => {
                 if (!targetUserAllChatCollectionSnapshot.exists()) {
                   // If 'allchat' collection doesn't exist, create it with a placeholder field
                   const { username, profileImg, faculty, id } = currentUserDocSnapshot.data();
-
+    
                   const dataToUpdate = {
                     username,
                     faculty,
@@ -86,9 +86,11 @@ const PrivateChat = ({ navigation }) => {
                 
                 // Proceed with creating/updating the document
                 await setDoc(chatDocRef, dataToUpdate);
-  
+    
               } else {
-                console.error('Target user document not found.');
+                // Handle the case where the target user document is not found
+                // You can add your own logic here to handle it silently
+                // For example, you might want to create a new user document for the target user
               }
             } else {
               console.error('Current user document not found.');

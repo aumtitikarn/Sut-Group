@@ -59,7 +59,7 @@ const UserData = ({ navigation }) => {
           top: 30,
           left: -90
         }}>
-          <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'orange' }} color={'#FFF'}/>
+          <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'#1C1441' }} color={'#FFF'}/>
         </View>
         <Image
           source={{ uri: userData.profileImg }}

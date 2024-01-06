@@ -243,7 +243,7 @@ const PostOther = ({ userUid }) => {
     {posts.map((post) => (
       <View key={post.id} style={styles.postContainer}>
         <View style={{ top: -70, left: 55, width:230}}>
-        <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+        <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'#1C1441'}} color={'#FFF'} />
           <Image
               source={{ uri: post.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}

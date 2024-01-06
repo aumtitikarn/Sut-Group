@@ -1,48 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
-import { collection, onSnapshot, query, where, getDoc, doc, getDocs } from 'firebase/firestore';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Image, StatusBar, TouchableOpacity } from 'react-native';
+import { collection, onSnapshot, doc, query, where, getDoc, getDocs } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-export default function GChat() {
+export default function GChat({ userUid }) {
   const [allChatData, setAllChatData] = useState([]);
-  const [userUid, setUserUid] = useState(null);
   const [userFaculty, setUserFaculty] = useState('');
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
-  const navigation = useNavigation(); // เพิ่ม hook นี้
-  
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          const currentUserUid = user.uid;
-          setUserUid(currentUserUid);
-          const userDocRef = doc(db, 'users', currentUserUid);
-          const allChatCollectionRef = collection(userDocRef, 'allchat');
-  
-          const unsubscribeSnapshot = onSnapshot(allChatCollectionRef, (querySnapshot) => {
-            const allChatDocuments = querySnapshot.docs.map(doc => doc.data());
-            setAllChatData(allChatDocuments);
-          });
-  
-          // Save the unsubscribe function to clean up the listener when the component unmounts
-          return () => unsubscribeSnapshot();
-        } else {
-          console.error('User not authenticated.');
-        }
-      } catch (error) {
-        console.error('Error fetching allchat data:', error);
-      }
-    });
-  
-    // Cleanup the auth listener when the component unmounts
-    return () => unsubscribeAuth();
-  }, []);
-  
   useEffect(() => {
     // Fetch group chat data based on user's faculty
     const fetchGroupChatData = async () => {
@@ -50,36 +20,43 @@ export default function GChat() {
         const userDocRef = doc(db, 'users', userUid);
         const userDocSnapshot = await getDoc(userDocRef);
         const userFaculty = userDocSnapshot.data().faculty;
-  
+
         const groupChatCollectionRef = collection(db, 'groupchat');
         const facultyQuery = where('users', 'array-contains', userUid);
         const groupChatQuery = query(groupChatCollectionRef, facultyQuery);
         const groupChatQuerySnapshot = await getDocs(groupChatQuery);
-  
+
         // Map through the documents and add 'id' property to each document
         const groupChatDocuments = groupChatQuerySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
           faculty: userFaculty,
         }));
-  
+
         setAllChatData(prevData => [...prevData, ...groupChatDocuments]);
       } catch (error) {
         console.error('Error fetching group chat data:', error);
       }
     };
-  
+
     fetchGroupChatData();
   }, [userUid]);
-  
 
-  
+  useEffect(() => {
+    const unsubscribeSnapshot = onSnapshot(collection(db, 'allchat'), (querySnapshot) => {
+      const allChatDocuments = querySnapshot.docs.map(doc => doc.data());
+      setAllChatData(allChatDocuments);
+    });
+
+    return () => unsubscribeSnapshot();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       {allChatData.map((chat, index) => (
         <TouchableOpacity 
           key={index} 
-          style={{ left: 60, marginTop:-20}}
+          style={{ left: 60, marginTop: -20 }}
           onPress={() => navigation.navigate('GroupChat', { userUid: userUid ,docId: chat.id })}
         >
           {Array.isArray(chat.users) && chat.users.includes(userUid) && (

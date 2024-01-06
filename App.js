@@ -32,6 +32,7 @@ import Createstore from './screen/createstore';
 import Store from './components/store';
 import Status from './components/Status';
 import GroupChat from './screen/GroupChat';
+import GChat from './screen/GChat';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -139,6 +140,7 @@ export default function Page() {
           <Stack.Screen name="PostHome" component={PostHome} />
           <Stack.Screen name="OtherProfile" component={OtherProfile} />
           <Stack.Screen name="GroupChat" component={GroupChat} />
+          <Stack.Screen name="GChat" component={GChat} />
           <Stack.Screen name="PostOther" component={PostOther} />
           <Stack.Screen name="PrivateChat" component={PrivateChat} />
           <Stack.Screen name="Wheel" component={Wheel} />

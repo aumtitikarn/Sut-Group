@@ -5,7 +5,7 @@ import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import  GChat  from './GChat';
+import GChat from './GChat';
 
 export default function Chat() {
   const [allChatData, setAllChatData] = useState([]);
@@ -47,7 +47,8 @@ export default function Chat() {
       <Appbar.Header style={{ backgroundColor: '#FDF4E2', height: 30, top: -30 }}>
         <Image style={styles.logo} source={require('../assets/2.png')} />
       </Appbar.Header>
-      <GChat />
+      <View style={{top:-15}}>
+      {userUid && <GChat userUid={userUid} />}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {allChatData
         .filter(chat => chat.id !== userUid)
@@ -68,6 +69,7 @@ export default function Chat() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     left: 60,
     top: 20,
-    marginTop:-10
+    marginTop: -10
   },
   avatar: {
     backgroundColor: '#1C1441',

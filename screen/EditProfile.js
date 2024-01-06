@@ -104,14 +104,17 @@ const EditProfile = ({ navigation }) => {
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
     const userUid = auth.currentUser.uid;
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
+    const GroupChatCollectionRef = collection(db, 'groupchat');
     const allPostShopCollectionRef = collection(db, 'allpostShop');
     const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
+    const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
     
 
     const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
+    const GroupChatSnapshot = await getDocs(GroupChatQuery);
     const allPostShopSnapshot = await getDocs(allPostShopQuery);
     const gameSnapshot = await getDocs(gameQuery);
 
@@ -148,6 +151,10 @@ const EditProfile = ({ navigation }) => {
           });
         }
     }
+
+    GroupChatSnapshot.forEach((doc) => {
+      Batch.update(doc.ref, updateData);
+    });
 
     gameSnapshot.forEach((doc) => {
       Batch.update(doc.ref, updateData);
@@ -276,6 +283,7 @@ const EditProfile = ({ navigation }) => {
         const allPostHomeCollectionRef = collection(db, 'allpostHome');
         const allPostShopCollectionRef = collection(db, 'allpostShop');
         const gameCollectionRef = collection(db, 'game');
+        const GroupChatCollectionRef = collection(db, 'groupchat');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
         const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
@@ -286,6 +294,7 @@ const EditProfile = ({ navigation }) => {
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
         const allchatShopQuery = query(allchatCollectionRef, where('id', '==', userUid));
         const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
+        const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
@@ -294,7 +303,7 @@ const EditProfile = ({ navigation }) => {
         const usershareSnapshot = await getDocs(usershareCollectionRef);
         const allchatSnapshot = await getDocs(allchatShopQuery);
         const gameSnapshot = await getDocs(gameQuery);
-        
+        const GroupChatSnapshot = await getDocs(GroupChatQuery);
         // เลือกทุกเอกสารในคอลเลคชัน allpostHome
       const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
       const allPostHomecommentQuery = query(allPostHomecommentCollectionRef);
@@ -303,6 +312,7 @@ const EditProfile = ({ navigation }) => {
 
       // เลือกทุก comment collection ในทุกเอกสาร allpostHome ที่มี userUid ตรงกับผู้ใช้ปัจจุบัน
       const batch = writeBatch(db);
+      
 
       for (const allPostHomeDoc of allPostHomecommentSnapshot.docs) {
         const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
@@ -334,6 +344,11 @@ const EditProfile = ({ navigation }) => {
         batch.update(doc.ref, updatedUserData); 
         
       });
+
+      GroupChatSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData);
+      });
+  
       gameSnapshot.forEach((doc) => {
         batch.update(doc.ref, updatedUserData); 
         
@@ -410,7 +425,7 @@ const EditProfile = ({ navigation }) => {
               left: 150
               
             }}>
-                <Avatar.Icon icon="account-circle" size={100} style={{ backgroundColor:'orange' }} color={'#FFF'}/>
+                <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'#1C1441' }} color={'#FFF'}/>
                 {profileImg && <Image source={{ uri: profileImg }} style={{ width: 100, height: 100, Left: 150, top: 0, borderRadius: 50, position: 'absolute',}} />}
             </View>
             <TouchableOpacity onPress={openlib}>

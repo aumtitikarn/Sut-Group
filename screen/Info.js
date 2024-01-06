@@ -67,7 +67,7 @@ function UserProfile() {
           top: -20,
           left: 170
         }}>
-          <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'orange' }} color={'#FFF'}/>
+          <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'#1C1441' }} color={'#FFF'}/>
         </View>
         <Image
           source={{ uri: userData.profileImg }}

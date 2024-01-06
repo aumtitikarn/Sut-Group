@@ -90,7 +90,7 @@ export default function GChat() {
                   size={25}
                 />
               </View>
-              <View style={{ marginTop: 10, left: -25 }}>
+              <View style={{ marginTop: 15, left: 10 }}>
                 <Text style={{ fontWeight: 'bold' }}>{chat.faculty}</Text>
               </View>
             </>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 50,
     height: 50,
-    left: -80,
+    left: -60,
     top: 50
   },
 });

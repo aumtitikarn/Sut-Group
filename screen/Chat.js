@@ -48,19 +48,23 @@ export default function Chat() {
         <Image style={styles.logo} source={require('../assets/2.png')} />
       </Appbar.Header>
       <GChat />
-      <ScrollView >
-        {allChatData.map((chat, index) => (
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {allChatData
+        .filter(chat => chat.id !== userUid)
+        .map((chat, index) => (
           <TouchableOpacity
             key={index}
-            style={{ left: 60, marginTop:20, top: 10 }}
+            style={styles.chatItem}
             onPress={() => navigation.navigate('PrivateChat', { userUid: chat.id })}
           >
-              <Avatar.Icon icon="account-circle" size={50} style={{  left: -60, backgroundColor: '#1C1441', position: 'absolute' }} color={'#FFF'} />
-              {chat.profileImg && (
-                <Image source={{ uri: chat.profileImg }} style={{ borderRadius: 50, position: 'absolute', width: 50, height: 50, left: -60 }} />
-              )}
+            <Avatar.Icon icon="account-circle" size={50} style={styles.avatar} color={'#FFF'} />
+            {chat.profileImg && (
+              <Image source={{ uri: chat.profileImg }} style={styles.profileImage} />
+            )}
+            <View style={styles.textContainer}>
               <Text style={{ fontWeight: 'bold' }}>{chat.username || 'Unknown User'}</Text>
               <Text>{chat.faculty}</Text>
+            </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -71,8 +75,6 @@ export default function Chat() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
     backgroundColor: '#fff5e2',
     paddingTop: StatusBar.currentHeight,
   },
@@ -81,5 +83,30 @@ const styles = StyleSheet.create({
     width: 100,
     top: 5,
     left: 130,
+  },
+  scrollContainer: {
+    padding: 20,
+  },
+  chatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    padding: 10,
+    borderRadius: 10,
+    left: 60,
+    top: 20,
+    marginTop:-10
+  },
+  avatar: {
+    backgroundColor: '#1C1441',
+    position: 'absolute',
+    left: -60,
+  },
+  profileImage: {
+    borderRadius: 50,
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    left: -60,
   },
 });

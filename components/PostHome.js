@@ -312,20 +312,13 @@ return (
 
         </Select>
       </Box>
-    <TouchableOpacity
+    <View
             style={{
-              borderRadius: 5,
-              borderWidth: 2,
-              backgroundColor: '#FDF4E2',
-              width: 90,
-              padding: 10,
-              marginTop: 20,
-              marginLeft: 290,
+              marginTop: 80,
             }}
             onPress={handleCreatePostPress} // เมื่อปุ่มถูกกด
           >
-            <Text style={{color:"#1C1441"}}>สร้างโพสต์</Text>
-          </TouchableOpacity>
+
           {filteredPosts.map((post) => (
         <View key={post.id} style={styles.postContainer}>
           <View style={{ top: -50, left: 55 }}>
@@ -397,7 +390,8 @@ return (
         )}
         </View>
         </View>
-      ))}      
+      ))}    
+      </View>  
     </ScrollView>
   </SafeAreaView>
   </NativeBaseProvider>
@@ -413,8 +407,9 @@ postContainer: {
   borderWidth: 2,
   borderColor: '#000',
   backgroundColor: '#FDF4E2',
-  margin: 15,
-  marginTop: 20,
+  marginTop: 10,
+  marginLeft: 15,
+  marginRight:15,
   borderRadius: 15,
   overflow: 'hidden',
   padding: 20,

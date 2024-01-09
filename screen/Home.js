@@ -6,6 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import PostHome from '../components/PostHome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Store from '../components/store';
+import Fab from '../components/fab';
 
 const MyComponent = () => {
   const navigation = useNavigation(); 
@@ -36,6 +37,9 @@ const MyComponent = () => {
         <Text></Text>
         <Text></Text>
       </ScrollView>
+      <View style={{top: -50, left: 30}}>
+        <Fab />
+        </View>
     </SafeAreaView>
   );
 };

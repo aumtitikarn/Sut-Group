@@ -33,6 +33,7 @@ import Store from './components/store';
 import Status from './components/Status';
 import GroupChat from './screen/GroupChat';
 import GChat from './screen/GChat';
+import Fab from './components/fab';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -125,6 +126,7 @@ export default function Page() {
           <Stack.Screen name="MyTabs" component={MyTabs} />
           <Stack.Screen name="Forgot" component={Forgot} />
           <Stack.Screen name="Chat" component={Chat} />
+          <Stack.Screen name="Fab" component={Fab} />
           <Stack.Screen name="Createpost" component={Createpost} />
           <Stack.Screen name="Marketpost" component={Marketpost} />
           <Stack.Screen name="EditProfile" component={EditProfile} />

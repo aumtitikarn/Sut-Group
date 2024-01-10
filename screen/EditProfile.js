@@ -413,7 +413,7 @@ const EditProfile = ({ navigation }) => {
                 <MaterialCommunityIcons 
                     name="pencil-outline"  
                     size={30}
-                    style={{ position: 'absolute', top: -40, left: 360, color: 'black' }}
+                    style={{ position: 'absolute', top: -40, left: 360, color: 'black', }}
                 />
                 </TouchableOpacity>
                 <MaterialCommunityIcons 
@@ -445,7 +445,7 @@ const EditProfile = ({ navigation }) => {
         placeholder={`${userData.username || ''}`}
         onChangeText={(text) => setNewData({ ...newData, username: text })}
       />
-       <Box maxW="300">
+       {/* <Box maxW="300">
         <Select selectedValue={newData.faculty} minWidth="370" accessibilityLabel="Choose Service" placeholder={`${userData.faculty || ''}`} style={styles.input} _selectedItem={{
         bg: "teal.600",
         endIcon: <CheckIcon size="5" />
@@ -460,12 +460,12 @@ const EditProfile = ({ navigation }) => {
           <Select.Item label="🏥สำนักวิชาสาธารณสุขศาสตร์" value="🏥สำนักวิชาสาธารณสุขศาสตร์" />
           <Select.Item label="💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" value="💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล" />
         </Select>
-      </Box>
-       <TextInput
+      </Box> */}
+       {/* <TextInput
        style={styles.input}
         placeholder={`${userData.major || ''}`}
         onChangeText={(text) => setNewData({ ...newData, major: text })}
-      />
+      /> */}
       <TextInput
       style={styles.input}
         placeholder={`${userData.email || ''}`}

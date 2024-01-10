@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, StatusBar, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs, onSnapshot } from 'firebase/firestore';
-import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
+import { FIRESTORE_DB, FIREBASE_AUTH, FIREBASE_STORAGE } from '../firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Appbar, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,6 +17,7 @@ const GroupChat = ({ navigation }) => {
   const [isUserDataLoaded, setIsUserDataLoaded] = useState(false);
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
+  const storage = FIREBASE_STORAGE;
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState([]);
@@ -71,14 +72,30 @@ const GroupChat = ({ navigation }) => {
         console.warn('UserData is not loaded yet. Cannot send message.');
         return;
       }
-  
-      await addDoc(messagesCollectionRef, {
+      const id = Date.now().toString();
+      const messageData = {
         text: message,
-        photo: photo,
         sender: userData.username,
         uid: userData.id,
         timestamp: serverTimestamp(),
-      });
+      };
+  
+      // Add the message data to Firestore
+      const newMessageRef = await addDoc(messagesCollectionRef, messageData);
+  
+      // If there is a photo, upload it to Firebase Storage and update the message data
+      if (photo) {
+        const fileName = `${id}.jpg`;
+        const storageRef = ref(storage, 'chatImg/' + fileName);
+        const response = await fetch(photo);
+        const blob = await response.blob();
+        await uploadBytes(storageRef, blob);
+        const downloadURL = await getDownloadURL(storageRef);
+  
+        // Update the message data with the photo URL
+        await updateDoc(newMessageRef, { photo: downloadURL });
+      }
+  
   
       setMessage('');
       setPhoto(null);
@@ -158,6 +175,7 @@ const openlib = async () => {
           message.uid === userUid ? 'flex-end' : 'flex-start',
       }}
     >
+      {/* กรอบข้อความ */}
       <View
   style={{
     backgroundColor: message.uid === userUid ? '#1C1441' : '#8AD1DB',
@@ -192,8 +210,18 @@ const openlib = async () => {
     position: 'absolute',}}>
                 {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: 55, margin: 10 }} />}
                 <View style={styles.iconContainer}>
-                <Icon name="camera" size={20} color="#000" style={styles.icon} onPress={camera}/>
-                <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openlib}/>
+                <TouchableOpacity 
+    onPress={camera}
+    style={{ pointerEvents: 'box-only' }}
+  >
+    <Icon name="camera" size={20} color="#000" style={styles.icon} />
+  </TouchableOpacity>
+  <TouchableOpacity 
+    onPress={openlib}
+    style={{ pointerEvents: 'box-only' }}
+  >
+    <Icon name="image" size={20} color="#000" style={styles.icon} />
+  </TouchableOpacity>
                 </View>
                   <View style={styles.inputContainer}>
                     <TextInput
@@ -252,7 +280,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius:30,
     left: -10,
-    backgroundColor: '#1C1441'
+    backgroundColor: '#1C1441',
+    pointerEvents: 'box-only'
   },
   sendButtonText: {
     color: 'white'
@@ -278,6 +307,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 15,
+    pointerEvents: 'box-only'
   },
 });
 

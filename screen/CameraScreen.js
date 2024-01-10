@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
 import { Camera } from 'expo-camera';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native'; 
 
 const CameraScreen = () => {
   const cameraRef = useRef(null);
@@ -10,6 +11,7 @@ const CameraScreen = () => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -73,12 +75,17 @@ const CameraScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Camera
         style={styles.camera}
         type={type}
         ref={cameraRef}
       >
+        <MaterialCommunityIcons 
+                    name="arrow-left"  
+                    size={35} style={{margin:15, position: 'absolute', color: 'black'}} 
+                    onPress={() => navigation.navigate('Home')} 
+                />
         <View>
           <TouchableOpacity style={styles.Flipbutton} onPress={flipCamera}>
             <MaterialCommunityIcons name="camera-flip-outline" color={'white'} size={50} />
@@ -107,7 +114,7 @@ const CameraScreen = () => {
           <Image source={{ uri: capturedImage.uri }} style={styles.previewImage} />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

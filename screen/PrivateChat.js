@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, StatusBar, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc, arrayUnion, getDocs, onSnapshot } from 'firebase/firestore';
-import { FIRESTORE_DB, FIREBASE_AUTH } from '../firestore';
+import { FIRESTORE_DB, FIREBASE_AUTH, FIREBASE_STORAGE } from '../firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Appbar, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ const PrivateChat = ({ navigation }) => {
   const { userUid } = route.params;
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
+  const storage = FIREBASE_STORAGE;
 
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -151,17 +152,28 @@ fetchMessages();
 
   
           // Create a new message document in the 'allchat' collection under the current user's 'users' collection
-          const messageDocRef = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
-  
+          const messageCollection = collection(db, 'users', currentUserUid, 'allchat', userUid, 'messages');
+          const id = Date.now().toString();
           // Add the message to the collection with the username as the text
-          await addDoc(messageDocRef, {
+          const messageDocRef = {
             text: message,
             sender: username,
             uid: currentUserUid,
-            photo : photo,
+            // photo : photo,
             timestamp: serverTimestamp(),
-          });
-  
+          };
+          const newMessageRef = await addDoc(messageCollection, messageDocRef );
+          if (photo) {
+            const fileName = `${id}.jpg`;
+            const storageRef = ref(storage, 'chatImg/' + fileName);
+            const response = await fetch(photo);
+            const blob = await response.blob();
+            await uploadBytes(storageRef, blob);
+            const downloadURL = await getDownloadURL(storageRef);
+      
+            // Update the message data with the photo URL
+            await updateDoc(newMessageRef, { photo: downloadURL });
+          }
           // Clear the input field
           setMessage('');
           setPhoto(null);
@@ -176,14 +188,25 @@ fetchMessages();
 
             const mDocRef = collection(db, 'users', userUid, 'allchat', currentUserUid, 'messages');
             // Update the document with new data
-            await addDoc(mDocRef, {
+            const mDocReff = {
               text: message,
               sender: username,
               uid: currentUserUid,
-              photo : photo,
+              // photo : photo,
               timestamp: serverTimestamp(),
-            });
-  
+            };
+            const newMessageReff = await addDoc(mDocRef, mDocReff);
+            if (photo) {
+              const fileName = `${id}.jpg`;
+              const storageRef = ref(storage, 'chatImg/' + fileName);
+              const response = await fetch(photo);
+              const blob = await response.blob();
+              await uploadBytes(storageRef, blob);
+              const downloadURL = await getDownloadURL(storageRef);
+        
+              // Update the message data with the photo URL
+              await updateDoc(newMessageReff, { photo: downloadURL });
+            }
             // Clear the input field
             setMessage('');
             setPhoto(null);
@@ -215,6 +238,7 @@ const camera = async () => {
     setPhoto(result.assets[0].uri);
   }
 };
+
 
 // เข้าถึงคลังรูปภาพ
 const openlib = async () => {

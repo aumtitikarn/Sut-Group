@@ -26,6 +26,7 @@ const EditProfile = ({ navigation }) => {
     const [newData, setNewData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [uid, setUid] = useState('');
+    const [email, setEmail] = useState('');
     const [photo, setPhoto] = useState('');
     const [faculty, setFaculty] = useState('');
     const [bigImg, setBigImg] = useState(null);
@@ -51,6 +52,7 @@ const EditProfile = ({ navigation }) => {
               // ตรงนี้คุณควรเรียก setProfileImg และ setBigImg โดยใช้ข้อมูลจาก Firestore
               setProfileImg(userData.profileImg);
               setBigImg(userData.bigImg);
+              setEmail(userData.email);
             }
           } catch (error) {
             console.error('Error fetching user data:', error.message);
@@ -80,7 +82,7 @@ const EditProfile = ({ navigation }) => {
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
-    const storageRef = ref(storage, `${uid}-${imageType}.jpg`); // ใช้ UID และ imageType ในชื่อไฟล์
+    const storageRef = ref(storage, `${userData.email}/profileImg.jpg`);
     await uploadBytes(storageRef, blob);
 
     // หลังจากอัปโหลดสำเร็จ รับ URI จาก Storage
@@ -228,7 +230,7 @@ const EditProfile = ({ navigation }) => {
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
-      const storageRef = ref(storage, `${uid}.jpg`); // ใช้ UID ของผู้ใช้เป็นชื่อไฟล์
+      const storageRef = ref(storage, `${userData.email}/BigImg.jpg`); // ใช้ UID ของผู้ใช้เป็นชื่อไฟล์
       await uploadBytes(storageRef, blob);
 
       // หลังจากอัปโหลดสำเร็จ รับ URI จาก Storage
@@ -426,7 +428,7 @@ const EditProfile = ({ navigation }) => {
               
             }}>
                 <Avatar.Icon icon="account-circle" size={80} style={{ backgroundColor:'#1C1441' }} color={'#FFF'}/>
-                {profileImg && <Image source={{ uri: profileImg }} style={{ width: 100, height: 100, Left: 150, top: 0, borderRadius: 50, position: 'absolute',}} />}
+                {profileImg && <Image source={{ uri: profileImg }} style={{ width: 80, height: 80, Left: 150, top: 0, borderRadius: 50, position: 'absolute',}} />}
             </View>
             <TouchableOpacity onPress={openlib}>
             <MaterialCommunityIcons 

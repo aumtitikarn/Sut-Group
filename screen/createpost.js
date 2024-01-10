@@ -84,8 +84,6 @@ const Createpost = ({ navigation }) => {
             setUsername(userData.username);
             setFaculty(userData.faculty);
             setProfileImg(userData.profileImg);
-            console.log('Name:', username);
-        console.log('Faculty:', faculty);
           } else {
             console.error('User document does not exist.');
           }

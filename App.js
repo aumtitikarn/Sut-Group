@@ -34,6 +34,7 @@ import Status from './components/Status';
 import GroupChat from './screen/GroupChat';
 import GChat from './screen/GChat';
 import Fab from './components/fab';
+import CameraScreen from './screen/CameraScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -149,6 +150,7 @@ export default function Page() {
           <Stack.Screen name="Tarot" component={Tarot} />
           <Stack.Screen name="Store" component={Store} />
           <Stack.Screen name="Createstore" component={Createstore} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} />
           <Stack.Screen name="Status" component={Status} />
         </Stack.Navigator>
     </NavigationContainer>

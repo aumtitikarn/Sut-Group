@@ -46,6 +46,12 @@ const FloatingButton = () => {
     navigation.navigate('Createpost');
   
   };
+
+  const handleCameraScreen = () => {
+   
+    navigation.navigate('CameraScreen');
+  
+  };
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={[styles.circle, { bottom: icon_1 }]}>
@@ -54,7 +60,7 @@ const FloatingButton = () => {
         </TouchableOpacity>
       </Animated.View>
       <Animated.View style={[styles.circle, { bottom: icon_2, right: icon_2 }]}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleCameraScreen}>
         <MaterialCommunityIcons name="camera-plus-outline" color={"white"} size={25} />
         </TouchableOpacity>
       </Animated.View>

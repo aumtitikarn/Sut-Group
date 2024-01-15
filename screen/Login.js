@@ -29,7 +29,6 @@ export default function Login({ navigation }) {
         onAuthStateChanged(FIREBASE_AUTH, (user) => {
           if (user) {
             // ผู้ใช้ล็อกอินอยู่
-            console.log("User is logged in:", user);
       
           } else {
             // ผู้ใช้ไม่ได้ล็อกอิน

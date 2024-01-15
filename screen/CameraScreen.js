@@ -116,33 +116,37 @@ const CameraScreen = () => {
   };
   
   const uploadImage = async (uri, uid, username, profileImg) => {
-    // Generate a unique filename for the image
-    const filename = `${uid}_${new Date().getTime()}.jpg`;
+    try {
+      // Generate a unique filename for the image
+      const filename = `${uid}_${new Date().getTime()}.jpg`;
   
-    // Create a reference to the storage service
-    const storageRef = ref(storage, `Story/${filename}`);
+      // Create a reference to the storage service
+      const storageRef = ref(storage, `Story/${filename}`);
   
-    // Convert the image to a Uint8Array to upload it
-    const response = await fetch(uri);
-    const blob = await response.blob();
+      // Convert the image to a Uint8Array to upload it
+      const response = await fetch(uri);
+      const blob = await response.blob();
   
-    // Upload the image using uploadBytes
-    await uploadBytes(storageRef, blob);
+      // Upload the image using uploadBytes
+      await uploadBytes(storageRef, blob);
   
-    // Get the download URL for the uploaded image
-    const downloadURL = await getDownloadURL(storageRef);
+      // Get the download URL for the uploaded image
+      const downloadURL = await getDownloadURL(storageRef);
   
-    // Add the image details to the Firestore collection
-    const storyRef = doc(db, 'Story', uid);  // Set the document name to be the uid
-    const dataCollectionRef = collection(storyRef, 'data'); // Create a subcollection named 'data'
-    await addDoc(dataCollectionRef, {
-      uri: downloadURL,
-      timestamp: serverTimestamp(),
-      uid: uid,
-      profileImg: profileImg,
-      username: username,
-    });
+      // Add the image details to the Firestore collection 'Story'
+      const storyRef = collection(db, 'Story');
+      await addDoc(storyRef, {
+        uri: downloadURL,
+        timestamp: serverTimestamp(),
+        uid: uid,
+        profileImg: profileImg,
+        username: username,
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error.message);
+    }
   };
+  
   
   
   

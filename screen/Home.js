@@ -29,7 +29,7 @@ const MyComponent = () => {
           onPress={() => navigateToWheel()} // Navigate to 'Wheel' screen when pressed
         />
         </Appbar.Header>
-        {/* <Store /> */}
+        <Store />
         <ScrollView>
         <PostHome />
         <Text></Text>

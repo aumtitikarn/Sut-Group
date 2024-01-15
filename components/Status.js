@@ -13,6 +13,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 const Status = ({route, navigation}) => {
   const {name} = route.params;
+  const {uri} = route.params;
   
 
   useEffect(() => {

@@ -140,7 +140,7 @@ const openlib = async () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{flex: 1}}>
               <>
-                <Appbar.Header style={{ backgroundColor: '#8AD1DB', height: 30, top: -15 }}>
+              <Appbar.Header style={{ backgroundColor: '#8AD1DB', height: 70, marginTop: -42 }}>
 
                   <Text style={{ fontSize: 20, marginLeft: 15, top: -5, fontWeight: "bold" }}> {userData && userData.faculty}</Text>
                 </Appbar.Header>

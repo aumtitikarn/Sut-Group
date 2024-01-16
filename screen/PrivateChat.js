@@ -263,11 +263,11 @@ const openlib = async () => {
           <View style={{flex: 1}}>
             {userData && (
               <>
-                <Appbar.Header style={{ backgroundColor: '#8AD1DB', height: 30, top: -15 }}>
-                  <Avatar.Icon icon="account-circle" size={50} style={{ backgroundColor: '#1C1441', marginLeft: 10, top: -5 }} color={'#FFF'} />
+                <Appbar.Header style={{ backgroundColor: '#8AD1DB', height: 70, marginTop: -42 }}>
+                  <Avatar.Icon icon="account-circle" size={50} style={{ backgroundColor: '#1C1441', marginLeft: 10, top: 0 }} color={'#FFF'} />
                   <Image
                     source={{ uri: userData.profileImg }}
-                    style={{ width: 50, height: 50, left: 14, top: -15, borderRadius: 50, position: 'absolute' }}
+                    style={{ width: 50, height: 50, left: 14, top: 10, borderRadius: 50, position: 'absolute' }}
                   />
                   <Text style={{ fontSize: 20, marginLeft: 15, top: -5, fontWeight: "bold" }}>{userData.username}</Text>
                 </Appbar.Header>

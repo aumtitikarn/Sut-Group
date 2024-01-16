@@ -17,7 +17,7 @@ const MyComponent = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-        <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 30, top:-15}}>
+        <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 70, marginTop:-43}}>
           <Image style={styles.logo} source={require('../assets/2.png')} />
           <Appbar.Content title="หน้าหลัก" style={{ left: 65 }} />
           <MaterialCommunityIcons
@@ -25,7 +25,7 @@ const MyComponent = () => {
           color='black' // You should define 'color' here or replace it with a specific color value
           size={40}
           left={-15}
-          top={-8}
+          top={0}
           onPress={() => navigateToWheel()} // Navigate to 'Wheel' screen when pressed
         />
         </Appbar.Header>

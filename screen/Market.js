@@ -20,7 +20,7 @@ export default function MyComponent() {
   };
   return(
     <SafeAreaView style={styles.conter}>
-    <Appbar.Header style={{backgroundColor:'#FDF4E2', height: 40, top:-15}} >
+    <Appbar.Header style={{ backgroundColor: '#FDF4E2'  , height: 70, marginTop:-43}}>
       <Image style={styles.logo} source={require('../assets/2.png')}  />
       <Appbar.Content title="ร้านค้า" style={{ left: 70 }} />
       <MaterialCommunityIcons

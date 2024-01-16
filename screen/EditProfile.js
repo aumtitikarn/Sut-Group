@@ -106,12 +106,14 @@ const EditProfile = ({ navigation }) => {
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
     const userUid = auth.currentUser.uid;
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
+    const StoryCollectionRef = collection(db, 'Story');
     const GroupChatCollectionRef = collection(db, 'groupchat');
     const allPostShopCollectionRef = collection(db, 'allpostShop');
     const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', auth.currentUser.uid));
     const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
+    const StoryQuery = query(StoryCollectionRef, where('uid', '==', userUid));
     const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
     
 
@@ -119,6 +121,7 @@ const EditProfile = ({ navigation }) => {
     const GroupChatSnapshot = await getDocs(GroupChatQuery);
     const allPostShopSnapshot = await getDocs(allPostShopQuery);
     const gameSnapshot = await getDocs(gameQuery);
+    const StorySnapshot = await getDocs(StoryQuery);
 
     const allPostHomeBatch = writeBatch(db);
     const allPostShopBatch = writeBatch(db);
@@ -155,6 +158,10 @@ const EditProfile = ({ navigation }) => {
     }
 
     GroupChatSnapshot.forEach((doc) => {
+      Batch.update(doc.ref, updateData);
+    });
+
+    StorySnapshot.forEach((doc) => {
       Batch.update(doc.ref, updateData);
     });
 
@@ -251,7 +258,8 @@ const EditProfile = ({ navigation }) => {
   useEffect(() => {
     fetchUserData();
   }, []);
-    
+
+ 
   const handleSaveChanges = async () => {
     try {
       setLoading(true);
@@ -284,6 +292,7 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลในคอลเลคชัน allpostHome ของผู้ใช้
         const allPostHomeCollectionRef = collection(db, 'allpostHome');
         const allPostShopCollectionRef = collection(db, 'allpostShop');
+        const StoryCollectionRef = collection(db, 'Story');
         const gameCollectionRef = collection(db, 'game');
         const GroupChatCollectionRef = collection(db, 'groupchat');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
@@ -296,10 +305,12 @@ const EditProfile = ({ navigation }) => {
         const allPostShopQuery = query(allPostShopCollectionRef, where('userUid', '==', userUid));
         const allchatShopQuery = query(allchatCollectionRef, where('id', '==', userUid));
         const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
+        const StoryQuery = query(StoryCollectionRef, where('uid', '==', userUid));
         const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
+        const StoryShopSnapshot = await getDocs(StoryQuery);
         const userPostHomeSnapshot = await getDocs(userPostHomeCollectionRef);
         const userPostShopSnapshot = await getDocs(userPostShopCollectionRef);
         const usershareSnapshot = await getDocs(usershareCollectionRef);
@@ -314,7 +325,6 @@ const EditProfile = ({ navigation }) => {
 
       // เลือกทุก comment collection ในทุกเอกสาร allpostHome ที่มี userUid ตรงกับผู้ใช้ปัจจุบัน
       const batch = writeBatch(db);
-      
 
       for (const allPostHomeDoc of allPostHomecommentSnapshot.docs) {
         const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
@@ -341,6 +351,12 @@ const EditProfile = ({ navigation }) => {
           });
         }
       }
+
+
+      StoryShopSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData); 
+        
+      });
 
       allchatSnapshot.forEach((doc) => {
         batch.update(doc.ref, updatedUserData); 

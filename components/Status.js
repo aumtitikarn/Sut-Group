@@ -10,58 +10,108 @@ import {
 } from 'react-native';
 import Ionic from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import { Avatar } from 'react-native-paper';
+import { onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
+import { FIRESTORE_DB } from '../firestore';
 
-const Status = ({route, navigation}) => {
-  const {name} = route.params;
-  const {uri} = route.params;
-  
+
+const Status = ({ route, navigation }) => {
+  const { name } = route.params;
+  const [stories, setStories] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const { profileImg } = route.params;
+  const { uid } = route.params;
+
 
   useEffect(() => {
-    let timer = setTimeout(() => {
-      navigation.goBack();
-    }, 5000);
+    const fetchStories = async () => {
+      const storyCollectionRef = collection(FIRESTORE_DB, 'Story');
+      const storyQuery = query(storyCollectionRef, where('uid', '==', uid));
 
-    Animated.timing(progress, {
-      toValue: 5,
-      duration: 5000,
-      useNativeDriver: false,
-    }).start();
-    return () => clearTimeout(timer);
-  }, []);
+      try {
+        const querySnapshot = await getDocs(storyQuery);
 
-  const [progress, setProgress] = useState(new Animated.Value(0));
+        if (!querySnapshot.empty) {
+          const storyDataList = querySnapshot.docs.map((doc) => doc.data());
 
-  const progressAnimation = progress.interpolate({
-    inputRange: [0, 5],
-    outputRange: ['0%', '100%'],
-  });
+          // Filter out stories older than 24 hours
+          const filteredStories = storyDataList.filter(
+            (story) => story.timestamp.toMillis() > Date.now() - 24 * 60 * 60 * 1000
+          );
 
+          // Sort stories based on timestamp in descending order (latest first)
+          const sortedStories = filteredStories.sort(
+            (a, b) => b.timestamp.toMillis() - a.timestamp.toMillis()
+          );
+
+          setStories(sortedStories);
+        } else {
+          console.log('No matching Story documents found for the provided uid');
+        }
+      } catch (error) {
+        console.error('Error fetching stories:', error.message);
+      }
+    };
+
+    fetchStories();
+  }, [uid]);
+
+
+  const formatPostTime = (timestamp) => {
+    if (timestamp) {
+      // ดึงค่าเวลาปัจจุบัน
+      const now = new Date().getTime();
+  
+      // แปลง timestamp เป็น milliseconds ให้กับ JavaScript Date Object
+      const postTime = new Date(timestamp.toDate());
+  
+      // คำนวณความต่างระหว่างเวลาปัจจุบันกับเวลาโพสต์
+      const timeDifference = now - postTime.getTime();
+  
+      // แปลง milliseconds เป็นวินาที
+      const seconds = Math.floor(timeDifference / 1000);
+  
+      // แปลงวินาทีเป็นนาที
+      const minutes = Math.floor(seconds / 60);
+  
+      // แปลงนาทีเป็นชั่วโมง
+      const hours = Math.floor(minutes / 60);
+  
+      // แปลงชั่วโมงเป็นวัน
+      const days = Math.floor(hours / 24);
+  
+      if (days > 0) {
+        return `${days} วันที่แล้ว`;
+      } else if (hours > 0) {
+        return `${hours} ชั่วโมงที่แล้ว`;
+      } else if (minutes > 0) {
+        return `${minutes} นาทีที่แล้ว`;
+      } else if (seconds > 0) {
+        return `${seconds} วินาทีที่แล้ว`;
+      } else {
+        return 'เมื่อไม่นานมานี้';
+      }
+    } else {
+      return 'ไม่มีข้อมูลวันที่';
+    }
+  }
   return (
     <View
       style={{
+        flex: 1,
         backgroundColor: 'black',
-        height: '100%',
-        position: 'relative',
         justifyContent: 'center',
         alignItems: 'center',
       }}>
       <StatusBar backgroundColor="black" barStyle="light-content" />
-      <View
-        style={{
-          height: 3,
-          width: '95%',
-          borderWidth: 1,
-          backgroundColor: 'gray',
-          position: 'absolute',
-          top: 18,
-        }}>
-        <Animated.View
-          style={{
-            height: '100%',
-            backgroundColor: 'white',
-            width: progressAnimation,
-          }}></Animated.View>
-      </View>
+      {stories.length > 0 ? (
+        <Image
+          source={{ uri: stories[currentIndex].uri }}
+          style={{ flex: 1, width: '100%', borderRadius: 10, borderWidth: 2 }}
+        />
+      ) : (
+        <Text style={{ color: 'white' }}>Loading or placeholder text</Text>
+      )}
       <View
         style={{
           padding: 15,
@@ -80,11 +130,19 @@ const Status = ({route, navigation}) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
+          <Avatar.Icon
+            icon="account-circle"
+            size={30}
+            style={{
+              backgroundColor: '#1C1441',
+              position: 'absolute',
+            }}
+            color={'#FFF'}
+          />
           <Image
-            
+            source={{ uri: profileImg }}
             style={{
               borderRadius: 100,
-              backgroundColor: 'orange',
               resizeMode: 'cover',
               width: '92%',
               height: '92%',
@@ -97,21 +155,24 @@ const Status = ({route, navigation}) => {
             flexDirection: 'row',
             width: '100%',
           }}>
-          <Text style={{color: 'white', fontSize: 15, paddingLeft: 10}}>
-            {name}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: 'white', fontSize: 15, paddingLeft: 10 }}>
+              {name}
+            </Text>
+            {stories.length > 0 && // Check if stories array is not empty
+              formatPostTime(stories[currentIndex].timestamp) !== 'ไม่มีข้อมูลวันที่' &&
+              !formatPostTime(stories[currentIndex].timestamp).includes('วัน') && (
+                <Text style={{ color: '#777267' }}> ● {formatPostTime(stories[currentIndex].timestamp)}</Text>
+              )}
+          </View>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionic
               name="close"
-              style={{fontSize: 20, color: 'white', opacity: 0.6}}
+              style={{ fontSize: 20, color: 'white', opacity: 0.6 }}
             />
           </TouchableOpacity>
         </View>
       </View>
-      <Image
-        
-        style={{position: 'absolute', width: '100%', height: 600}}
-      />
       <View
         style={{
           position: 'absolute',
@@ -123,22 +184,22 @@ const Status = ({route, navigation}) => {
           marginVertical: 10,
           width: '100%',
         }}>
-        <TextInput
-          placeholder="send message"
-          placeholderTextColor="white"
-          style={{
-            borderColor: 'white',
-            borderRadius: 25,
-            width: '85%',
-            height: 50,
-            paddingLeft: 20,
-            borderWidth: 1,
-            fontSize: 20,
-            color: 'white',
-          }}
-        />
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Feather name="navigation" style={{fontSize: 30, color: 'white'}} />
+        {/* Add navigation buttons or indicators to switch between stories */}
+        <TouchableOpacity
+          onPress={() =>
+            setCurrentIndex((prevIndex) =>
+              prevIndex > 0 ? prevIndex - 1 : stories.length - 1
+            )
+          }>
+          <Text style={{ color: 'white' }}>Previous</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            setCurrentIndex((prevIndex) =>
+              prevIndex < stories.length - 1 ? prevIndex + 1 : 0
+            )
+          }>
+          <Text style={{ color: 'white' }}>Next</Text>
         </TouchableOpacity>
       </View>
     </View>

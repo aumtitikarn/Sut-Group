@@ -14,6 +14,8 @@ import { addDoc,
   } 
 from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import * as ImagePicker from 'expo-image-picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CameraScreen = () => {
   const cameraRef = useRef(null);
@@ -49,6 +51,18 @@ const CameraScreen = () => {
 
     return () => clearInterval(interval);
   }, [isRecording]);
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      const imagePickerStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+      if (status === 'granted' && imagePickerStatus.status === 'granted') {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+      }
+    })();
+  }, []);
 
   const flipCamera = () => {
     setType(
@@ -146,10 +160,6 @@ const CameraScreen = () => {
       console.error('Error uploading image:', error.message);
     }
   };
-  
-  
-  
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -199,6 +209,7 @@ const CameraScreen = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+      marginTop: -43,
       paddingTop: StatusBar.currentHeight,
     },
     camera: {
@@ -230,7 +241,6 @@ const styles = StyleSheet.create({
       height: '100%',
       borderRadius: 10,
       borderWidth: 2,
-      borderColor: 'white',
     },
     refreshButton: {
       position: 'absolute',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { onSnapshot, collection } from 'firebase/firestore';
+import { onSnapshot, collection, query, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../firestore';
 import { Avatar } from 'react-native-paper';
 
@@ -11,15 +11,18 @@ const Store = () => {
   const db = FIRESTORE_DB;
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'Story'), (snapshot) => {
-      const stories = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
-      // Filter out documents with duplicate usernames
-      const uniqueStories = stories.filter((story, index, self) =>
-        index === self.findIndex((s) => s.data.username === story.data.username)
-      );
-      setStoryInfo(uniqueStories);
-    });
-
+    const unsubscribe = onSnapshot(
+      query(collection(db, 'Story'), where('timestamp', '>=', new Date(Date.now() - 24 * 60 * 60 * 1000))),
+      (snapshot) => {
+        const stories = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+        // Filter out documents with duplicate usernames
+        const uniqueStories = stories.filter((story, index, self) =>
+          index === self.findIndex((s) => s.data.username === story.data.username)
+        );
+        setStoryInfo(uniqueStories);
+      }
+    );
+  
     return () => unsubscribe();
   }, []);
 
@@ -28,7 +31,7 @@ const Store = () => {
       key={item.id}
       onPress={() => {
         // Navigate to story details or handle the press event
-        navigation.navigate('Status', { name: item.data.username, uri: item.data.uri, uid: item.data.uid, profileImg: item.data.profileImg });
+        navigation.navigate('Status', { name: item.data.username, uid: item.data.uid, profileImg: item.data.profileImg });
       }}
     >
       <View style={{ flexDirection: 'column', alignItems: 'center', height: 100, justifyContent: 'center', marginLeft: 20 }}>
@@ -48,7 +51,7 @@ const Store = () => {
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       horizontal
-      style={{ height: 100 }}
+      style={{ height: storyInfo.length > 0 ? 110 : 0 }}
     />
   );
 };

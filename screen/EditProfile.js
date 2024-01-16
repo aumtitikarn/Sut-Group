@@ -289,12 +289,25 @@ const EditProfile = ({ navigation }) => {
         // อัปเดตข้อมูลผู้ใช้
         await updateDoc(userDocRef, updatedUserData);
   
+        const facultyArray = [
+          'Science',
+          'Social',
+          'Agriculture',
+          'Engineer',
+          'Doctor',
+          'Nurse',
+          'Dentis',
+          'Publichealth',
+          'ArtandScience',
+        ];
+        const batch = writeBatch(db);
+        for (const faculty of facultyArray) {
         // อัปเดตข้อมูลในคอลเลคชัน allpostHome ของผู้ใช้
         const allPostHomeCollectionRef = collection(db, 'allpostHome');
         const allPostShopCollectionRef = collection(db, 'allpostShop');
         const StoryCollectionRef = collection(db, 'Story');
         const gameCollectionRef = collection(db, 'game');
-        const GroupChatCollectionRef = collection(db, 'groupchat');
+        const GroupChatCollectionRef = collection(db, 'groupchat',faculty, 'messages');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
         const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
@@ -324,7 +337,6 @@ const EditProfile = ({ navigation }) => {
       const allPostHomecommentSnapshot = await getDocs(allPostHomecommentQuery);
 
       // เลือกทุก comment collection ในทุกเอกสาร allpostHome ที่มี userUid ตรงกับผู้ใช้ปัจจุบัน
-      const batch = writeBatch(db);
 
       for (const allPostHomeDoc of allPostHomecommentSnapshot.docs) {
         const commentCollectionRef = collection(allPostHomeDoc.ref, 'comment');
@@ -393,7 +405,7 @@ const EditProfile = ({ navigation }) => {
         userPostShopSnapshot.forEach((doc) => {
           batch.update(doc.ref, updatedUserData);
         });
-  
+      }
         // ทำการ commit สำหรับ Write Batch เพื่ออัปเดตคุณสมบัติในเอกสารทั้งหมด
         await batch.commit();
         setLoading(false);
@@ -405,6 +417,7 @@ const EditProfile = ({ navigation }) => {
     } catch (error) {
       console.error('Error updating user data:', error.message);
     }
+    
   };
       return (
         <NativeBaseProvider>

@@ -163,10 +163,10 @@ const openlib = async () => {
     <View>
       <Text
       style={{
-        left:
-          message.uid === userUid ? 320 : 0,
+        textAlign: message.uid === userUid ? 'right' : 'left',
+        margin: 5,
       }}>
-        {message.sender}:</Text>
+        {message.username}:</Text>
     <View
       key={index}
       style={{

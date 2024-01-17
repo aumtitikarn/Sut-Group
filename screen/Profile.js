@@ -119,7 +119,7 @@ export default function TabViewExample() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFF',
-    flex: 1,
+    height: 900,
     marginTop: -43,
     paddingTop: StatusBar.currentHeight
   },

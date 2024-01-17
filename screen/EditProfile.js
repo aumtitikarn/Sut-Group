@@ -108,6 +108,7 @@ const EditProfile = ({ navigation }) => {
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
     const StoryCollectionRef = collection(db, 'Story');
     const GroupChatCollectionRef = collection(db, 'groupchat');
+    const GroupPostCollectionRef = collection(db, 'groupPost');
     const allPostShopCollectionRef = collection(db, 'allpostShop');
     const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
@@ -115,10 +116,11 @@ const EditProfile = ({ navigation }) => {
     const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
     const StoryQuery = query(StoryCollectionRef, where('uid', '==', userUid));
     const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
-    
+    const GroupPostQuery = query(GroupPostCollectionRef, where('userUid', '==', userUid));
 
     const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
     const GroupChatSnapshot = await getDocs(GroupChatQuery);
+    const GroupPostSnapshot = await getDocs(GroupPostQuery);
     const allPostShopSnapshot = await getDocs(allPostShopQuery);
     const gameSnapshot = await getDocs(gameQuery);
     const StorySnapshot = await getDocs(StoryQuery);
@@ -158,6 +160,10 @@ const EditProfile = ({ navigation }) => {
     }
 
     GroupChatSnapshot.forEach((doc) => {
+      Batch.update(doc.ref, updateData);
+    });
+
+    GroupPostSnapshot.forEach((doc) => {
       Batch.update(doc.ref, updateData);
     });
 
@@ -308,6 +314,7 @@ const EditProfile = ({ navigation }) => {
         const StoryCollectionRef = collection(db, 'Story');
         const gameCollectionRef = collection(db, 'game');
         const GroupChatCollectionRef = collection(db, 'groupchat',faculty, 'messages');
+        const GroupPostCollectionRef = collection(db, 'groupPost',faculty, 'posts');
         const userPostHomeCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postHome');
         const userPostShopCollectionRef = collection(db, 'users', auth.currentUser.uid, 'postShop');
         const usershareCollectionRef = collection(db, 'users', auth.currentUser.uid, 'share');
@@ -320,6 +327,7 @@ const EditProfile = ({ navigation }) => {
         const gameQuery = query(gameCollectionRef, where('id', '==', userUid));
         const StoryQuery = query(StoryCollectionRef, where('uid', '==', userUid));
         const GroupChatQuery = query(GroupChatCollectionRef, where('uid', '==', userUid));
+        const GroupPostQuery = query(GroupPostCollectionRef, where('userUid', '==', userUid));
 
         const allPostHomeSnapshot = await getDocs(allPostHomeQuery);
         const allPostShopSnapshot = await getDocs(allPostShopQuery);
@@ -330,6 +338,7 @@ const EditProfile = ({ navigation }) => {
         const allchatSnapshot = await getDocs(allchatShopQuery);
         const gameSnapshot = await getDocs(gameQuery);
         const GroupChatSnapshot = await getDocs(GroupChatQuery);
+        const GroupPostSnapshot = await getDocs(GroupPostQuery);
         // เลือกทุกเอกสารในคอลเลคชัน allpostHome
       const allPostHomecommentCollectionRef = collection(db, 'allpostHome');
       const allPostHomecommentQuery = query(allPostHomecommentCollectionRef);
@@ -363,6 +372,10 @@ const EditProfile = ({ navigation }) => {
           });
         }
       }
+
+      GroupPostSnapshot.forEach((doc) => {
+        batch.update(doc.ref, updatedUserData);
+      });
 
 
       StoryShopSnapshot.forEach((doc) => {

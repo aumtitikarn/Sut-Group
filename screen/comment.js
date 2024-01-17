@@ -47,6 +47,7 @@ const Comment = () => {
   const [profileImg, setProfileImg] = useState(''); 
   const navigation = useNavigation();
   const route = useRoute();
+  const { DocName } = route.params;
   const postId = route.params.postId; 
   const uidcom = route.params.uidcom; 
   // console.log(postId);
@@ -88,14 +89,26 @@ const Comment = () => {
       try {
         const postRef = doc(FIRESTORE_DB, 'allpostHome', postId);
         const postDoc = await getDoc(postRef);
-
+        const GroupRef = doc(FIRESTORE_DB, 'groupPost', DocName, 'posts', postId);
+        const GroupDoc = await getDoc(GroupRef);
+    
+        let postData;
+    
         if (postDoc.exists()) {
-          // Document exists, store the data in state
-          setPosts(postDoc.data());
+          postData = postDoc.data();
+        } else if (GroupDoc.exists()) {
+          postData = GroupDoc.data();
         } else {
-          // Document doesn't exist
           console.log('Post not found');
+          return;
         }
+    
+        // Check if the required properties are present before using indexOf
+        if (postData && postData.text) {
+          console.log('Text contains:', postData.text.indexOf('example'));
+        }
+    
+        setPosts(postData);
       } catch (error) {
         console.error('Error fetching post data:', error);
       }
@@ -211,10 +224,11 @@ const Comment = () => {
   
         // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
         const allpostHomeCollectionRef = collection(db, 'allpostHome',postId,'comment');
-  
+        const GroupRef = collection(db, 'groupPost', DocName, 'posts',postId,'comment');
         // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
         await setDoc(doc(allpostHomeCollectionRef, id), post);
         await setDoc(doc(postHomeCollectionRef, id), post);
+        await setDoc(doc(GroupRef, id), post);
         
   
         console.log("comment :", post);

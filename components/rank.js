@@ -41,7 +41,7 @@ function Rank() {
               {scores.slice(0, 3).map((scoreData, index) => (
                 <View key={scoreData.id} style={styles.scoreItem}>
                     <View style={{top: -50}}>
-                     <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+                     <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'#1C1441'}} color={'#FFF'} />
             <Image
               source={{ uri: scoreData.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}

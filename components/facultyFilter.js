@@ -10,10 +10,14 @@ import { FIREBASE_AUTH } from '../firestore';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
+import { useRoute } from '@react-navigation/native';
 
 
-const PostHome = () => {
+
+const FacultyFilter = () => {
   const [posts, setPosts] = useState([]);
+  const route = useRoute();
+  const { DocName } = route.params;
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [faculties, setFaculties] = useState([]);
@@ -37,7 +41,7 @@ const PostHome = () => {
       setFaculties([facultiesData]);
     }
   });
-    const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, 'groupPost', DocName, 'posts'), orderBy('timestamp', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedPosts = [];
@@ -73,7 +77,7 @@ const PostHome = () => {
   const updateLike = async (post) => {
     try {
       const userUid = auth.currentUser.uid;
-      const postRef = doc(db, 'allpostHome', post.id);
+      const postRef = doc(db, 'groupPost', DocName, 'posts', post.id);
       const postDoc = await getDoc(postRef);
   
       if (postDoc.exists()) {
@@ -268,7 +272,7 @@ const handleDeletePost = async (postId) => {
     await deleteDoc(postHomeRef);
 
     // 2. Delete the post from the "allpostHome" collection in Firestore
-    const allpostHomeRef = doc(db, 'allpostHome', postId);
+    const allpostHomeRef = doc(db, 'groupPost', DocName, 'posts');
     await deleteDoc(allpostHomeRef);
 
     console.log('ลบโพสต์สำเร็จ');
@@ -301,93 +305,12 @@ const handleImagePress = (post) => {
   }
 };
 
-const fetchGroupPostData = async (faculty) => {
-  try {
-    const facultyDocName = getFacultyDocName(faculty);
-    navigation.navigate('FacultyFilter', { DocName: facultyDocName});
-    if (facultyDocName) {
-      const groupPostRef = collection(db, 'groupPost', facultyDocName, 'posts');
-
-      const groupPostSnapshot = await getDocs(groupPostRef);
-
-      if (!groupPostSnapshot.empty) {
-        const postsData = groupPostSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } else {
-        console.log('No data found for faculty:', faculty);
-      }
-    } else {
-      console.log('No faculty name matching the condition');
-    }
-  } catch (error) {
-    console.error('Error fetching groupPost data:', error);
-  }
-
-  function getFacultyDocName(faculty) {
-    switch (faculty) {
-      case '⚗️สำนักวิชาวิทยาศาสตร์':
-        return 'Science';
-      case '🧭สำนักวิชาเทคโนโลยีสังคม':
-        return 'Social';
-      case '🌲สำนักวิชาเทคโนโลยีการเกษตร':
-        return 'Agriculture';
-      case '⚙️สำนักวิชาวิศวกรรมศาสตร์':
-        return 'Engineer';
-      case '🩺สำนักวิชาแพทย์':
-        return 'Doctor';
-      case '💉สำนักวิชาพยาบาลศาสตร์':
-        return 'Nurse';
-      case '🦷สำนักวิชาทันตแพทย์':
-        return 'Dentis';
-      case '🏥สำนักวิชาสาธารณสุขศาสตร์':
-        return 'Publichealth';
-      case '💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล':
-        return 'ArtandScience';
-      default:
-        return '';
-    }
-  }
-};
-
 
 return (
   <NativeBaseProvider>
   <SafeAreaView style={styles.container}>
-    <ScrollView>
-    <Box maxW="200" style={{ left: 20, top: 15, position: 'absolute', backgroundColor: 'white', borderColor: 'black', borderWidth: 2 }}>
-    <Select
-  selectedValue={faculty}
-  minWidth="200"
-  accessibilityLabel="Choose Service"
-  placeholder="สำนักวิชา"
-  style={{ backgroundColor: 'white' }}
-  _selectedItem={{
-    bg: "#8AD1DB",
-    endIcon: <CheckIcon size="5" />
-  }}
-  mt={0}
-  onValueChange={async (itemValue) => {
-    setFaculty(itemValue);
-    if (itemValue === 'ทั้งหมด') {
-      // Fetch all post data
-      const q = query(collection(db, 'allpostHome'), orderBy('timestamp', 'desc'));
-      const snapshot = await getDocs(q);
-      const updatedPosts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setPosts(updatedPosts);
-    } else {
-      // Fetch group post data based on selected faculty
-      fetchGroupPostData(itemValue);
-    }
-  }}
->
-  <Select.Item label="สำนักวิชาทั้งหมด" value="ทั้งหมด" />
-  {faculties.map(facultyName => (
-    <Select.Item key={facultyName} label={facultyName} value={facultyName} />
-  ))}
-</Select>
-</Box>
+    <Text style={{textAlign:'center', marginTop : 50, marginBottom : -50, fontSize: 25, fontWeight:'bold'}}>เฉพาะสำนักวิชา</Text>
+    <ScrollView >
     <View
             style={{
               marginTop: 80,
@@ -443,18 +366,13 @@ return (
               <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Comment', { postId: post.id, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
+              onPress={() => navigation.navigate('Comment', { postId: post.id,DocName: DocName, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
             >
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
             </TouchableOpacity>
             <TouchableOpacity
   onPress={() => handleSharePost(post)}
   style={{ marginLeft: 50, top: -2 }}>
-  <Icon
-    name={isShared[post.id] ? 'share' : 'share'} 
-    size={25}
-    color={isShared[post.id] ? '#8AD1DB' : '#000'}   
-  />
 </TouchableOpacity>
           </View>
         <View key={post.id}>
@@ -476,7 +394,7 @@ return (
 
 const styles = StyleSheet.create({
 container: {
-  marginTop:-70,
+  flex:1,
   backgroundColor: '#8AD1DB',
 },
 postContainer: {
@@ -528,4 +446,4 @@ dropdown: {
 },
 });
 
-export default PostHome;
+export default FacultyFilter;

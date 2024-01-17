@@ -25,6 +25,7 @@ from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { FIREBASE_AUTH } from '../firestore';
+import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
 const Createpost = ({ navigation }) => {
   const [feed, setFeed] = useState('');
@@ -36,6 +37,8 @@ const Createpost = ({ navigation }) => {
   const [faculty, setFaculty] = useState(''); // เก็บค่า faculty ของผู้ใช้ที่เข้าสู่ระบบ
   const [profileImg, setProfileImg] = useState(''); 
   const [userData, setUserData] = useState({});
+  const [selectedOption, setSelectedOption] = useState('allpostHome');
+  const [error, setError] = useState(null);
   const db = FIRESTORE_DB;
   const storage = FIREBASE_STORAGE;
   const auth = FIREBASE_AUTH;
@@ -80,7 +83,6 @@ const Createpost = ({ navigation }) => {
         .then((userDoc) => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            console.log('User Data:', userData);
             setUsername(userData.username);
             setFaculty(userData.faculty);
             setProfileImg(userData.profileImg);
@@ -155,6 +157,77 @@ const Createpost = ({ navigation }) => {
       console.error('Error adding document: ', error);
     }
   };
+
+  const handlePostGroup = async () => {
+    try {
+      const userUid = auth.currentUser?.uid;
+      if (userUid) {
+        const id = Date.now().toString();
+        const facultyDocName = getFacultyDocName(faculty);
+  
+        // Reference to the faculty document within the 'groupPost' collection
+        const facultyDocRef = doc(db, 'groupPost', facultyDocName);
+  
+        const post = {
+          username: username,
+          faculty: faculty,
+          text: feed,
+          timestamp: serverTimestamp(),
+          userUid: userUid,
+          postid: id,
+          like: 0,
+        };
+  
+        if (profileImg) {
+          post.profileImg = profileImg;
+        }
+  
+        if (photo) {
+          const fileName = `${id}.jpg`;
+          const storageRef = ref(storage, 'photo_post/' + fileName);
+          const response = await fetch(photo);
+          const blob = await response.blob();
+          await uploadBytes(storageRef, blob);
+          const downloadURL = await getDownloadURL(storageRef);
+          post.photo = downloadURL;
+        }
+  
+        // Add the post document to the specified faculty within the 'groupPost' collection
+        await setDoc(doc(facultyDocRef, 'posts', id), post);
+  
+        navigation.navigate('Home');
+        console.log('Document written with ID: ', id);
+        setFeed('');
+        setPhoto(null);
+      }
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+    function getFacultyDocName(faculty) {
+      switch (faculty) {
+        case '⚗️สำนักวิชาวิทยาศาสตร์':
+          return 'Science';
+        case '🧭สำนักวิชาเทคโนโลยีสังคม':
+          return 'Social';
+        case '🌲สำนักวิชาเทคโนโลยีการเกษตร':
+          return 'Agriculture';
+        case '⚙️สำนักวิชาวิศวกรรมศาสตร์':
+          return 'Engineer';
+        case '🩺สำนักวิชาแพทย์':
+          return 'Doctor';
+        case '💉สำนักวิชาพยาบาลศาสตร์':
+          return 'Nurse';
+        case '🦷สำนักวิชาทันตแพทย์':
+          return 'Dentis';
+        case '🏥สำนักวิชาสาธารณสุขศาสตร์':
+          return 'Publichealth';
+        case '💻กลุ่มหลักสูตรศาสตร์และศิลป์ดิจิทัล':
+          return 'ArtandScience';
+        default:
+          return '';
+      }
+    }
+  };
  // เข้าถึงกล้อง
 const camera = async () => {
   const result = await ImagePicker.launchCameraAsync({
@@ -187,6 +260,7 @@ const openlib = async () => {
  
 
   return (
+    <NativeBaseProvider>
     <SafeAreaView style={styles.container}>
     <View style={{left:25, top: 5}} >
     <MaterialCommunityIcons 
@@ -211,6 +285,24 @@ const openlib = async () => {
      top: -60,
       left: 110, 
     }}>
+      <Box maxW="50">
+          <Select
+            selectedValue={selectedOption}
+            minWidth="150"
+            accessibilityLabel="Choose Service"
+            placeholder="การมองเห็น"
+            style={styles.view}
+            _selectedItem={{
+              bg: "teal.600",
+              endIcon: <CheckIcon size="1" />,
+            }}
+            mt={1}
+            onValueChange={(itemValue) => setSelectedOption(itemValue)}
+          >
+            <Select.Item label="ทั้งหมด" value="allpostHome" />
+            <Select.Item label="เฉพาะสำนักวิชา" value="groupPost" />
+          </Select>
+        </Box>
       <TextInput
         style={styles.input}
         placeholder="คุณกำลังคิดอะไรอยู่..."
@@ -230,12 +322,20 @@ const openlib = async () => {
       top: -80,
       left: 275
     }}>
-    <TouchableOpacity style={styles.buttonYellow}>
-      <Text style={{ color: "#1C1441"}} onPress={handlePost}>โพสต์</Text>
-    </TouchableOpacity>
+     <TouchableOpacity style={styles.buttonYellow} onPress={() => {
+            // Check the selected option and call the appropriate function
+            if (selectedOption === 'allpostHome') {
+              handlePost();
+            } else if (selectedOption === 'groupPost') {
+              handlePostGroup();
+            }
+          }}>
+            <Text style={{ color: "#1C1441" }}>โพสต์</Text>
+          </TouchableOpacity>
     </View>
       
     </SafeAreaView>
+    </NativeBaseProvider>
   );
 };
 const styles = StyleSheet.create({
@@ -278,6 +378,14 @@ const styles = StyleSheet.create({
     width: 200,
     height: 110,
     alignSelf: 'center', 
+  },
+  view: {
+    height: 40,
+    marginBottom: 10,
+    borderWidth: 1,
+    padding: 10,
+   borderRadius: 40,
+   backgroundColor: '#FFF',
   },
 });
 export default Createpost;

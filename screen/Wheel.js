@@ -185,10 +185,11 @@ const Wheel = ({ navigation }) => {
  
  const styles = StyleSheet.create({
   container: {
-     flex: 1,
+     height:900,
      backgroundColor: '#fff5e2',
      alignItems: 'center',
      justifyContent: 'center',
+     top:-43
     
   },
   input: {

@@ -366,7 +366,8 @@ class Basketball extends Component {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: 800
+    height: 800,
+    top: -43
   },
 });
 

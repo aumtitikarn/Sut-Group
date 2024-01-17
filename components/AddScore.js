@@ -90,8 +90,9 @@ function AddScore(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight
+    height:900,
+    paddingTop: StatusBar.currentHeight,
+    top: -43
   },
   myscore: {
     flex: 1,

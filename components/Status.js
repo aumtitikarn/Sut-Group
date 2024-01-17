@@ -110,7 +110,7 @@ const Status = ({ route, navigation }) => {
           style={{ flex: 1, width: '100%', borderRadius: 10, borderWidth: 2 }}
         />
       ) : (
-        <Text style={{ color: 'white' }}>Loading or placeholder text</Text>
+        <Text style={{ color: 'white' }}>Loading</Text>
       )}
       <View
         style={{

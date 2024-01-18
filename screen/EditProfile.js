@@ -102,13 +102,24 @@ const EditProfile = ({ navigation }) => {
       alert('อัพเดทรูปโปรไฟล์เรียบร้อยแล้ว');
       setProfileImg(downloadURL);
     }
-
+    const facultyArray = [
+      'Science',
+      'Social',
+      'Agriculture',
+      'Engineer',
+      'Doctor',
+      'Nurse',
+      'Dentis',
+      'Publichealth',
+      'ArtandScience',
+    ];
+    for (const faculty of facultyArray) {
     // อัปเดตข้อมูลในคอลเลคชัน allpostHome ด้วยข้อมูลใหม่
     const userUid = auth.currentUser.uid;
     const allPostHomeCollectionRef = collection(db, 'allpostHome');
     const StoryCollectionRef = collection(db, 'Story');
     const GroupChatCollectionRef = collection(db, 'groupchat');
-    const GroupPostCollectionRef = collection(db, 'groupPost');
+    const GroupPostCollectionRef = collection(db, 'groupPost', faculty, 'posts');
     const allPostShopCollectionRef = collection(db, 'allpostShop');
     const gameCollectionRef = collection(db, 'game');
     const allPostHomeQuery = query(allPostHomeCollectionRef, where('userUid', '==', auth.currentUser.uid));
@@ -153,6 +164,37 @@ const EditProfile = ({ navigation }) => {
           const replySnapshot = await getDocs(replyQuery);
           
           replySnapshot.forEach((replyDoc) => {
+            // ทำการอัปเดตข้อมูลใน reply collection ตามที่คุณต้องการ
+            allPostHomeBatch.update(replyDoc.ref, updateData);
+          });
+        }
+    }
+
+    const GroupPostcommentCollectionRef = collection(db, 'groupPost', faculty, 'posts');
+    const GroupPostcommentQuery = query(GroupPostcommentCollectionRef);
+
+    const GroupPostcommentSnapshot = await getDocs(GroupPostcommentQuery);
+
+    // โพสต์เฉพาะสำนัก
+    for (const GroupPostcommentDoc of GroupPostcommentSnapshot.docs) {
+      const GroupPostcommentCollectionRef = collection(GroupPostcommentDoc.ref, 'comment');
+      const GroupPostcommentQuery = query(GroupPostcommentCollectionRef, where('userUid', '==', userUid));
+      const GroupPostcommentSnapshot = await getDocs(GroupPostcommentQuery);
+
+      GroupPostcommentSnapshot.forEach((doc) => {
+        // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
+        allPostHomeBatch.update(doc.ref,updateData);
+      });
+      const GroupPostcommenttCollectionRef = collection(GroupPostcommentDoc.ref, 'comment');
+        const GroupPostcommenttQuery = query(GroupPostcommenttCollectionRef);
+        const GroupPostcommenttSnapshot = await getDocs(GroupPostcommenttQuery);
+      
+        for (const GroupPostcommentDoc of GroupPostcommenttSnapshot.docs) {
+          const GroupPostreplyCollectionRef = collection(GroupPostcommentDoc.ref, 'reply');
+          const GroupPostreplyQuery = query(GroupPostreplyCollectionRef, where('userUid', '==', userUid));
+          const GroupPostreplySnapshot = await getDocs(GroupPostreplyQuery);
+          
+          GroupPostreplySnapshot.forEach((replyDoc) => {
             // ทำการอัปเดตข้อมูลใน reply collection ตามที่คุณต้องการ
             allPostHomeBatch.update(replyDoc.ref, updateData);
           });
@@ -219,6 +261,7 @@ const EditProfile = ({ navigation }) => {
 
     await postHomeBatch.commit();
     await postShopBatch.commit();
+  }
   } catch (error) {
     console.error('Error uploading image: ', error);
   }
@@ -372,7 +415,36 @@ const EditProfile = ({ navigation }) => {
           });
         }
       }
-
+      const GroupPostcommentCollectionRef = collection(db, 'groupPost', faculty, 'posts');
+      const GroupPostcommentQuery = query(GroupPostcommentCollectionRef);
+  
+      const GroupPostcommentSnapshot = await getDocs(GroupPostcommentQuery);
+  
+      // โพสต์เฉพาะสำนัก
+      for (const GroupPostcommentDoc of GroupPostcommentSnapshot.docs) {
+        const GroupPostcommentCollectionRef = collection(GroupPostcommentDoc.ref, 'comment');
+        const GroupPostcommentQuery = query(GroupPostcommentCollectionRef, where('userUid', '==', userUid));
+        const GroupPostcommentSnapshot = await getDocs(GroupPostcommentQuery);
+  
+        GroupPostcommentSnapshot.forEach((doc) => {
+          // ทำการอัปเดตข้อมูลใน comment collection ตามที่คุณต้องการ
+          batch.update(doc.ref,updatedUserData);
+        });
+        const GroupPostcommenttCollectionRef = collection(GroupPostcommentDoc.ref, 'comment');
+          const GroupPostcommenttQuery = query(GroupPostcommenttCollectionRef);
+          const GroupPostcommenttSnapshot = await getDocs(GroupPostcommenttQuery);
+        
+          for (const GroupPostcommentDoc of GroupPostcommenttSnapshot.docs) {
+            const GroupPostreplyCollectionRef = collection(GroupPostcommentDoc.ref, 'reply');
+            const GroupPostreplyQuery = query(GroupPostreplyCollectionRef, where('userUid', '==', userUid));
+            const GroupPostreplySnapshot = await getDocs(GroupPostreplyQuery);
+            
+            GroupPostreplySnapshot.forEach((replyDoc) => {
+              // ทำการอัปเดตข้อมูลใน reply collection ตามที่คุณต้องการ
+              batch.update(replyDoc.ref, updatedUserData);
+            });
+          }
+      }
       GroupPostSnapshot.forEach((doc) => {
         batch.update(doc.ref, updatedUserData);
       });

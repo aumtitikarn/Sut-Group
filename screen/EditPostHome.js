@@ -74,7 +74,7 @@ const EditPostHome = ({ route, navigation }) => {
     </View>
       <Text style={{ left: 90, top: -40, fontWeight: 'bold', fontSize: 24 }}>แก้ไขโพสต์</Text>
       <View style={{ top: -20, left: 20 }}>
-        <Avatar.Icon icon="account-circle" size={80}  style={{ backgroundColor:'orange',}} color={'#FFF'}/>
+        <Avatar.Icon icon="account-circle" size={80}  style={{ backgroundColor:'#1C1441',}} color={'#FFF'}/>
         {imageUrl && (
        <Image
           source={{ uri: imageUrl }}

@@ -35,7 +35,11 @@ import GroupChat from './screen/GroupChat';
 import GChat from './screen/GChat';
 import Fab from './components/fab';
 import CameraScreen from './screen/CameraScreen';
+import CommentGroup from './screen/CommentGroup';
+import ReplyGroup from './screen/ReplyGroup';
 import FacultyFilter from './components/facultyFilter';
+import ReplyGroupData from './components/ReplyGroupData';
+import CommentDataGroup from './components/CommentDataGroup';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -136,7 +140,9 @@ export default function Page() {
           <Stack.Screen name="EditPostHome" component={EditPostHome} />
           <Stack.Screen name="Comment" component={Comment} />
           <Stack.Screen name="Reply" component={Reply} />
+          <Stack.Screen name="ReplyGroup" component={ReplyGroup} />
           <Stack.Screen name="AddScore" component={AddScore} />
+          <Stack.Screen name="CommentGroup" component={CommentGroup} />
           <Stack.Screen name="Info" component={Info} />
           <Stack.Screen name="BasketGame" component={BasketGame} />
           <Stack.Screen name="Marketplace" component={Marketplace} />
@@ -145,11 +151,13 @@ export default function Page() {
           <Stack.Screen name="OtherProfile" component={OtherProfile} />
           <Stack.Screen name="GroupChat" component={GroupChat} />
           <Stack.Screen name="GChat" component={GChat} />
+          <Stack.Screen name="ReplyGroupData" component={ReplyGroupData} />
           <Stack.Screen name="PostOther" component={PostOther} />
           <Stack.Screen name="PrivateChat" component={PrivateChat} />
           <Stack.Screen name="Wheel" component={Wheel} />
           <Stack.Screen name="Tarot" component={Tarot} />
           <Stack.Screen name="Store" component={Store} />
+          <Stack.Screen name="CommentDataGroup" component={CommentDataGroup} />
           <Stack.Screen name="Createstore" component={Createstore} />
           <Stack.Screen name="FacultyFilter" component={FacultyFilter} />
           <Stack.Screen name="CameraScreen" component={CameraScreen} />

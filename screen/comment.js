@@ -47,10 +47,8 @@ const Comment = () => {
   const [profileImg, setProfileImg] = useState(''); 
   const navigation = useNavigation();
   const route = useRoute();
-  const { DocName } = route.params;
   const postId = route.params.postId; 
   const uidcom = route.params.uidcom; 
-  // console.log(postId);
 
   const fetchUsers = async () => {
     try {
@@ -69,7 +67,7 @@ const Comment = () => {
       // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
       return unsubscribe;
     } catch (error) {
-      console.error('Error fetching user data: ', error);
+
     }
   };
  
@@ -89,28 +87,15 @@ const Comment = () => {
       try {
         const postRef = doc(FIRESTORE_DB, 'allpostHome', postId);
         const postDoc = await getDoc(postRef);
-        const GroupRef = doc(FIRESTORE_DB, 'groupPost', DocName, 'posts', postId);
-        const GroupDoc = await getDoc(GroupRef);
-    
-        let postData;
-    
+
         if (postDoc.exists()) {
-          postData = postDoc.data();
-        } else if (GroupDoc.exists()) {
-          postData = GroupDoc.data();
+          // Document exists, store the data in state
+          setPosts(postDoc.data());
         } else {
+          // Document doesn't exist
           console.log('Post not found');
-          return;
         }
-    
-        // Check if the required properties are present before using indexOf
-        if (postData && postData.text) {
-          console.log('Text contains:', postData.text.indexOf('example'));
-        }
-    
-        setPosts(postData);
       } catch (error) {
-        console.error('Error fetching post data:', error);
       }
     };
 
@@ -165,18 +150,14 @@ const Comment = () => {
         .then((userDoc) => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            console.log('User Data:', userData);
             setUsername(userData.username);
             setFaculty(userData.faculty);
             setProfileImg(userData.profileImg);
-            console.log('Name:', username);
-        console.log('Faculty:', faculty);
           } else {
             console.error('User document does not exist.');
           }
         })
         .catch((error) => {
-          console.error('Error fetching user data: ', error);
         });
     }
   }, [auth.currentUser]);
@@ -224,11 +205,10 @@ const Comment = () => {
   
         // ใช้ค่า id ในชื่อคอลเลกชัน 'allpostHome'
         const allpostHomeCollectionRef = collection(db, 'allpostHome',postId,'comment');
-        const GroupRef = collection(db, 'groupPost', DocName, 'posts',postId,'comment');
+  
         // อัปเดตเอกสารในคอลเลกชัน 'allpostHome' ด้วยข้อมูลจาก 'post' object
         await setDoc(doc(allpostHomeCollectionRef, id), post);
         await setDoc(doc(postHomeCollectionRef, id), post);
-        await setDoc(doc(GroupRef, id), post);
         
   
         console.log("comment :", post);
@@ -253,34 +233,36 @@ const Comment = () => {
     }
   };
   // เข้าถึงกล้อง
-const camera = async () => {
-  const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [10, 10],
-    quality: 1,
-  });
-
-  if (!result.canceled) {
-    setPhoto(result.assets[0].uri);
-  }
-};
-
-// เข้าถึงคลังรูปภาพ
-const openlib = async () => {
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [10, 10],
-    quality: 1,
-  });
-
-  console.log(result);
-
-  if (!result.canceled) {
-    setPhoto(result.assets[0].uri);
-  }
-};
+  const camera = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      // Use result.uri instead of result.assets[0].uri
+      setPhoto(result.uri);
+    }
+  };
+  
+  // Function to handle image library access
+  const openlib = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [10, 10],
+      quality: 1,
+    });
+  
+    console.log(result);
+  
+    if (!result.canceled) {
+      // Use result.uri instead of result.assets[0].uri
+      setPhoto(result.uri);
+    }
+  };
  
 
   return (

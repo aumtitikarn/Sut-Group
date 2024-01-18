@@ -309,7 +309,9 @@ const handleImagePress = (post) => {
 return (
   <NativeBaseProvider>
   <SafeAreaView style={styles.container}>
-    <Text style={{textAlign:'center', marginTop : 50, marginBottom : -50, fontSize: 25, fontWeight:'bold'}}>เฉพาะสำนักวิชา</Text>
+  <Text style={{ textAlign: 'center', marginTop: 50, marginBottom: -50, fontSize: 20, fontWeight: 'bold', borderRadius:40, backgroundColor:'white',padding:10,paddingLeft:10, paddingRight:10,margin:20 }}>
+    {faculties}
+</Text>
     <ScrollView >
     <View
             style={{
@@ -366,7 +368,7 @@ return (
               <Text style={{ left: 20 }}>{likeCount[post.id]}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Comment', { postId: post.id,DocName: DocName, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
+              onPress={() => navigation.navigate('CommentGroup', { postId: post.id,DocName: DocName, uidcom: post.userUid,navigation })} // ส่ง postId ไปยังหน้า Comment
             >
             <Icon name="comment" size={25} color="#000" style={{ marginLeft: 50, top: -3 }} />
             </TouchableOpacity>

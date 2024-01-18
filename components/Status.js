@@ -144,8 +144,8 @@ const Status = ({ route, navigation }) => {
             style={{
               borderRadius: 100,
               resizeMode: 'cover',
-              width: '92%',
-              height: '92%',
+              width: 30,
+              height: 30,
             }}
           />
         </View>
@@ -155,14 +155,17 @@ const Status = ({ route, navigation }) => {
             flexDirection: 'row',
             width: '100%',
           }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ 
+            flexDirection: 'row', 
+            alignItems: 'center',
+            }}>
             <Text style={{ color: 'white', fontSize: 15, paddingLeft: 10 }}>
               {name}
             </Text>
             {stories.length > 0 && // Check if stories array is not empty
               formatPostTime(stories[currentIndex].timestamp) !== 'ไม่มีข้อมูลวันที่' &&
               !formatPostTime(stories[currentIndex].timestamp).includes('วัน') && (
-                <Text style={{ color: '#777267' }}> ● {formatPostTime(stories[currentIndex].timestamp)}</Text>
+                <Text style={{ color: '#777267', fontSize:13 }}> ● {formatPostTime(stories[currentIndex].timestamp)}</Text>
               )}
           </View>
           <TouchableOpacity onPress={() => navigation.goBack()}>

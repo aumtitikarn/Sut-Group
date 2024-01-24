@@ -289,12 +289,6 @@ const openlib = async () => {
   })
   .map((message, index) => (
     <View>
-      <Text
-      style={{
-        left:
-          message.uid === currentUserUid ? 320 : 0,
-      }}>
-        {message.sender}:</Text>
     <View
       key={index}
       style={{

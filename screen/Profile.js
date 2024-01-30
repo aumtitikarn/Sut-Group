@@ -28,7 +28,6 @@ export default function TabViewExample() {
     signOut(auth).then(() => {
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     }).catch((error) => {
-      console.log(error.message);
     });
   };  
 
@@ -119,7 +118,7 @@ export default function TabViewExample() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFF',
-    height: 900,
+    height: 950,
     marginTop: -43,
     paddingTop: StatusBar.currentHeight
   },

@@ -3,7 +3,7 @@ import { Text, StyleSheet, TextInput, Button, View,  Modal, Image, StatusBar, Sa
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firestore';
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
-import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
+import { Select,Box,CheckIcon,NativeBaseProvider } from 'native-base';
 
 
 export default function Register({navigation}) {
@@ -84,8 +84,21 @@ export default function Register({navigation}) {
 
 
   return (
-    <NativeBaseProvider>
-    <SafeAreaView style={styles.container}>
+    <NativeBaseProvider initialWindowMetrics={{
+      frame: {
+        width: 320,
+        height: 640,
+        x: 0,
+        y: 0,
+      },
+      insets: {
+        left: 0,
+        right: 0,
+        bottom: 0,
+        top: 0,
+      },
+    }}>
+    <SafeAreaView style={styles.container} testID="register-screen">
     <View>
      <Image style={styles.logo} source={require('../assets/2.png')} />
         <Text style={styles.para}>
@@ -94,27 +107,30 @@ export default function Register({navigation}) {
      <View style={styles.vivi}>
      <TextInput
         style={styles.input}
-        onChangeText={setUsername}
+        onChangeText={(text) => setUsername(text)}
         placeholder="ชื่อบัญชีผู้ใช้"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         value={username}
+        testID="username-input"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setName}
+        onChangeText={(text) => setName(text)}
         placeholder="ชื่อ"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         value={name}
+        testName="name-input"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setLname}
+        onChangeText={(text) => setLname(text)}
         placeholder="นามสกุล"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         value={lname}
+        testLastname="Lastname-input"
       />
   <Box maxW="300">
-        <Select selectedValue={faculty} minWidth="370" accessibilityLabel="Choose Service" placeholder="สำนักวิชา" style={styles.input} _selectedItem={{
+        <Select selectedValue={faculty} minWidth="370" accessibilityLabel="Choose Service" placeholder="สำนักวิชา" testID="faculty-input"  style={styles.input} _selectedItem={{
         bg: "teal.600",
         endIcon: <CheckIcon size="5" />
       }} mt={1} onValueChange={itemValue => setFaculty(itemValue)}>
@@ -131,33 +147,36 @@ export default function Register({navigation}) {
       </Box>
       <TextInput
         style={styles.input}
-        onChangeText={setMajor}
+        onChangeText={(text) => setMajor(text)}
         placeholder="สาขา"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         value={major}
+        testMajor="Major-input"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setEmail}
+        onChangeText={(text) => setEmail(text)}
         placeholder="อีเมล"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         value={email}
+        testEmail="Email-input"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setPassword}
+        onChangeText={(text) => setPassword(text)}
         value={password}
         placeholder="รหัสผ่าน"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         secureTextEntry
       />
       <TextInput
         style={styles.input}
-        onChangeText={setConfirmPassword}
+        onChangeText={(text) => setConfirmPassword(text)}
         value={confirmPassword}
         placeholder="ยืนยันรหัสผ่าน"
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         secureTextEntry
+        testPassword="password-input"
       />
       <View style={{margin: 10}}>
       <Button

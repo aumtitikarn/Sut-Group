@@ -54,7 +54,7 @@ export default function Login({ navigation }) {
         value={email}
         onChangeText={(text) => setEmail(text)}
         placeholder="อีเมล "
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
       />
       <TextInput
         style={styles.input}
@@ -62,7 +62,7 @@ export default function Login({ navigation }) {
         onChangeText={(text) => setPassword(text)}
         placeholder="รหัสผ่าน"
         secureTextEntry={hidePassword}
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
       />
       <Text
         style={{color: '#1C1441', left:40}}

@@ -59,10 +59,8 @@ if (loginButtonElements.length > 0) {
       expect(signInWithEmailAndPassword).toHaveBeenCalledWith(/* ข้อมูลของผู้ใช้ที่ถูกกรอกเข้ามา */);
     }, { timeout: 5000 });
   } else {
-    console.error('loginButtonElement does not have onPress property or onPress is not a function');
   }
 } else {
-  console.error('No elements found with text "เข้าสู่ระบบ"');
 }
   });
   

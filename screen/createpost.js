@@ -10,7 +10,6 @@ import { View,
   Platform,
   Alert, } from 'react-native';
 import { Avatar } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FIRESTORE_DB, FIREBASE_STORAGE } from '../firestore';
 import { addDoc,
@@ -27,7 +26,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { FIREBASE_AUTH } from '../firestore';
 import { Select,Box,CheckIcon,NativeBaseProvider } from "native-base";
 
-const Createpost = ({ navigation }) => {
+export default function Createpost({navigation}) {
   const [feed, setFeed] = useState('');
   const [like, setLike] = useState('');
   const [comment, setComment] = useState('');
@@ -59,8 +58,7 @@ const Createpost = ({ navigation }) => {
 
         // เพื่อคลุมครองการแบ่งปัน ต้องนำออกเมื่อคอมโพเนนต์ถูกคลุมครอง (unmounted)
         return unsubscribe;
-      } catch (error) {
-        console.error('Error fetching user data: ', error);
+      } catch {
       }
     };
 
@@ -87,11 +85,9 @@ const Createpost = ({ navigation }) => {
             setFaculty(userData.faculty);
             setProfileImg(userData.profileImg);
           } else {
-            console.error('User document does not exist.');
           }
         })
         .catch((error) => {
-          console.error('Error fetching user data: ', error);
         });
     }
   }, [auth.currentUser]);
@@ -154,7 +150,6 @@ const Createpost = ({ navigation }) => {
         setPhoto(null);
       }
     } catch (error) {
-      console.error('Error adding document: ', error);
     }
   };
 
@@ -200,8 +195,7 @@ const Createpost = ({ navigation }) => {
         setFeed('');
         setPhoto(null);
       }
-    } catch (error) {
-      console.error('Error adding document: ', error);
+    } catch  {
     }
     function getFacultyDocName(faculty) {
       switch (faculty) {
@@ -237,7 +231,7 @@ const camera = async () => {
     quality: 1,
   });
 
-  if (!result.canceled) {
+  if  (!result.canceled && result.assets && result.assets.length > 0) {
     setPhoto(result.assets[0].uri);
   }
 };
@@ -253,15 +247,28 @@ const openlib = async () => {
 
   console.log(result);
 
-  if (!result.canceled) {
+  if  (!result.canceled && result.assets && result.assets.length > 0) {
     setPhoto(result.assets[0].uri);
   }
 };
  
 
   return (
-    <NativeBaseProvider>
-    <SafeAreaView style={styles.container}>
+    <NativeBaseProvider initialWindowMetrics={{
+      frame: {
+        width: 320,
+        height: 640,
+        x: 0,
+        y: 0,
+      },
+      insets: {
+        left: 0,
+        right: 0,
+        bottom: 0,
+        top: 0,
+      },
+    }}>
+    <SafeAreaView style={styles.container} testID="createpost-container">
     <View style={{left:25, top: 5}} >
     <MaterialCommunityIcons 
       name="arrow-left"  
@@ -306,7 +313,7 @@ const openlib = async () => {
       <TextInput
         style={styles.input}
         placeholder="คุณกำลังคิดอะไรอยู่..."
-        placeholderTextColor="Gray"
+        placeholderTextColor="gray"
         textAlignVertical="top" 
         multiline={true}
         value={feed}
@@ -315,8 +322,8 @@ const openlib = async () => {
     </View>
     {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginLeft: 110,top: -50, margin: 10 }} />}
     <View style={styles.iconContainer}>
-    <Icon name="camera" size={20} color="#000" style={styles.icon} onPress={camera}/>
-    <Icon name="image" size={20} color="#000" style={styles.icon} onPress={openlib}/>
+    <MaterialCommunityIcons name="camera" size={20} color="#000" style={styles.icon} onPress={camera} testID="selected-image"/>
+    <MaterialCommunityIcons name="image" size={20} color="#000" style={styles.icon} onPress={openlib} testID="image-icon"/>
     </View>
     <View style={{
       top: -80,
@@ -388,4 +395,3 @@ const styles = StyleSheet.create({
    backgroundColor: '#FFF',
   },
 });
-export default Createpost;

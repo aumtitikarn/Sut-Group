@@ -271,7 +271,7 @@ const openlib = async () => {
               <Avatar.Icon
                 icon="account-circle"
                 size={50}
-                style={{ top: 30, left: 30, backgroundColor: 'orange' }}
+                style={{ top: 30, left: 30, backgroundColor: '#1C1441' }}
                 color={'#FFF'}
               />
               <Image

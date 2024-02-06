@@ -150,7 +150,7 @@ const ReplyData = ({comments}) => {
               <Avatar.Icon
                 icon="account-circle"
                 size={50}
-                style={{ backgroundColor: 'orange' }}
+                style={{ backgroundColor: '#1C1441' }}
                 color={'#FFF'}
               />
               <Image

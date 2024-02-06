@@ -15,7 +15,7 @@ import { addDoc,
 from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const CameraScreen = () => {
   const cameraRef = useRef(null);
@@ -174,11 +174,11 @@ const CameraScreen = () => {
           onPress={() => navigation.navigate('Home')} 
         />
         <View>
-          <TouchableOpacity style={styles.Flipbutton} onPress={flipCamera}>
+          <TouchableOpacity style={styles.Flipbutton} onPress={flipCamera} testID="flip-button">
             <MaterialCommunityIcons name="camera-flip-outline" color={'white'} size={50} />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+          <TouchableOpacity style={styles.captureButton} onPress={takePicture} testID="capture-button">
             <MaterialCommunityIcons name="radiobox-marked" color={'white'} size={100} />
           </TouchableOpacity>
 
@@ -192,11 +192,11 @@ const CameraScreen = () => {
       {capturedImage && (
         <View style={styles.previewContainer}>
           <Image source={{ uri: capturedImage.uri }} style={styles.previewImage} />
-          <TouchableOpacity style={styles.refreshButton} onPress={refreshCamera}>
+          <TouchableOpacity style={styles.refreshButton} onPress={refreshCamera} testID="refresh-button">
             <MaterialCommunityIcons name="refresh" color={'black'} size={35} style={{top:5, left:10}} />
             <Text style={{fontWeight:'bold', fontSize:18, top:-25, left:50}}>ถ่ายอีกครั้ง</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.sentStory} onPress={sentStory}>
+          <TouchableOpacity style={styles.sentStory} onPress={sentStory} testID="send-button">
             <MaterialCommunityIcons name="arrow-up" color={'black'} size={35} style={{margin:9}} />
           </TouchableOpacity>
         </View>

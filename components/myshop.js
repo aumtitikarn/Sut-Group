@@ -150,7 +150,7 @@ export default function MyShop() {
             <View style={{ top: -40 }}>
               <View style={{ left: 60 }}>
               
-              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'#1C1441'}} color={'#FFF'} />
             <Image
               source={{ uri: shop.profileImg }}
               style={{  borderRadius: 50, position: 'absolute', width: 50, height:50, left: -60, top: 40 }}

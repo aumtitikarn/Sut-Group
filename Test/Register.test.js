@@ -39,7 +39,6 @@ describe('Register component', () => {
     const { getByText, getByPlaceholderText, queryByText, findByText, findAllByText } = render(<Register />);
 
     expect(findAllByText('ลงทะเบียน')).toBeTruthy();
-    // ... other assertions for rendering
   });
 
   test('registers user on valid input', async () => {
@@ -48,7 +47,6 @@ describe('Register component', () => {
     );
 
 
-    // Update the rest of your test logic
     fireEvent.changeText(getByPlaceholderText('ชื่อบัญชีผู้ใช้'), 'admin');
     fireEvent.changeText(getByPlaceholderText('ชื่อ'), 'John');
     fireEvent.changeText(getByPlaceholderText('นามสกุล'), 'Smith');
@@ -57,28 +55,25 @@ describe('Register component', () => {
     fireEvent.changeText(getByPlaceholderText('รหัสผ่าน'), 'password123');
     fireEvent.changeText(getByPlaceholderText('ยืนยันรหัสผ่าน'), 'password123');
   
-    // Mock the response of createUserWithEmailAndPassword
+
     const mockUser = { user: { uid: '123' } };
     createUserWithEmailAndPassword.mockResolvedValueOnce(mockUser);
   
-    // Use findAllByText to wait for all elements with the text 'เข้าสู่ระบบ'
+
     const RegisterButtonElements = await findAllByText('ลงทะเบียน');
     
-    // Check if there are elements that match the condition
+  
     if (RegisterButtonElements.length > 0) {
-      // Choose the specific element you want to interact with
       const RegisterButtonElement = RegisterButtonElements[0];
   
-      // Check if loginButtonElement has the 'onPress' property correctly
       if (RegisterButtonElement.props && typeof RegisterButtonElement.props.onPress === 'function') {
-        // Press the button
+
         fireEvent.press(RegisterButtonElement);
         const facultyInput = getByTestId('faculty-input');
         expect(facultyInput).toBeTruthy();
     await waitFor(() => {
       expect(createUserWithEmailAndPassword).toHaveBeenCalledWith({}, 'test@example.com', 'password123');
       expect(screen.getByText('ลงทะเบียนสำเร็จ')).toBeTruthy();
-      // ... other expectations based on your implementation
     });
   }
 }
@@ -91,14 +86,14 @@ describe('Register component', () => {
     fireEvent.changeText(getByPlaceholderText('รหัสผ่าน'), 'password123');
     fireEvent.changeText(getByPlaceholderText('ยืนยันรหัสผ่าน'), 'mismatchedpassword');
 
-    // Use findAllByText to wait for all elements with the text 'เข้าสู่ระบบ'
+    
     const RegisterButtonElements = await findAllByText('ลงทะเบียน');
-    // Check if there are elements that match the condition
+
     if (RegisterButtonElements.length > 0) {
-      // Choose the specific element you want to interact with
+  
       const RegisterButtonElement = RegisterButtonElements[0];
   
-      // Check if loginButtonElement has the 'onPress' property correctly
+  
       if (RegisterButtonElement.props && typeof RegisterButtonElement.props.onPress === 'function') {
         // Press the button
         fireEvent.press(RegisterButtonElement);

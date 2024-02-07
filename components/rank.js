@@ -72,7 +72,7 @@ function Rank() {
     const styles = StyleSheet.create({
         container: {
           paddingTop: StatusBar.currentHeight,
-          height: 800,
+          height: 850,
           top: -43
         },
         myscore: {

@@ -42,21 +42,19 @@ describe('Login component', () => {
     fireEvent.changeText(getByPlaceholderText('อีเมล '), 'test@example.com');
     fireEvent.changeText(getByPlaceholderText('รหัสผ่าน'), 'password123');
     
-    // Use findByText to wait for the button to be available
     const loginButtonElements = await findAllByText('เข้าสู่ระบบ');
-  
-// ในกรณีที่มี elements ที่ตรงกับเงื่อนไข
+
 if (loginButtonElements.length > 0) {
   const loginButtonElement = loginButtonElements[0];
 
-  // ตรวจสอบว่า loginButtonElement มี property 'onPress' ถูกต้อง
+
   if (loginButtonElement.props && typeof loginButtonElement.props.onPress === 'function') {
-    // ทำการกดปุ่ม
+
     fireEvent.press(loginButtonElement);
 
     await waitFor(() => {
-      expect(onAuthStateChanged).toHaveBeenCalledWith(/* mock auth object, expect.any(Function) */);
-      expect(signInWithEmailAndPassword).toHaveBeenCalledWith(/* ข้อมูลของผู้ใช้ที่ถูกกรอกเข้ามา */);
+      expect(onAuthStateChanged).toHaveBeenCalledWith();
+      expect(signInWithEmailAndPassword).toHaveBeenCalledWith();
     }, { timeout: 5000 });
   } else {
   }
@@ -71,24 +69,19 @@ if (loginButtonElements.length > 0) {
     fireEvent.changeText(getByPlaceholderText('อีเมล '), 'test@example.com');
     fireEvent.changeText(getByPlaceholderText('รหัสผ่าน'), 'password123');
     
-    // Use findAllByText to wait for all elements with the text 'เข้าสู่ระบบ'
+
     const loginButtonElements = await findAllByText('เข้าสู่ระบบ');
     
-    // Check if there are elements that match the condition
     if (loginButtonElements.length > 0) {
-      // Choose the specific element you want to interact with
       const loginButtonElement = loginButtonElements[0];
   
-      // Check if loginButtonElement has the 'onPress' property correctly
       if (loginButtonElement.props && typeof loginButtonElement.props.onPress === 'function') {
         // Press the button
         fireEvent.press(loginButtonElement);
     
         await waitFor(() => {
-          // Use queryByText instead of getByText to find an element with text 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
           expect(queryByText('อีเมลหรือรหัสผ่านไม่ถูกต้อง')).toBeTruthy();
-          // Check if signInWithEmailAndPassword is called with the correct user data
-          expect(signInWithEmailAndPassword).toHaveBeenCalledWith(/* ข้อมูลของผู้ใช้ที่ถูกกรอกเข้ามา */);
+          expect(signInWithEmailAndPassword).toHaveBeenCalledWith();
         });
       }
     }

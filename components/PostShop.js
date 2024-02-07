@@ -279,7 +279,7 @@ export default function PostShop() {
             </Card>
             <View style={{ top: -20 }}>
               <View style={{ left: 60 }}>
-              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'orange'}} color={'#FFF'} />
+              <Avatar.Icon icon="account-circle" size={50} style={{ top: 40, left: -60 , backgroundColor:'#1C1441'}} color={'#FFF'} />
               
         <Image
           source={{ uri: shop.profileImg }}

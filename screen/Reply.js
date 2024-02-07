@@ -286,7 +286,7 @@ useEffect(() => {
               <Avatar.Icon
                 icon="account-circle"
                 size={50}
-                style={{ top: 30, left: 30, backgroundColor: 'orange' }}
+                style={{ top: 30, left: 30, backgroundColor: '#1C1441' }}
                 color={'#FFF'}
               />
               <Image
@@ -358,7 +358,7 @@ useEffect(() => {
                <Avatar.Icon
                 icon="account-circle"
                 size={30}
-                style={{ top: 20, left: -30, backgroundColor: 'orange', position:'absolute' }}
+                style={{ top: 20, left: -30, backgroundColor: '#1C1441', position:'absolute' }}
                 color={'#FFF'}
               />
               <Image
